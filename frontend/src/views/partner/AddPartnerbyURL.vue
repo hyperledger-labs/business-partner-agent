@@ -167,7 +167,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
@@ -226,14 +225,14 @@ export default {
           if (result.status === 200 || result.status === 201) {
             store.dispatch("loadPartners");
             store.dispatch("loadPartnerSelectList");
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.addPartnerbyURL.eventSuccessCreatePartnerInvite")
             );
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     async copyInvitationURL() {

@@ -64,7 +64,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
@@ -81,7 +80,7 @@ export default {
     TrustedIssuers,
   },
   mounted() {
-    EventBus.$emit("title", this.$t("view.schema.title"));
+    this.emitter.emit("title", this.$t("view.schema.title"));
     console.log("SCHEMA", this.schema);
     this.fetch();
   },
@@ -116,7 +115,7 @@ export default {
           if (error.response.status === 404) {
             this.data = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
@@ -127,7 +126,7 @@ export default {
           console.log(result);
           if (result.status === 200) {
             store.dispatch("loadSchemas");
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.schema.eventSuccessDelete")
             );
@@ -137,7 +136,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

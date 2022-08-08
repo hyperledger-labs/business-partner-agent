@@ -82,7 +82,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { EventBus } from "@/main";
 import {
   IssueCredentialRequestJsonLd,
   issuerService,
@@ -213,7 +212,7 @@ export default {
           return resp.data;
         }
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     async submit() {
@@ -222,7 +221,7 @@ export default {
         const _credexId = await this.issueCredential();
         this.isBusy = false;
         if (_credexId) {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("component.issueCredential.successMessage")
           );
@@ -232,7 +231,7 @@ export default {
         }
       } catch (error) {
         this.isBusy = false;
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     cancel() {

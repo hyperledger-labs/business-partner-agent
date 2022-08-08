@@ -141,7 +141,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import {
   SchemaAPI,
   CreateSchemaRequest,
@@ -254,7 +253,7 @@ export default {
           return resp.data;
         }
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     async submit() {
@@ -262,7 +261,7 @@ export default {
       try {
         const _schema = await this.saveSchema();
         if (_schema) {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("component.createSchema.eventSuccess")
           );
@@ -271,7 +270,7 @@ export default {
         }
       } catch (error) {
         this.isBusy = false;
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     cancel() {

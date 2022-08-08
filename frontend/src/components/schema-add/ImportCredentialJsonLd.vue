@@ -106,7 +106,6 @@
 <script lang="ts">
 import VBpaButton from "@/components/BpaButton";
 import adminService from "@/services/admin-service";
-import { EventBus } from "@/main";
 import { jsonLdService } from "@/services";
 
 export default {
@@ -165,7 +164,7 @@ export default {
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.addSchema.eventSuccess")
             );
@@ -174,7 +173,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     async getJsonLdAttributes() {
@@ -202,7 +201,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", error.message);
+          this.emitter.emit("error", error.message);
         })
         .finally(() => {
           this.isBusy = false;

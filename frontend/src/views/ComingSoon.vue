@@ -12,12 +12,11 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 export default {
   name: "ComingSoon",
   components: {},
   created() {
-    EventBus.$emit("title", this.$t("view.comingSoon.title"));
+    this.emitter.emit("title", this.$t("view.comingSoon.title"));
   },
   data: () => {
     return {};

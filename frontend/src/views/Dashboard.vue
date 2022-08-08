@@ -92,7 +92,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import DashboardCard from "@/components/DashboardCard.vue";
@@ -102,7 +101,7 @@ export default {
   name: "Dashboard",
   components: { DashboardCard, VBpaButton },
   created() {
-    EventBus.$emit("title", this.$t("view.dashboard.title"));
+    this.emitter.emit("title", this.$t("view.dashboard.title"));
     this.getStatus();
   },
   data: () => {

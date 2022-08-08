@@ -60,7 +60,6 @@
 <script lang="ts">
 import VBpaButton from "@/components/BpaButton";
 import adminService from "@/services/admin-service";
-import { EventBus } from "@/main";
 
 export default {
   name: "import-credential-indy",
@@ -95,7 +94,7 @@ export default {
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.addSchema.eventSuccess")
             );
@@ -104,7 +103,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

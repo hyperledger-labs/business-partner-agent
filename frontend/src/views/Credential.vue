@@ -76,7 +76,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import Cred from "@/components/Credential.vue";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
@@ -90,7 +89,7 @@ export default {
     type: String,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.credential.title"));
+    this.emitter.emit("title", this.$t("view.credential.title"));
     this.getCredential();
     this.$store.commit("credentialNotificationSeen", { id: this.id });
   },
@@ -130,7 +129,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     saveChanges() {
@@ -156,7 +155,7 @@ export default {
               return response.status === 200;
             });
             if (allResponsesTrue) {
-              EventBus.$emit(
+              this.emitter.emit(
                 "success",
                 this.$t("view.credential.eventSuccessUpdate")
               );
@@ -171,7 +170,7 @@ export default {
             console.error(errorElement);
           }
           // react on errors.
-          EventBus.$emit("errors", error);
+          this.emitter.emit("errors", error);
         });
     },
     deleteCredential() {
@@ -180,7 +179,7 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.credential.eventSuccessDelete")
             );
@@ -190,7 +189,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

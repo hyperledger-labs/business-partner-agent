@@ -80,7 +80,6 @@
   </v-container>
 </template>
 <script lang="ts">
-import { EventBus } from "@/main";
 import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activities-service";
@@ -200,7 +199,7 @@ export default {
           if (error.response.status === 404) {
             this.items = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           }
         });
     },

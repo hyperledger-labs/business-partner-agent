@@ -269,7 +269,6 @@ import Profile from "@/components/Profile.vue";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { getPartnerState } from "@/utils/partnerUtils";
-import { EventBus } from "@/main";
 import {
   AriesProofExchange,
   PartnerAPI,
@@ -304,7 +303,7 @@ export default {
     CredentialTypeTabs,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.partner.title"));
+    this.emitter.emit("title", this.$t("view.partner.title"));
     this.getPartner();
     this.getPresentationRecords();
     this.$store.commit("partnerNotificationSeen", { id: this.id });
@@ -445,7 +444,7 @@ export default {
         })
         .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     deletePartner() {
@@ -455,7 +454,7 @@ export default {
           console.log(result);
           if (result.status === 200) {
             store.dispatch("loadPartners");
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.partner.eventSuccessPartnerDelete")
             );
@@ -465,7 +464,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     acceptPartnerRequest() {
@@ -474,7 +473,7 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.partner.eventSuccessConnectionAccepted")
             );
@@ -483,7 +482,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     refreshPartner() {
@@ -520,7 +519,7 @@ export default {
         })
         .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     onUpdatePartner() {

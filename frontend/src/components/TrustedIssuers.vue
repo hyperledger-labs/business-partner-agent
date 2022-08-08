@@ -74,7 +74,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import { adminService, TrustedIssuer } from "@/services";
 export default {
@@ -169,7 +168,7 @@ export default {
             this.$emit("changed");
           })
           .catch((error) => {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.items.splice(index, 1);
@@ -206,7 +205,7 @@ export default {
             this.isEdit = false;
             trustedIssuer.isEdit = false;
             this.editingTrustedIssuer = undefined;
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.trustedIssuers.eventSuccessCreate")
             );
@@ -215,7 +214,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     updateTrustedIssuer(trustedIssuer: TrustedIssuer & { isEdit: boolean }) {
@@ -232,7 +231,7 @@ export default {
           this.editingTrustedIssuer = undefined;
 
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.trustedIssuers.eventSuccessUpdate")
             );
@@ -242,7 +241,7 @@ export default {
         .catch((error) => {
           this.isBusy = false;
           trustedIssuer.isEdit = true;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

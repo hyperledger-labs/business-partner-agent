@@ -88,7 +88,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
@@ -107,9 +106,9 @@ export default {
     type: String,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.requestVerification.title"));
+    this.emitter.emit("title", this.$t("view.requestVerification.title"));
     if (!this.schemaId) {
-      EventBus.$emit(
+      this.emitter.emit(
         "success",
         this.$t("view.requestVerification.eventSuccessNoVerification")
       );
@@ -148,7 +147,7 @@ export default {
           }
         }
       } else {
-        EventBus.$emit(
+        this.emitter.emit(
           "error",
           this.$t("view.requestVerification.eventErrorSelect")
         );
@@ -169,7 +168,7 @@ export default {
         .then((response) => {
           console.log(response);
           this.isBusy = false;
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("view.requestVerification.eventSuccessSend")
           );
@@ -177,7 +176,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

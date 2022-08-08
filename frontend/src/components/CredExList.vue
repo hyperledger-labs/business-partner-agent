@@ -284,7 +284,6 @@ import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import Timeline from "@/components/Timeline.vue";
-import { EventBus } from "@/main";
 import {
   CredentialExchangeRoles,
   CredentialExchangeStates,
@@ -473,7 +472,7 @@ export default {
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
         }
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
       this.isLoadingCredentials = false;
     },
@@ -589,11 +588,11 @@ export default {
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
         .then(() => {
-          EventBus.$emit("success");
+          this.emitter.emit("success");
           this.closeDialog();
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         })
         .finally(() => {
           this.isLoadingSendCounterOffer = false;

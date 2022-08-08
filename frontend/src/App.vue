@@ -335,7 +335,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement.vue";
 import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
@@ -493,7 +492,7 @@ export default {
         process.env.VUE_APP_I18N_LOCALE ||
         "en";
       i18n.global.locale.value = locale;
-      this.$vuetify.lang.current = locale;
+      // this.$vuetify.lang.current = locale; TODO
 
       // Load up an alternate favicon
       if (this.ux.favicon) {
@@ -507,18 +506,17 @@ export default {
 
     // Global Error handling
     // Todo: Put in extra component
-
-    EventBus.$on("title", (title: string) => {
+    this.emitter.on("title", (title: string) => {
       this.title = title;
     });
 
-    EventBus.$on("success", (message: string) => {
+    this.emitter.on("success", (message: string) => {
       (this.snackbarMsg = message),
         (this.color = "green"),
         (this.snackbar = true);
     });
 
-    EventBus.$on("error", (message: AxiosError) => {
+    this.emitter.on("error", (message: AxiosError) => {
       console.log(message.response);
 
       if (

@@ -5,7 +5,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { EventBus } from "@/main";
 import { IStateTransactionAuthorAgreement } from "@/store/state-type";
 import { adminService } from "@/services";
 
@@ -59,7 +58,7 @@ const actions = {
       })
       .catch((error) => {
         console.error(error);
-        EventBus.$emit("error", error);
+        this.emitter.emit("error", error);
       });
   },
 
@@ -75,7 +74,7 @@ const actions = {
           taa: { digest: "", version: state.taaVersion, text: state.taaText },
         });
         console.error(error);
-        EventBus.$emit("error", error);
+        this.emitter.emit("error", error);
       });
   },
 
@@ -85,12 +84,12 @@ const actions = {
         digest: state.taaDigest,
       })
       .then(() => {
-        EventBus.$emit("success", "TAA registration fired");
+        this.emitter.emit("success", "TAA registration fired");
         context.dispatch("validateTaa");
       })
       .catch((error) => {
         console.error(error);
-        EventBus.$emit("error", error);
+        this.emitter.emit("error", error);
       });
   },
 };

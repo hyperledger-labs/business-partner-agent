@@ -8,7 +8,6 @@
 import { IStateSchemas } from "@/store/state-type";
 import { CredentialTypes } from "@/constants";
 import adminService from "@/services/admin-service";
-import { EventBus } from "@/main";
 import { CredentialType, SchemaAPI } from "@/services";
 import i18n from "@/plugins/i18n";
 
@@ -69,7 +68,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

@@ -61,7 +61,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import issuerService from "@/services/issuer-service";
 import VBpaButton from "@/components/BpaButton";
 import { CreateCredDefRequest, CredDef } from "@/services";
@@ -139,7 +138,7 @@ export default {
             this.$emit("changed");
           })
           .catch((error) => {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.items.splice(index, 1);
@@ -163,7 +162,7 @@ export default {
           if (result.status === 200) {
             this.isEdit = false;
             item.isEdit = false;
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.credentialDefinitions.eventSuccess")
             );
@@ -173,7 +172,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
 

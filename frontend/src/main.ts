@@ -22,6 +22,7 @@ import "vue-json-pretty/lib/styles.css";
 import { RuntimeConfig, settingsService } from "@/services";
 import axios from "axios";
 import VueAxios from "vue-axios";
+import mitt from "mitt";
 
 const app = createApp(App)
   .use(i18n)
@@ -32,6 +33,8 @@ const app = createApp(App)
 
 app.component("vue-json-pretty", VueJsonPretty);
 
+const emitter = mitt();
+app.config.globalProperties.emitter = emitter;
 app.config.globalProperties.$filters = filters;
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
@@ -164,7 +167,6 @@ app.use(VueNativeSock, socketApi, {
   app.mount("#app");
 })();
 
-const EventBus = new Vue();
-export { EventBus, apiBaseUrl, app };
+export { apiBaseUrl, app };
 
 export { default as axios } from "axios";

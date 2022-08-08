@@ -166,7 +166,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { EventBus } from "@/main";
 import {
   CredDef,
   IssueCredentialRequestIndy,
@@ -313,7 +312,7 @@ export default {
           return resp.data;
         }
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     async submit() {
@@ -322,7 +321,7 @@ export default {
         const _credexId = await this.issueCredential();
         this.isBusy = false;
         if (_credexId) {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("component.issueCredential.successMessage")
           );
@@ -332,7 +331,7 @@ export default {
         }
       } catch (error) {
         this.isBusy = false;
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     cancel() {
@@ -379,7 +378,7 @@ export default {
             this.expertLoad.data = event_.target.result;
           });
           reader.addEventListener("error", () => {
-            EventBus.$emit(
+            this.emitter.emit(
               "error",
               `${this.$t(
                 "component.issueCredential.expertLoad.errorMessages.readFile"
@@ -387,7 +386,7 @@ export default {
             );
           });
         } catch (error) {
-          EventBus.$emit(
+          this.emitter.emit(
             "error",
             `${this.$t(
               "component.issueCredential.expertLoad.errorMessages.readFile"
@@ -439,7 +438,7 @@ export default {
           if (count) {
             this.enableSubmit();
           } else {
-            EventBus.$emit(
+            this.emitter.emit(
               "error",
               this.$t(
                 "component.issueCredential.expertLoad.errorMessages.attributes"
@@ -450,7 +449,7 @@ export default {
           let errorMessage = this.$t(
             "component.issueCredential.expertLoad.errorMessages.parse"
           );
-          EventBus.$emit("error", `${errorMessage} ${formatErrorMessage}`);
+          this.emitter.emit("error", `${errorMessage} ${formatErrorMessage}`);
         }
       }
     },

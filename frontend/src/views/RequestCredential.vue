@@ -50,7 +50,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import { ExchangeVersion, CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
@@ -64,7 +63,7 @@ export default {
     id: String, // partner ID
   },
   mounted() {
-    EventBus.$emit("title", this.$t("view.requestCredential.title"));
+    this.emitter.emit("title", this.$t("view.requestCredential.title"));
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadSchemas");
   },
@@ -132,7 +131,7 @@ export default {
       credentialService
         .requestCredential(this.id, data)
         .then(() => {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("view.requestCredential.eventSuccessSend")
           );
@@ -140,7 +139,7 @@ export default {
           this.$router.go(-1);
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },

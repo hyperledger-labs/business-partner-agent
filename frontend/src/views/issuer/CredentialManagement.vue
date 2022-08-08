@@ -148,7 +148,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import CredExList from "@/components/CredExList.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
@@ -168,7 +167,7 @@ export default {
     CredExList,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.issueCredentials.title"));
+    this.emitter.emit("title", this.$t("view.issueCredentials.title"));
   },
   data: () => {
     return {

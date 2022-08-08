@@ -7,7 +7,6 @@
  */
 import partnerService from "@/services/partner-service";
 import { PartnerStates } from "@/constants";
-import { EventBus } from "@/main";
 import { IStatePartnerSelectList } from "@/store/state-type";
 import { PartnerAPI } from "@/services";
 
@@ -38,7 +37,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

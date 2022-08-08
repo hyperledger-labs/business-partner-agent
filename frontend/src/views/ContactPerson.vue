@@ -104,7 +104,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ContactPerson",
@@ -156,7 +155,7 @@ export default {
     },
   },
   created() {
-    EventBus.$emit("title", this.$t("view.contactPerson.title"));
+    this.emitter.emit("title", this.$t("view.contactPerson.title"));
     if (this.person) {
       this.newContact = true;
     }

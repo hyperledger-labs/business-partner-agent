@@ -204,7 +204,6 @@
 
 <script lang="ts">
 import Profile from "@/components/Profile.vue";
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 import { invitationsService, partnerService, TagAPI } from "@/services";
@@ -275,7 +274,7 @@ export default {
             this.did
           }.`;
           this.partnerLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     addPartner() {
@@ -298,7 +297,7 @@ export default {
           if (result.status === 201) {
             store.dispatch("loadPartners");
             store.dispatch("loadPartnerSelectList");
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.addPartner.eventSuccessAdd")
             );
@@ -309,12 +308,12 @@ export default {
         })
         .catch((error) => {
           if (error.response.status === 412) {
-            EventBus.$emit(
+            this.emitter.emit(
               "error",
               this.$t("view.addPartner.eventErrorAlreadyExists")
             );
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
@@ -341,7 +340,7 @@ export default {
           })
           .catch((error) => {
             this.invitationUrlLoading = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
       }
     },
@@ -368,7 +367,7 @@ export default {
             store.dispatch("loadPartners");
             this.receivedInvitation = {};
             this.invitationUrlLoaded = false;
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.addPartner.eventSuccessAdd")
             );
@@ -377,7 +376,7 @@ export default {
             });
           })
           .catch((error) => {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
       }
     },

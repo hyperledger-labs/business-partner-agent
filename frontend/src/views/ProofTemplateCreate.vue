@@ -177,7 +177,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proof-template-service";
 import AttributeEdit from "@/components/proof-templates/AttributeEdit.vue";
@@ -212,7 +211,7 @@ export default {
   },
   components: { RestrictionsEdit, AttributeEdit, VBpaButton },
   created() {
-    EventBus.$emit("title", this.$t("view.proofTemplates.title"));
+    this.emitter.emit("title", this.$t("view.proofTemplates.title"));
   },
   data: () => {
     return {
@@ -422,7 +421,7 @@ export default {
             documentId: response.data.id,
             useV2Exchange: this.useV2Exchange,
           });
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("view.proofTemplate.create.success")
           );
@@ -437,7 +436,7 @@ export default {
           this.createButtonIsBusy = false;
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
           this.createButtonIsBusy = false;
         });
     },

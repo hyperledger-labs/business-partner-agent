@@ -87,7 +87,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import AttributeGroup from "@/components/proof-templates/AttributeGroup.vue";
 import proofTemplateService from "@/services/proof-template-service";
 import VBpaButton from "@/components/BpaButton";
@@ -106,7 +105,7 @@ export default {
     VBpaButton,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.proofTemplates.title"));
+    this.emitter.emit("title", this.$t("view.proofTemplates.title"));
   },
   data: () => {
     return {
@@ -131,7 +130,7 @@ export default {
         .deleteProofTemplate(this.proofTemplate.id)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.proofTemplate.view.eventSuccessDelete")
             );
@@ -142,7 +141,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

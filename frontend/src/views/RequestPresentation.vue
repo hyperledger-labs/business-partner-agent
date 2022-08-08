@@ -48,7 +48,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
 import proofTemplateService from "@/services/proof-template-service";
@@ -62,7 +61,7 @@ export default {
     id: String, // partner ID
   },
   mounted() {
-    EventBus.$emit("title", this.$t("view.requestPresentation.title"));
+    this.emitter.emit("title", this.$t("view.requestPresentation.title"));
   },
   data: () => {
     return {
@@ -96,7 +95,7 @@ export default {
       proofTemplateService
         .sendProofTemplate(this.selectedProofTemplate[0].id, this.id, data)
         .then(() => {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("view.requestPresentation.eventSuccessSend")
           );
@@ -104,7 +103,7 @@ export default {
           this.$router.go(-1);
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },

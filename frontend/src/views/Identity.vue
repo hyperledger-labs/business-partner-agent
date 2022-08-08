@@ -18,13 +18,12 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import { didService } from "@/services";
 export default {
   name: "Identity",
   components: {},
   created() {
-    EventBus.$emit("title", this.$t("view.identity.title"));
+    this.emitter.emit("title", this.$t("view.identity.title"));
     this.getIdentity();
   },
   data: () => {
@@ -44,7 +43,7 @@ export default {
           this.didDoc = result.data;
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

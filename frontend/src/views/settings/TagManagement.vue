@@ -84,7 +84,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import adminService from "@/services/admin-service";
 import VBpaButton from "@/components/BpaButton";
 
@@ -92,7 +91,7 @@ export default {
   name: "TagManagement",
   components: { VBpaButton },
   created() {
-    EventBus.$emit("title", this.$t("view.tagManagement.title"));
+    this.emitter.emit("title", this.$t("view.tagManagement.title"));
   },
   data: () => {
     return {
@@ -118,18 +117,18 @@ export default {
         })
         .then((response) => {
           if (response.status === 201 || response.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.tagManagement.eventSuccessTagAdded")
             );
             this.newTag = "";
             this.$store.dispatch("loadTags");
           } else {
-            EventBus.$emit("error", response.statusText);
+            this.emitter.emit("error", response.statusText);
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     deleteTag(tag: string, hardDelete = false) {
@@ -138,7 +137,7 @@ export default {
         .then((response) => {
           this.hardDeleteDialog = false;
           if (response.status === 201 || response.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.tagManagement.eventSuccessTagRemoved")
             );
@@ -146,7 +145,7 @@ export default {
             this.deleteErrorMsg = "";
             this.selectedTag = undefined;
           } else {
-            EventBus.$emit("error", response.statusText);
+            this.emitter.emit("error", response.statusText);
           }
         })
         .catch((error) => {
@@ -156,7 +155,7 @@ export default {
             this.deleteErrorMsg = error.response.data.message;
             this.selectedTag = tag;
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           }
         });
     },

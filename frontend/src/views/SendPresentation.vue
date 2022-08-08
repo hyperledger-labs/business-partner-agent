@@ -52,7 +52,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
@@ -68,7 +67,7 @@ export default {
     id: String,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.sendPresentation.title"));
+    this.emitter.emit("title", this.$t("view.sendPresentation.title"));
   },
   data: () => {
     return {
@@ -124,7 +123,7 @@ export default {
           .then((response) => {
             console.log(response);
             this.isBusy = false;
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.sendPresentation.eventSuccessSend")
             );
@@ -135,7 +134,7 @@ export default {
           })
           .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.isBusy = false;

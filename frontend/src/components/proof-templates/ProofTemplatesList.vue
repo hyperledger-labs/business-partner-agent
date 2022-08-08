@@ -37,7 +37,6 @@ create new ones
 </template>
 <script lang="ts">
 import store from "@/store";
-import { EventBus } from "@/main";
 import { ProofTemplate, proofTemplateService } from "@/services";
 
 export default {
@@ -129,7 +128,7 @@ export default {
           this.$store.dispatch("loadProofTemplates");
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

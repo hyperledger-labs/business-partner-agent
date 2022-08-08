@@ -11,7 +11,7 @@ import {
   Page,
   walletService,
 } from "@/services";
-import { apiBaseUrl, axios, EventBus } from "@/main";
+import { apiBaseUrl, axios } from "@/main";
 import { AxiosResponse } from "axios";
 import { IStateCredentialsAndDocuments } from "@/store/state-type";
 import { CredentialTypes } from "@/constants";
@@ -53,14 +53,14 @@ export default {
               })
               .catch((error) => {
                 console.error(error);
-                EventBus.$emit("error", error);
+                this.emitter.emit("error", error);
               });
           }
           context.commit("loadCredentialsFinished", credentials);
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
     async loadDocuments(context: any) {
@@ -71,7 +71,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

@@ -169,7 +169,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import store from "@/store";
 import { adminService, UpdateSchemaRequest, SchemaAPI } from "@/services";
 import TrustedIssuers from "@/components/TrustedIssuers.vue";
@@ -281,7 +280,7 @@ export default {
         .updateSchema(this.schema.id, newDefaultAttribute)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.manageSchema.eventSuccessUpdate")
             );
@@ -291,7 +290,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
       this.isEdit = false;
     },
@@ -300,7 +299,7 @@ export default {
         .removeSchema(this.schema.id)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("component.manageSchema.eventSuccessDelete")
             );
@@ -309,7 +308,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     onChanged() {

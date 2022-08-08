@@ -51,7 +51,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import SchemaList from "@/components/SchemaList.vue";
 import SchemaAdd from "@/components/schema-add/SchemaAdd.vue";
 import CreateSchema from "@/components/CreateSchema.vue";
@@ -67,7 +66,7 @@ export default {
     SchemaList,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.schemaSettings.title"));
+    this.emitter.emit("title", this.$t("view.schemaSettings.title"));
   },
   data: () => {
     return {

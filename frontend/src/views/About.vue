@@ -63,11 +63,10 @@
 
 <script lang="ts">
 import Licenses from "../../licenses/licenseInfos.json";
-import { EventBus } from "@/main";
 export default {
   name: "About",
   created() {
-    EventBus.$emit("title", this.$t("view.about.title"));
+    this.emitter.emit("title", this.$t("view.about.title"));
   },
   data: () => {
     return {

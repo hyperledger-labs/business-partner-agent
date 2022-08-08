@@ -6,7 +6,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { IStateStatus } from "@/store/state-type";
-import { EventBus } from "@/main";
 import { statusService, BPAStats } from "@/services";
 
 const state: IStateStatus = {
@@ -32,7 +31,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

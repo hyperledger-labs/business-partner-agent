@@ -37,7 +37,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import Document from "@/views/Document.vue";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
 import credentialService from "@/services/credential-service";
@@ -70,7 +69,7 @@ export default {
       credentialService
         .requestCredential(this.id, data)
         .then(() => {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("view.requestCredential.eventSuccessSend")
           );
@@ -78,7 +77,7 @@ export default {
           this.$router.go(-1);
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },
@@ -95,7 +94,7 @@ export default {
     },
   },
   mounted() {
-    EventBus.$emit("title", this.$t("view.requestPresentation.title"));
+    this.emitter.emit("title", this.$t("view.requestPresentation.title"));
   },
 };
 </script>

@@ -87,7 +87,6 @@
 <script lang="ts">
 import { CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import { SchemaAPI } from "@/services";
 
@@ -98,7 +97,7 @@ export default {
     VBpaButton,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.wallet.title"));
+    this.emitter.emit("title", this.$t("view.wallet.title"));
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadSchemas");
   },

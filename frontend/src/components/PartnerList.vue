@@ -56,7 +56,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
@@ -202,7 +201,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     getProfileAddress(partner: PartnerAPI) {

@@ -142,7 +142,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
 import Credential from "@/components/Credential.vue";
@@ -186,10 +185,10 @@ export default {
   },
   created() {
     if (this.id && !this.type) {
-      EventBus.$emit("title", this.$t("view.document.titleExisting"));
+      this.emitter.emit("title", this.$t("view.document.titleExisting"));
       this.getDocument();
     } else {
-      EventBus.$emit("title", this.$t("view.document.titleNew"));
+      this.emitter.emit("title", this.$t("view.document.titleNew"));
       this.document.type = this.type;
       this.document.schemaId = this.schemaId;
       this.document.isPublic = this.isProfile(this.document.type);
@@ -245,7 +244,7 @@ export default {
             this.document = result.data;
             this.intDoc = { ...this.document };
             this.isReady = true;
-            EventBus.$emit(
+            this.emitter.emit(
               "title",
               `${this.$t("view.document.titleEdit")} (${
                 this.document.typeLabel
@@ -254,7 +253,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     saveDocument(closeDocument: boolean) {
@@ -278,14 +277,14 @@ export default {
             } else {
               this.$router.go(this.$router.currentRoute);
             }
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.document.eventSuccessSaveEdit")
             );
           })
           .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
 
         // create new document
@@ -307,14 +306,14 @@ export default {
             });
             this.isBusy = false;
             this.$router.go(-1);
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.document.eventSuccessSaveNew")
             );
           })
           .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           });
       }
     },
@@ -323,7 +322,7 @@ export default {
         .deleteDocument(this.id)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.document.eventSuccessDelete")
             );
@@ -331,7 +330,7 @@ export default {
           }
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

@@ -7,7 +7,6 @@
  */
 import { ProofTemplate } from "@/services";
 import proofTemplateService from "@/services/proof-template-service";
-import { EventBus } from "@/main";
 import { IStateProofTemplates } from "@/store/state-type";
 
 const state: IStateProofTemplates = {
@@ -32,7 +31,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

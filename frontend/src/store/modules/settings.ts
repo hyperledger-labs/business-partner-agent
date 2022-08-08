@@ -7,7 +7,6 @@
  */
 import { IStateSettings } from "@/store/state-type";
 import { RuntimeConfig, settingsService } from "@/services";
-import { EventBus } from "@/main";
 
 const state: IStateSettings = {
   config: {} as RuntimeConfig,
@@ -40,7 +39,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

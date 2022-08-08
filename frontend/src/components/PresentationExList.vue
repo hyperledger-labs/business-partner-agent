@@ -148,7 +148,6 @@ import {
   PresentationRequestCredentials,
   proofExService,
 } from "@/services";
-import { EventBus } from "@/main";
 import {
   CredentialTypes,
   PresentationExchangeStates,
@@ -266,14 +265,14 @@ export default {
       const referents = this.prepareReferents();
       try {
         await proofExService.approveProofRequest(this.record.id, referents);
-        EventBus.$emit(
+        this.emitter.emit(
           "success",
           this.$t("component.presentationExList.eventSuccessApprove")
         );
         this.closeDialog();
         this.$emit("changed");
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     async decline() {
@@ -282,14 +281,14 @@ export default {
           this.record.id,
           this.declineReasonText
         );
-        EventBus.$emit(
+        this.emitter.emit(
           "success",
           this.$t("component.presentationExList.eventSuccessDecline")
         );
         this.closeDialog();
         this.$emit("changed");
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     openItem(
@@ -341,14 +340,14 @@ export default {
             (item: AriesProofExchange) => item.id === this.record.id
           );
           this.items.splice(index, 1);
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("component.presentationExList.eventSuccessDelete")
           );
           this.closeDialog();
         }
       } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
+        this.emitter.emit("error", this.$axiosErrorMessage(error));
       }
     },
     addProofData() {

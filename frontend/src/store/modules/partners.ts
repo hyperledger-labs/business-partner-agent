@@ -8,7 +8,6 @@
 import { PartnerAPI } from "@/services";
 import { IStatePartners } from "@/store/state-type";
 import partnerService from "@/services/partner-service";
-import { EventBus } from "@/main";
 
 const state: IStatePartners = {
   partnerList: new Array<PartnerAPI>(),
@@ -40,7 +39,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

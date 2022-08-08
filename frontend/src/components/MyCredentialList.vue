@@ -97,7 +97,6 @@ import {
   CredentialExchangeStates,
   CredentialTypes,
 } from "@/constants";
-import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { AriesCredential, MyDocumentAPI, Page, PageOptions } from "@/services";
 import { AxiosResponse } from "axios";
@@ -207,7 +206,7 @@ export default {
           if (error.response.status === 404) {
             this.data = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           }
         });
     },

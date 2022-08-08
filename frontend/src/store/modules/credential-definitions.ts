@@ -8,7 +8,6 @@
 import { CredDef } from "@/services";
 import { IStateCredentialDefinitions } from "@/store/state-type";
 import issuerService from "@/services/issuer-service";
-import { EventBus } from "@/main";
 
 const state: IStateCredentialDefinitions = {
   credDefSelectList: new Array<CredDef>(),
@@ -32,7 +31,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

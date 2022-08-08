@@ -132,7 +132,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import { LocaleMetaType } from "@/views/settings/locale-meta-type";
 import { BPAStats } from "@/services";
@@ -142,7 +141,7 @@ import i18n from "@/plugins/i18n";
 export default {
   name: "Settings",
   created() {
-    EventBus.$emit("title", this.$t("view.settings.title"));
+    this.emitter.emit("title", this.$t("view.settings.title"));
     this.getStatus();
     this.copyText = this.$t("button.clickToCopy");
   },
@@ -248,7 +247,7 @@ export default {
       this.$i18n.locale = locale;
       this.$vuetify.lang.current = locale;
       localStorage.setItem("locale", locale);
-      EventBus.$emit("title", this.$t("view.settings.title"));
+      this.emitter.emit("title", this.$t("view.settings.title"));
     },
     onPickColor(c: VuetifyThemeItem) {
       this.$vuetify.theme.themes.light.primary = c;

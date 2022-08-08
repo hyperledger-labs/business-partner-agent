@@ -6,7 +6,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import adminService from "@/services/admin-service";
-import { EventBus } from "@/main";
 import { IStateTags } from "@/store/state-type";
 import { TagAPI } from "@/services";
 
@@ -32,7 +31,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          EventBus.$emit("error", error);
+          this.emitter.emit("error", error);
         });
     },
   },

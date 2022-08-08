@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import ProofTemplateCreate from "@/views/ProofTemplateCreate.vue";
 import proofTemplateService from "@/services/proof-template-service";
 import { ExchangeVersion } from "@/constants";
@@ -27,7 +26,7 @@ export default {
     id: String, // partner ID
   },
   mounted() {
-    EventBus.$emit("title", this.$t("view.requestPresentation.title"));
+    this.emitter.emit("title", this.$t("view.requestPresentation.title"));
   },
   methods: {
     async submitRequest(proofTemplateIdAndExchangeVersion: {
@@ -47,14 +46,14 @@ export default {
           data
         )
         .then(() => {
-          EventBus.$emit(
+          this.emitter.emit(
             "success",
             this.$t("view.requestPresentation.eventSuccessSend")
           );
           this.$router.go(-2);
         })
         .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          this.emitter.emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

@@ -61,7 +61,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import PartnerList from "@/components/PartnerList.vue";
 export default {
@@ -71,7 +70,7 @@ export default {
     VBpaButton,
   },
   created() {
-    EventBus.$emit("title", this.$t("view.partners.title"));
+    this.emitter.emit("title", this.$t("view.partners.title"));
   },
   data: () => {
     return {

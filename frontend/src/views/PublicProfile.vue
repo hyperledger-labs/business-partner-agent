@@ -40,7 +40,6 @@
 
 <script lang="ts">
 import Profile from "@/components/Profile.vue";
-import { EventBus } from "@/main";
 export default {
   name: "PublicProfile",
   props: {},
@@ -56,7 +55,7 @@ export default {
     },
   },
   created() {
-    EventBus.$emit("title", this.$t("view.profile.title"));
+    this.emitter.emit("title", this.$t("view.profile.title"));
 
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadCredentials");

@@ -44,7 +44,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
@@ -53,7 +52,7 @@ export default {
   name: "ProofTemplates",
   components: { ProofTemplatesList, VBpaButton },
   created() {
-    EventBus.$emit("title", this.$t("view.proofTemplates.title"));
+    this.emitter.emit("title", this.$t("view.proofTemplates.title"));
   },
   data: () => {
     return {

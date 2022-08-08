@@ -47,14 +47,13 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import ActivityList from "@/components/ActivityList.vue";
 
 export default {
   name: "Notifications",
   components: { ActivityList },
   created() {
-    EventBus.$emit("title", this.$t("view.notifications.title"));
+    this.emitter.emit("title", this.$t("view.notifications.title"));
     // do we want to clear all the notifications?
     //this.$store.commit("taskNotificationsClear");
   },

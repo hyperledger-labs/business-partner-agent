@@ -71,7 +71,6 @@
 </template>
 
 <script lang="ts">
-import { EventBus } from "@/main";
 import TrustedIssuer from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 import { AddSchemaRequest, adminService } from "@/services";
@@ -122,7 +121,7 @@ export default {
           this.isBusyAddSchema = false;
 
           if (result.status === 200) {
-            EventBus.$emit(
+            this.emitter.emit(
               "success",
               this.$t("view.addSchema.eventSuccessSchemaAdd")
             );
@@ -132,12 +131,12 @@ export default {
         .catch((error) => {
           this.isBusyAddSchema = false;
           if (error.response.status === 400) {
-            EventBus.$emit(
+            this.emitter.emit(
               "error",
               this.$t("view.addSchema.eventErrorSchemaExists")
             );
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
+            this.emitter.emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
