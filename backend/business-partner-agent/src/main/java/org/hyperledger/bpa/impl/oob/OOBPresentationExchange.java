@@ -15,19 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.impl.oob;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import lombok.NonNull;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
+import org.hyperledger.bpa.controller.api.proof.RequestOOBPresentationRequest;
+import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 
-import java.util.UUID;
+@Singleton
+public class OOBPresentationExchange {
 
-@Data
-@NoArgsConstructor
-public class SendProofRequest implements ExchangeVersionTranslator {
-    private UUID partnerId;
-    private UUID myCredentialId;
-    private ExchangeVersion exchangeVersion;
+    @Inject
+    ProofTemplateManager templateManager;
+
+    public APICreateInvitationResponse requestConnectionLess(@NonNull RequestOOBPresentationRequest req) {
+
+        return null;
+    }
 }

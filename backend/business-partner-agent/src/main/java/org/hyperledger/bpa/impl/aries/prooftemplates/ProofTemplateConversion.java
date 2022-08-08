@@ -66,6 +66,20 @@ public class ProofTemplateConversion {
             throw new PartnerException(ms.getMessage("api.partner.no.connection"));
         }
 
+        return templateToProofRequest(proofTemplate)
+                .connectionId(partner.getConnectionId())
+                .build();
+    }
+
+    /**
+     * Renders a proof request builder not bound to any partner yet.
+     *
+     * @param proofTemplate {@link BPAProofTemplate}
+     * @return {@link PresentProofRequest.PresentProofRequestBuilder}
+     */
+    @NonNull
+    public PresentProofRequest.PresentProofRequestBuilder templateToProofRequest(
+            @NonNull @Valid BPAProofTemplate proofTemplate) {
         ProofTemplateElementVisitor proofTemplateElementVisitor = new ProofTemplateElementVisitor(
                 this::resolveLedgerSchemaId,
                 new RevocationTimeStampProvider(clock));
@@ -78,9 +92,7 @@ public class ProofTemplateConversion {
                 .forEach(proofTemplateElementVisitor::visit);
 
         return PresentProofRequest.builder()
-                .proofRequest(proofTemplateElementVisitor.getResult())
-                .connectionId(partner.getConnectionId())
-                .build();
+                .proofRequest(proofTemplateElementVisitor.getResult());
     }
 
     private Optional<String> resolveLedgerSchemaId(UUID databaseSchemaId) {

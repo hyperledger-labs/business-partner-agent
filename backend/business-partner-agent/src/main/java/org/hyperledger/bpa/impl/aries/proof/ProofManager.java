@@ -146,15 +146,23 @@ public class ProofManager {
         }
     }
 
+    /**
+     * Renders the proof-request, not bound to any connection
+     *
+     * @param proofTemplate {@link BPAProofTemplate}
+     * @return {@link PresentProofRequest}
+     */
+    public PresentProofRequest renderIndyProofRequest(@NonNull @Valid BPAProofTemplate proofTemplate) {
+        return proofTemplateConversion.templateToProofRequest(proofTemplate).build();
+    }
+
     public void sendPresentProofRequestJsonLD(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         try {
             ac.presentProofV2SendRequest(V20PresSendRequestRequest
                     .builder()
                     .connectionId(p.getConnectionId())
-                    .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
-                            .dif(ldVerifier.prepareRequest(proofTemplate))
-                            .build())
+                    .presentationRequest(renderLDProofRequest(proofTemplate))
                     .build())
                     .ifPresent(persistProof(PersistProofCmd.builder()
                             .partner(p).type(CredentialType.JSON_LD).proofTemplate(proofTemplate).build()));
@@ -162,6 +170,13 @@ public class ProofManager {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
 
+    }
+
+    public V20PresSendRequestRequest.V20PresRequestByFormat renderLDProofRequest(
+            @NonNull @Valid BPAProofTemplate proofTemplate) {
+        return V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                .dif(ldVerifier.prepareRequest(proofTemplate))
+                .build();
     }
 
     // request proof from partner - currently not used by the frontend

@@ -20,12 +20,13 @@ package org.hyperledger.bpa.controller.api.partner;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class RequestCredentialRequest {
+public class RequestCredentialRequest implements ExchangeVersionTranslator {
     public UUID documentId;
     public ExchangeVersion exchangeVersion;
 }

@@ -24,6 +24,8 @@ import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -35,6 +37,7 @@ import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
+import org.jetbrains.annotations.NotNull;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -64,9 +67,7 @@ public class ProofTemplateManager {
 
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
             @Nullable ExchangeVersion version) {
-        BPAProofTemplate proofTemplate = repo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
+        BPAProofTemplate proofTemplate = findProofTemplate(id);
         if (proofTemplate.typeIsIndy()) {
             version = version != null ? version : ExchangeVersion.V1;
             proofManager.sendPresentProofRequestIndy(partnerId, proofTemplate, version);
@@ -75,8 +76,20 @@ public class ProofTemplateManager {
         }
     }
 
-    public Optional<BPAProofTemplate> getProofTemplate(@NonNull UUID id) {
-        return repo.findById(id);
+    public PresentProofRequest templateToIndyProofRequest(@NonNull UUID id) {
+        BPAProofTemplate proofTemplate = findProofTemplate(id);
+        return proofManager.renderIndyProofRequest(proofTemplate);
+    }
+
+    public V20PresSendRequestRequest.V20PresRequestByFormat templateToLDProofRequest(@NonNull UUID id) {
+        BPAProofTemplate proofTemplate = findProofTemplate(id);
+        return proofManager.renderLDProofRequest(proofTemplate);
+    }
+
+    public BPAProofTemplate findProofTemplate(@NotNull UUID id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
     }
 
     public BPAProofTemplate addProofTemplate(@NonNull @Valid BPAProofTemplate template) {

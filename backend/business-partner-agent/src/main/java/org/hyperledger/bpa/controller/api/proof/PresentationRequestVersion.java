@@ -20,10 +20,11 @@ package org.hyperledger.bpa.controller.api.proof;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
 @Data
 @NoArgsConstructor
-public class PresentationRequestVersion {
+public class PresentationRequestVersion implements ExchangeVersionTranslator {
     /** presentation exchange api version */
     private ExchangeVersion exchangeVersion;
 }
