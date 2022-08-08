@@ -8,9 +8,9 @@
 
 import "@/assets/scss/style.scss";
 
-import Vue, { createApp } from "vue";
+import { createApp } from "vue";
 import { AxiosResponse } from "axios";
-import VueNativeSock from "vue-native-websocket";
+import VueNativeSock from "vue-native-websocket-vue3";
 import App from "./App.vue";
 import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
@@ -85,7 +85,7 @@ app.use(VueNativeSock, socketApi, {
           target = "onNotification";
       }
     }
-    this.store[method](target, message);
+    store[method](target, message);
   },
 });
 
