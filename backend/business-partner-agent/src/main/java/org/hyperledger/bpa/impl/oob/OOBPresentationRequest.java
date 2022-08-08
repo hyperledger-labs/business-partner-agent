@@ -40,7 +40,7 @@ import java.util.UUID;
 
 @Slf4j
 @Singleton
-public class OOBPresentationExchange extends OOBBase {
+public class OOBPresentationRequest extends OOBBase {
 
     private final ProofTemplateManager templateManager;
 
@@ -49,7 +49,7 @@ public class OOBPresentationExchange extends OOBBase {
     private final PartnerProofRepository partnerProofRepo;
 
     @Inject
-    public OOBPresentationExchange(
+    public OOBPresentationRequest(
             AriesClient ac,
             ProofTemplateManager templateManager,
             PartnerProofRepository partnerProofRepo) {

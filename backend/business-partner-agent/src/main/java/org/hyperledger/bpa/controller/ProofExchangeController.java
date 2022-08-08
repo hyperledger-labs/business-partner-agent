@@ -41,7 +41,7 @@ import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
 import org.hyperledger.bpa.controller.api.proof.RequestOOBPresentationRequest;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
-import org.hyperledger.bpa.impl.oob.OOBPresentationExchange;
+import org.hyperledger.bpa.impl.oob.OOBPresentationRequest;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -59,7 +59,7 @@ public class ProofExchangeController {
     ProofManager proofM;
 
     @Inject
-    OOBPresentationExchange oob;
+    OOBPresentationRequest oob;
 
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
