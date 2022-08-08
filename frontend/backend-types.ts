@@ -90,7 +90,7 @@ export interface paths {
     post: operations["createCredDef"];
   };
   "/api/issuer/creddef/{id}": {
-    /** Delete a indy credential definition (will not delete it from the ledger) */
+    /** Delete an indy credential definition (will not delete it from the ledger) */
     delete: operations["deleteCredDef"];
   };
   "/api/issuer/exchanges": {
@@ -228,6 +228,10 @@ export interface paths {
   "/api/proof-exchanges/proof-request": {
     /** Request proof from partner */
     post: operations["requestProof_1"];
+  };
+  "/api/proof-exchanges/proof-request/oob-attachment": {
+    /** OOB presentation request step 1 - prepares presentation request and returns URL for use within the barcode */
+    post: operations["connectionLessPresentationRequest"];
   };
   "/api/proof-exchanges/proof-send": {
     /** Send proof to partner */
@@ -1087,6 +1091,14 @@ export interface components {
       documentId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
+    RequestOOBPresentationRequest: {
+      alias?: string;
+      tag?: components["schemas"]["Tag"][];
+      trustPing?: boolean;
+      /** Format: uuid */
+      templateId: string;
+      exchangeVersion?: components["schemas"]["ExchangeVersion"];
+    };
     RequestProofRequest: {
       requestBySchema?: components["schemas"]["RequestProofRequest.RequestBySchema"];
       /** Format: uuid */
@@ -1756,7 +1768,7 @@ export interface operations {
       };
     };
   };
-  /** Delete a indy credential definition (will not delete it from the ledger) */
+  /** Delete an indy credential definition (will not delete it from the ledger) */
   deleteCredDef: {
     parameters: {
       path: {
@@ -2424,6 +2436,23 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["RequestProofRequest"];
+      };
+    };
+  };
+  /** OOB presentation request step 1 - prepares presentation request and returns URL for use within the barcode */
+  connectionLessPresentationRequest: {
+    responses: {
+      /** APICreateInvitationResponse */
+      200: {
+        content: {
+          "application/json": components["schemas"]["APICreateInvitationResponse"];
+        };
+      };
+    };
+    /** RequestOOBPresentationRequest */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestOOBPresentationRequest"];
       };
     };
   };
