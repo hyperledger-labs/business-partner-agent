@@ -22,8 +22,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.BasePresExRecord;
 import org.hyperledger.aries.api.present_proof.PresentationFreeOfferHelper;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
@@ -62,30 +61,35 @@ public class OOBPresentationExchange extends OOBBase {
     }
 
     public APICreateInvitationResponse requestConnectionLess(@NonNull RequestOOBPresentationRequest req) {
-        PresentProofRequest proofRequest = templateManager.templateToIndyProofRequest(req.getTemplateId());
+        ProofTemplateManager.RenderedTemplate rendered = templateManager.renderTemplate(req.getTemplateId());
         PresentationFreeOfferHelper.PresentationFreeOffer freeOffer;
-        if (req.exchangeIsV1()) {
-            freeOffer = h.buildV1Indy(proofRequest.getProofRequest());
+        if (CredentialType.INDY.equals(rendered.type())) {
+            if (req.exchangeIsV1()) {
+                freeOffer = h.buildV1Indy(rendered.indy().getProofRequest());
+            } else {
+                freeOffer = h.buildV2Indy(rendered.indy().getProofRequest());
+            }
         } else {
-            freeOffer = h.buildV2Indy(proofRequest.getProofRequest());
+            freeOffer = h.buildDif(rendered.dif());
         }
 
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
 
         Partner p = persistPartner(freeOffer.getInvitationRecord(), req.getAlias(), req.getTrustPing(), req.getTag());
-        persistProof(req.getTemplateId(), freeOffer.getPresentationExchangeRecord(), p);
+        persistProof(req.getTemplateId(), rendered.type(), freeOffer.getPresentationExchangeRecord(), p);
 
         return buildResponse(freeOffer.getInvitationRecord().getInviMsgId());
     }
 
     private void persistProof(
             @NonNull UUID templateId,
-            @NonNull PresentationExchangeRecord ex,
+            @NonNull CredentialType type,
+            @NonNull BasePresExRecord ex,
             @NonNull Partner p) {
         final PartnerProof pp = PartnerProof
                 .builder()
                 .state(ex.getState())
-                .type(CredentialType.INDY)
+                .type(type)
                 .presentationExchangeId(ex.getPresentationExchangeId())
                 .role(ex.getRole())
                 .threadId(ex.getThreadId())

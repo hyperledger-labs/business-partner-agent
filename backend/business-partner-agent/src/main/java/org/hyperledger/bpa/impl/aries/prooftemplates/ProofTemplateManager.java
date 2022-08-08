@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -40,7 +40,10 @@ import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
 import org.jetbrains.annotations.NotNull;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -76,14 +79,12 @@ public class ProofTemplateManager {
         }
     }
 
-    public PresentProofRequest templateToIndyProofRequest(@NonNull UUID id) {
+    public RenderedTemplate renderTemplate(@NonNull UUID id) {
         BPAProofTemplate proofTemplate = findProofTemplate(id);
-        return proofManager.renderIndyProofRequest(proofTemplate);
-    }
-
-    public V20PresSendRequestRequest.V20PresRequestByFormat templateToLDProofRequest(@NonNull UUID id) {
-        BPAProofTemplate proofTemplate = findProofTemplate(id);
-        return proofManager.renderLDProofRequest(proofTemplate);
+        if (proofTemplate.typeIsIndy()) {
+            return new RenderedTemplate(CredentialType.INDY, proofManager.renderIndyProofRequest(proofTemplate), null);
+        }
+        return new RenderedTemplate(CredentialType.JSON_LD, null, proofManager.renderLDProofRequest(proofTemplate));
     }
 
     public BPAProofTemplate findProofTemplate(@NotNull UUID id) {
@@ -122,4 +123,6 @@ public class ProofTemplateManager {
         }
         return Arrays.stream(ValueOperators.values()).map(ValueOperators::getValue).collect(Collectors.toSet());
     }
+
+    public record RenderedTemplate(CredentialType type, PresentProofRequest indy, V2DIFProofRequest dif) {}
 }

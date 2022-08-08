@@ -162,7 +162,9 @@ public class ProofManager {
             ac.presentProofV2SendRequest(V20PresSendRequestRequest
                     .builder()
                     .connectionId(p.getConnectionId())
-                    .presentationRequest(renderLDProofRequest(proofTemplate))
+                    .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                            .dif(renderLDProofRequest(proofTemplate))
+                            .build())
                     .build())
                     .ifPresent(persistProof(PersistProofCmd.builder()
                             .partner(p).type(CredentialType.JSON_LD).proofTemplate(proofTemplate).build()));
@@ -172,11 +174,8 @@ public class ProofManager {
 
     }
 
-    public V20PresSendRequestRequest.V20PresRequestByFormat renderLDProofRequest(
-            @NonNull @Valid BPAProofTemplate proofTemplate) {
-        return V20PresSendRequestRequest.V20PresRequestByFormat.builder()
-                .dif(ldVerifier.prepareRequest(proofTemplate))
-                .build();
+    public V2DIFProofRequest renderLDProofRequest(@NonNull @Valid BPAProofTemplate proofTemplate) {
+        return ldVerifier.prepareRequest(proofTemplate);
     }
 
     // request proof from partner - currently not used by the frontend
