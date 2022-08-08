@@ -24,7 +24,7 @@ import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.Tag;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public class RequestOOBPresentationRequest implements ExchangeVersionTranslator 
     private Boolean trustPing;
 
     // bpa internal id
-    @NotBlank
+    @NotNull
     private UUID templateId;
 
     private ExchangeVersion exchangeVersion;

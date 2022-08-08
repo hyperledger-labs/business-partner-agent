@@ -28,6 +28,8 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.InvitationController;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.Tag;
@@ -96,5 +98,16 @@ public abstract class OOBBase {
 
     URI createURI(String path) {
         return URI.create(scheme + "://" + host + path);
+    }
+
+    APICreateInvitationResponse buildResponse(@NonNull String invitationMsgId) {
+        return APICreateInvitationResponse.builder()
+                .invitationUrl(
+                        createURI(InvitationController.INVITATION_CONTROLLER_BASE_URL
+                                + "/oob-attachment/"
+                                + invitationMsgId)
+                                .toString())
+                .invitationId(invitationMsgId)
+                .build();
     }
 }

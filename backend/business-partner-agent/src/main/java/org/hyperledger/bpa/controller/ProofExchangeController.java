@@ -33,12 +33,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
+import org.hyperledger.bpa.controller.api.proof.RequestOOBPresentationRequest;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
+import org.hyperledger.bpa.impl.oob.OOBPresentationExchange;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -54,6 +57,9 @@ public class ProofExchangeController {
 
     @Inject
     ProofManager proofM;
+
+    @Inject
+    OOBPresentationExchange oob;
 
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
@@ -120,6 +126,19 @@ public class ProofExchangeController {
         }
         proofM.sendPresentProofRequestIndy(req.getPartnerId(), req);
         return HttpResponse.ok();
+    }
+
+    /**
+     * OOB presentation request step 1 - prepares presentation request and returns URL for
+     * use within the barcode
+     *
+     * @param req {@link RequestOOBPresentationRequest}
+     * @return {@link APICreateInvitationResponse}
+     */
+    @Post("/proof-request/oob-attachment")
+    public HttpResponse<APICreateInvitationResponse> connectionLessPresentationRequest(
+            @Valid @Body RequestOOBPresentationRequest req) {
+        return HttpResponse.ok(oob.requestConnectionLess(req));
     }
 
     /**

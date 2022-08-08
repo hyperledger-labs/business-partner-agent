@@ -102,13 +102,7 @@ public class OOBCredentialOffer extends OOBBase {
         Partner p = persistPartner(freeOffer.getInvitationRecord(), req.getAlias(), req.getTrustPing(), req.getTag());
         persistCredentialExchange(freeOffer, document, dbCredDef, p);
 
-        return APICreateInvitationResponse.builder()
-                .invitationUrl(
-                        createURI(InvitationController.INVITATION_CONTROLLER_BASE_URL
-                                + "/oob-attachment/"
-                                + freeOffer.getInvitationRecord().getInviMsgId()).toString())
-                .invitationId(freeOffer.getInvitationRecord().getInviMsgId())
-                .build();
+        return buildResponse(freeOffer.getInvitationRecord().getInviMsgId());
     }
 
     private void persistCredentialExchange(
