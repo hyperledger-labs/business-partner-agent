@@ -91,9 +91,9 @@ public class OOBCredentialOffer extends OOBBase {
 
         CredentialFreeOfferHelper.CredentialFreeOffer freeOffer;
         if (req.exchangeIsV1()) {
-            freeOffer = h.buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
+            freeOffer = h.buildV1Indy(dbCredDef.getCredentialDefinitionId(), document);
         } else {
-            freeOffer = h.buildFreeOfferIndyV2(dbCredDef.getCredentialDefinitionId(), document);
+            freeOffer = h.buildV2Indy(dbCredDef.getCredentialDefinitionId(), document);
         }
 
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
@@ -117,12 +117,9 @@ public class OOBCredentialOffer extends OOBBase {
                 .role(CredentialExchangeRole.ISSUER)
                 .state(CredentialExchangeState.OFFER_SENT)
                 .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                .credentialExchangeId(r.getCredentialExchangeId())
-                .threadId(r.getThreadId())
-                .credentialOffer(r.getCredentialProposalDict() != null
-                        ? ExchangePayload
-                                .indy(r.getCredentialProposalDict().getCredentialProposal())
-                        : null)
+                .credentialExchangeId(r.getCredentialExchangeRecord().getCredentialExchangeId())
+                .threadId(r.getCredentialExchangeRecord().getThreadId())
+                .credentialOffer(ExchangePayload.buildForCredentialOffer(r.getCredentialExchangeRecord()))
                 .indyCredential(Credential.builder()
                         .attrs(document)
                         .build());
