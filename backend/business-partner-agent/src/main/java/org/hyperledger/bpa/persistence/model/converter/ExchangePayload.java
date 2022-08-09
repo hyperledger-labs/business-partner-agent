@@ -60,8 +60,8 @@ public class ExchangePayload<I, L> implements ExchangeTypeTranslator {
         return null;
     }
 
-    public static ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal,
-            V20CredExRecordByFormat.LdProof> buildForCredentialOffer(@NonNull BaseCredExRecord credEx) {
+    public static ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> buildForCredentialOffer(
+            @NonNull BaseCredExRecord credEx) {
         if (credEx instanceof V1CredentialExchange v1) {
             return ExchangePayload.indy(v1.getCredentialProposalDict().getCredentialProposal());
         } else if (credEx instanceof V20CredExRecord v2) {

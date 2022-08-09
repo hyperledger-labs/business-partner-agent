@@ -124,5 +124,6 @@ public class ProofTemplateManager {
         return Arrays.stream(ValueOperators.values()).map(ValueOperators::getValue).collect(Collectors.toSet());
     }
 
-    public record RenderedTemplate(CredentialType type, PresentProofRequest indy, V2DIFProofRequest dif) {}
+    public record RenderedTemplate(CredentialType type, PresentProofRequest indy, V2DIFProofRequest dif) {
+    }
 }
