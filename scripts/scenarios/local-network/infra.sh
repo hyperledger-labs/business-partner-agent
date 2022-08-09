@@ -1,4 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Copyright (c) 2022 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository at
+# https://github.com/hyperledger-labs/organizational-agent
+#
+# SPDX-License-Identifier: Apache-2.0
 
 export VON_FOLDER=von-network
 export SCRIPT_PATH=${0%\/*}/$VON_FOLDER/manage
