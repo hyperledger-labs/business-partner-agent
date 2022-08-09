@@ -94,7 +94,8 @@ public class ProofTemplateManager {
 
     public Page<ProofTemplate> listProofTemplates(@Nullable String name, @NonNull Pageable pageable) {
         Page<ProofTemplate> proofTemplates;
-        proofTemplates = repo.findByNameLike(name, pageable).map(BPAProofTemplate::toRepresentation);
+        name = "%" + name + "%";
+        proofTemplates = repo.findByNameIlike(name, pageable).map(BPAProofTemplate::toRepresentation);
         return proofTemplates;
     }
 

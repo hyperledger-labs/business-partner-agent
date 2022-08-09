@@ -15,7 +15,7 @@ create new ones
       v-model="search"
       append-icon="$vuetify.icons.search"
       :label="$t('app.search')"
-      @change="updateProofTemplates"
+      @change="loadProofTemplates"
       single-line
       hide-details
     ></v-text-field>
@@ -65,6 +65,7 @@ export default {
       proofTemplate: {},
       dirty: false,
       isBusy: true,
+      proofTemplates: new Array<ProofTemplate>(),
       hideFooter: true,
       totalNumberOfElements: 0,
       options: {},
@@ -73,15 +74,14 @@ export default {
   watch: {
     options: {
       handler() {
-        this.updateProofTemplates();
+        this.loadProofTemplates();
       },
     },
-  },
-
-  // TODO: Store dispatch abkoppeln ähnlich wie bei den anderen componenten.
-  created() {
-    // this.$store.dispatch("loadProofTemplates");
-    this.updateProofTemplates();
+    search: {
+      handler() {
+        this.loadProofTemplates();
+      },
+    },
   },
   computed: {
     headers() {
@@ -96,11 +96,6 @@ export default {
         },
       ];
     },
-    // proofTemplates: {
-    //   get() {
-    //     return this.$store.getters.getProofTemplates;
-    //   },
-    // },
     inputValue: {
       get() {
         return this.value;
@@ -111,7 +106,7 @@ export default {
     },
   },
   methods: {
-    async updateProofTemplates() {
+    async loadProofTemplates() {
       this.isBusy = true;
       this.proofTemplates = [];
       const params = PageOptions.toUrlSearchParams(this.options);
@@ -139,8 +134,7 @@ export default {
     onClosed() {
       this.dialog = false;
       if (this.dirty) {
-        // store.dispatch("loadProofTemplates");
-        this.updateProofTemplates();
+        this.loadProofTemplates();
         this.$emit("changed");
       }
       this.dirty = false;
@@ -168,10 +162,8 @@ export default {
           if (result.status === 200) {
             this.$emit("removedItem", proofTemplate.id);
           }
-
           // reload proof templates
-          // this.$store.dispatch("loadProofTemplates");
-          this.updateProofTemplates();
+          this.loadProofTemplates();
         })
         .catch((error) => {
           EventBus.$emit("error", this.$axiosErrorMessage(error));

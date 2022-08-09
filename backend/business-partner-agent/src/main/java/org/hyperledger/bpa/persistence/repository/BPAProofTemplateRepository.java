@@ -32,7 +32,6 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAProofTemplateRepository extends PageableRepository<BPAProofTemplate, UUID> {
 
-//  @Query("SELECT *, COUNT (*) FROM bpa_proof_template WHERE name LIKE name")
-  @Executable
-  Page<BPAProofTemplate> findByNameLike(@Nullable String name, @NonNull Pageable pageable);
+    @Executable
+    Page<BPAProofTemplate> findByNameIlike(@Nullable String name, @NonNull Pageable pageable);
 }

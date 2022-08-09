@@ -93,8 +93,8 @@ public class PartnerController {
     /**
      * Get known partners
      *
-     * @param pc       {@link PaginationCommand}
-     * @param schemaId Filter Partners by schema id
+     * @param pc              {@link PaginationCommand}
+     * @param schemaId        Filter Partners by schema id
      * @param showInvitations Filter Partners by connection state
      * @return list of partners
      */
@@ -107,8 +107,8 @@ public class PartnerController {
             return HttpResponse
                     .ok(Page.of(issuersFor, pc != null ? pc.toPageable() : Pageable.unpaged(), issuersFor.size()));
         }
-        if (!showInvitations){
-          return HttpResponse.ok(pm.getPartnerByInvitation(pc != null ? pc.toPageable() : Pageable.unpaged()));
+        if (!showInvitations) {
+            return HttpResponse.ok(pm.getPartnerByInvitation(pc != null ? pc.toPageable() : Pageable.unpaged()));
         }
         return HttpResponse.ok(pm.getPartners(pc != null ? pc.toPageable() : Pageable.unpaged()));
     }

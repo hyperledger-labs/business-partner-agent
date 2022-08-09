@@ -29,6 +29,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button
                 v-bind="attrs"
+                :loading="this.isBusy"
                 v-on="on"
                 color="primary"
                 @click="proofTemplateCreate()"
@@ -58,6 +59,7 @@ export default {
   data: () => {
     return {
       proofTemplateCreateDialog: false,
+      isBusy: false,
     };
   },
   methods: {
@@ -66,10 +68,12 @@ export default {
       this.proofTemplateCreateDialog = false;
     },
     proofTemplateCreate() {
+      this.isBusy = true;
       this.$router.push({
         name: "ProofTemplateCreate",
         params: {},
       });
+      this.isBusy = false;
     },
   },
 };

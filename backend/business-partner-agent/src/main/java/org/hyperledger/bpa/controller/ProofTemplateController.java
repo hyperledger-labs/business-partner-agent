@@ -54,7 +54,8 @@ public class ProofTemplateController {
     /**
      * List configured templates
      *
-     * @param pc        {@link PaginationCommand}
+     * @param pc   {@link PaginationCommand}
+     * @param name {@link String}
      * @return list of {@link ProofTemplate}
      */
     @Get("{?pc*}")
@@ -63,11 +64,9 @@ public class ProofTemplateController {
             @Valid @Nullable PaginationCommand pc) {
         return HttpResponse.ok(
                 proofTemplateManager.listProofTemplates(
-                  name,
-                  pc != null ? pc.toPageable() : Pageable.unpaged()));
+                        name,
+                        pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
-//    @Get
-//    public HttpResponse<Page>
 
     /**
      * Get template by id

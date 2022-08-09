@@ -9,7 +9,7 @@ import { Page, PageOptions, ProofTemplate } from "@/services";
 import proofTemplateService from "@/services/proof-template-service";
 import { EventBus } from "@/main";
 import { IStateProofTemplates } from "@/store/state-type";
-
+// TBD: is this file needed?
 const state: IStateProofTemplates = {
   proofTemplateList: new Array<ProofTemplate>(),
 };

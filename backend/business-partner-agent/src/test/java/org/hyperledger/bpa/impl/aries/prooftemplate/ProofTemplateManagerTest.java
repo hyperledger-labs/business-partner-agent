@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.impl.aries.prooftemplate;
 
 import io.micronaut.context.BeanContext;
-import io.micronaut.data.annotation.Query;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -177,25 +176,13 @@ class ProofTemplateManagerTest {
                 .name("mySecondTemplate")
                 .build());
 
-        List<String> allTemplates = sut.listProofTemplates("", Pageable.unpaged()).map(ProofTemplate::getName).getContent();
-        // Update this Test
+        List<String> allTemplates = sut.listProofTemplates("", Pageable.unpaged()).map(ProofTemplate::getName)
+                .getContent();
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
         assertTrue(allTemplates.contains("myFirstTemplate"), "Expected myFirstTemplate in the listed proof templates");
         assertTrue(allTemplates.contains("mySecondTemplate"),
                 "Expected mySecondTemplate in the listed proof templates");
     }
-  //TODO: this test shall check if the expected query is generated in the Repository:
-  @Test
-  void testAnnotationMetadata() {
-    String query = beanContext.getBeanDefinition(BPAProofTemplateRepository.class)
-      .getRequiredMethod("findByNameLike", String.class)
-      .getAnnotationMetadata().stringValue(Query.class)
-      .orElse(null);
-
-    assertEquals(
-      "SELECT book_ FROM example.Book AS book_ WHERE (book_.title = :p1)", query);
-
-  }
 
     @Test
     void removeProofTemplate() {
