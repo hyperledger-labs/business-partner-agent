@@ -28,7 +28,7 @@ usage () {
   
   stop   - Stops the local infrastructure but does not delete the volumes and containers.
 
-  prune  - Stops the local infrastructure and deletes the volumes and containers.
+  purge  - Stops the local infrastructure and deletes the volumes and containers.
 
   status - Prints the status of the local infrastructure.
 EOF
@@ -80,9 +80,9 @@ stop () {
 }
 
 # =================================================================================================================
-# Prune:
+# Purge:
 # -----------------------------------------------------------------------------------------------------------------
-prune () {
+purge () {
   $SCRIPT_PATH down
 }
 
@@ -105,8 +105,8 @@ case "${COMMAND}" in
   stop)
       stop
     ;;
-  prune)
-      prune
+  purge)
+      purge
     ;;
   status)
       status
