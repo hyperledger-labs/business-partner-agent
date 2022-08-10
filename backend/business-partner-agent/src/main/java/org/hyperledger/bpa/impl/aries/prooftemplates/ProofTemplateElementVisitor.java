@@ -47,7 +47,7 @@ import java.util.stream.Stream;
  */
 class ProofTemplateElementVisitor {
 
-    private final Function<String, Optional<String>> resolveLedgerSchemaId;
+    private final Function<UUID, Optional<String>> resolveLedgerSchemaId;
     private final RevocationTimeStampProvider revocationTimeStampProvider;
     private static final NonRevocationApplicator DEFAULT_NON_REVOCATION = new NonRevocationApplicator(false, null);
 
@@ -85,7 +85,7 @@ class ProofTemplateElementVisitor {
     }
 
     ProofTemplateElementVisitor(
-            Function<String, Optional<String>> resolveLedgerSchemaId,
+            Function<UUID, Optional<String>> resolveLedgerSchemaId,
             RevocationTimeStampProvider revocationTimeStampProvider) {
         this.resolveLedgerSchemaId = resolveLedgerSchemaId;
         this.revocationTimeStampProvider = revocationTimeStampProvider;

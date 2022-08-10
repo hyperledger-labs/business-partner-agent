@@ -14,7 +14,7 @@ import {
   AriesProofExchange,
   DeclineExchangeRequest,
   PresentationRequestCredentials,
-  PresentationRequestCredentialsDif,
+  CredentialInfo,
 } from "@/services/types-services";
 
 export default {
@@ -57,7 +57,7 @@ export default {
 
   getMatchingDifCredentials(
     id: string
-  ): Promise<AxiosResponse<PresentationRequestCredentialsDif>> {
+  ): Promise<AxiosResponse<PresentationRequestCredentials[]>> {
     return appAxios().get(
       `${ApiRoutes.PROOF_EXCHANGES}/${id}/matching-credentials-ld`
     );

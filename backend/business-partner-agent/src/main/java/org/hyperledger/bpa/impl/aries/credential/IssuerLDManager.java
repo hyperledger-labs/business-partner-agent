@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.aries.jsonld;
+package org.hyperledger.bpa.impl.aries.credential;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.inject.Inject;
@@ -37,7 +37,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.Partner;

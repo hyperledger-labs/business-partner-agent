@@ -8,13 +8,18 @@
 
 <template>
   <v-container>
+    <v-progress-linear
+      v-if="isLoadingPresExRecords"
+      indeterminate
+    ></v-progress-linear>
     <v-data-table
-      :loading="isLoading"
-      :hide-default-footer="items.length < 10"
+      :hide-default-footer="hideFooter"
       :headers="headers"
-      :items="items"
-      :sort-by="['updatedAt']"
-      :sort-desc="[true]"
+      :items="presentationExchangeRecords"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
+      sort-by="updatedAt"
+      sort-desc
       single-select
       @click:row="openItem"
     >
@@ -143,7 +148,9 @@
 <script lang="ts">
 import {
   AriesProofExchange,
+  PageOptions,
   PresentationRequestCredentials,
+  partnerService,
   proofExService,
 } from "@/services";
 import { EventBus } from "@/main";
@@ -158,20 +165,20 @@ import PresentationRecordV2 from "@/components/PresentationRecordV2.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
-    value: Array,
     openItemById: String,
+    partnerId: String,
   },
   mounted() {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find(
-        (index: AriesProofExchange) => index.id === this.openItemById
+      const item = this.presentationExchangeRecords.find(
+        (item: AriesProofExchange) => item.id === this.openItemById
       );
       if (item) {
         this.openItem(item);
       } else {
-        // Load record separately if items have not been resolved
+        // Load record separately if presentationExchangeRecords have not been resolved
         proofExService.getProofExRecord(this.openItemById).then((resp) => {
           if (resp.data) {
             this.openItem(resp.data);
@@ -187,20 +194,33 @@ export default {
       },
       dialog: false,
       isBusy: false,
-      isLoading: false,
+      isLoadingPresExRecords: true,
+      presentationExchangeRecords: new Array<AriesProofExchange>(),
+      options: {},
+      totalNumberOfElements: 0,
+      hideFooter: false,
       isWaitingForMatchingCreds: false,
       declineReasonText: "",
     };
   },
-  computed: {
-    items: {
-      get() {
-        return this.value;
-      },
-      set(value: AriesProofExchange[]) {
-        this.$emit("input", value);
+  watch: {
+    dialog(visible: boolean) {
+      if (visible) {
+        this.$store.commit("presentationNotificationSeen", {
+          id: this.record.id,
+        });
+        if (this.record.state === "request_received") {
+          this.getMatchingCredentials();
+        }
+      }
+    },
+    options: {
+      handler() {
+        this.loadPresentationRecords();
       },
     },
+  },
+  computed: {
     headers() {
       return [
         {
@@ -212,6 +232,7 @@ export default {
         {
           text: this.$t("component.presentationExList.table.label"),
           value: "label",
+          sortable: false,
         },
         {
           text: this.$t("component.presentationExList.table.role"),
@@ -259,6 +280,27 @@ export default {
     closeDialog() {
       this.declineReasonText = "";
       this.dialog = false;
+    },
+    async loadPresentationRecords() {
+      this.isLoadingPresExRecords = true;
+      this.presentationExchangeRecords = [];
+      const params = PageOptions.toUrlSearchParams(this.options);
+      try {
+        const response = await partnerService.getPresentationExRecords(
+          this.partnerId,
+          params
+        );
+        if (response.status === 200) {
+          const { itemsPerPage } = this.options;
+          this.presentationExchangeRecords = response.data.content;
+          this.totalNumberOfElements = response.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+          this.$emit("presRawData", this.presentationExchangeRecords);
+        }
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isLoadingPresExRecords = false;
     },
     async approve() {
       const referents = this.prepareReferents();
@@ -335,10 +377,10 @@ export default {
       try {
         const resp = await proofExService.deleteProofExRecord(this.record.id);
         if (resp.status === 200) {
-          const index = this.items.findIndex(
+          const index = this.presentationExchangeRecords.findIndex(
             (item: AriesProofExchange) => item.id === this.record.id
           );
-          this.items.splice(index, 1);
+          this.presentationExchangeRecords.splice(index, 1);
           EventBus.$emit(
             "success",
             this.$t("component.presentationExList.eventSuccessDelete")
@@ -419,41 +461,9 @@ export default {
           for (const cred of matchingCreds) {
             for (const c of cred.presentationReferents) {
               const attribute = this.record.proofRequest.requestedAttributes[c];
+              this.pushIfMatch(attribute, cred);
               const pred = this.record.proofRequest.requestedPredicates[c];
-              if (attribute) {
-                if (
-                  !Object.hasOwnProperty.call(attribute, "matchingCredentials")
-                ) {
-                  attribute.matchingCredentials = [];
-                }
-                const hasMatchingCred = attribute.matchingCredentials.some(
-                  (item: PresentationRequestCredentials) => {
-                    return (
-                      item.credentialInfo.referent ===
-                      cred.credentialInfo.referent
-                    );
-                  }
-                );
-                if (!hasMatchingCred) {
-                  attribute.matchingCredentials.push(cred);
-                }
-              } else if (pred) {
-                if (!Object.hasOwnProperty.call(pred, "matchingCredentials")) {
-                  pred.matchingCredentials = [];
-                }
-
-                const hasMatchingPred = pred.matchingCredentials.some(
-                  (item: PresentationRequestCredentials) => {
-                    return (
-                      item.credentialInfo.referent ===
-                      cred.credentialInfo.referent
-                    );
-                  }
-                );
-                if (!hasMatchingPred) {
-                  pred.matchingCredentials.push(cred);
-                }
-              }
+              this.pushIfMatch(pred, cred);
             }
           }
           this.record.canBeFulfilled = this.canBeFulfilled();
@@ -463,20 +473,52 @@ export default {
         proofExService
           .getMatchingDifCredentials(this.record.id)
           .then((result) => {
-            this.record.canBeFulfilled = result.data.match;
+            const matches: PresentationRequestCredentials[] = result.data;
+
+            for (const match of matches) {
+              const attribute =
+                this.record.proofRequest.requestedAttributes[
+                  match.credentialInfo.schemaId
+                ];
+              this.pushIfMatch(attribute, match);
+              for (const key of Object.keys(
+                this.record.proofRequest.requestedPredicates
+              )) {
+                if (key.startsWith(match.credentialInfo.schemaId)) {
+                  this.pushIfMatch(
+                    this.record.proofRequest.requestedPredicates[key],
+                    match
+                  );
+                }
+              }
+            }
+            this.record.canBeFulfilled = result.data.length > 0;
             this.isWaitingForMatchingCreds = false;
           });
       }
     },
-  },
-  watch: {
-    dialog(visible: boolean) {
-      if (visible) {
-        this.$store.commit("presentationNotificationSeen", {
-          id: this.record.id,
-        });
-        if (this.record.state === "request_received") {
-          this.getMatchingCredentials();
+    pushIfMatch(
+      attributeOrPredicate: any,
+      match: PresentationRequestCredentials
+    ): void {
+      if (attributeOrPredicate) {
+        if (
+          !Object.hasOwnProperty.call(
+            attributeOrPredicate,
+            "matchingCredentials"
+          )
+        ) {
+          attributeOrPredicate.matchingCredentials = [];
+        }
+        const hasMatchingCred = attributeOrPredicate.matchingCredentials.some(
+          (item: PresentationRequestCredentials) => {
+            return (
+              item.credentialInfo.referent === match.credentialInfo.referent
+            );
+          }
+        );
+        if (!hasMatchingCred) {
+          attributeOrPredicate.matchingCredentials.push(match);
         }
       }
     },

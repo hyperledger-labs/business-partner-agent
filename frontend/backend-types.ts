@@ -506,6 +506,7 @@ export interface components {
     };
     AttributeGroup: {
       schemaLevelRestrictions: components["schemas"]["SchemaRestrictions"][];
+      /** Format: uuid */
       schemaId: string;
       attributeGroupName: string;
       attributes: components["schemas"]["Attribute"][];
@@ -1059,18 +1060,17 @@ export interface components {
       credentialDefinitionId?: string;
       issuerLabel?: string;
     };
-    PresentationRequestCredentialsLD: {
-      match?: boolean;
-    };
     PresentationRequestVersion: {
       /** @description presentation exchange api version */
       exchangeVersion?: unknown;
     };
     ProofTemplate: {
+      /** Format: uuid */
       id: string | null;
       /** Format: date-time */
       createdAt: string | null;
       name: string;
+      type: components["schemas"]["CredentialType"] | null;
       attributeGroups: components["schemas"]["AttributeGroup"][];
     };
     /** @enum {string} */
@@ -1156,6 +1156,7 @@ export interface components {
       defaultAttributeName?: string;
       trustedIssuer?: components["schemas"]["TrustedIssuer"][];
       ldType?: string;
+      expandedType?: string;
       version?: string;
       credentialDefinitions?: components["schemas"]["CredDef"][];
     };
@@ -2496,7 +2497,7 @@ export interface operations {
       /** getMatchingLDCredentials 200 response */
       200: {
         content: {
-          "application/json": components["schemas"]["PresentationRequestCredentialsLD"];
+          "application/json": components["schemas"]["PresentationRequestCredentialsIndy"][];
         };
       };
     };

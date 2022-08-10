@@ -19,7 +19,9 @@ package org.hyperledger.bpa.persistence.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.util.CollectionUtils;
 import lombok.*;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
@@ -27,7 +29,10 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -40,17 +45,21 @@ import java.util.stream.Collectors;
 // using a concrete class instead of a generic list does not unmarshal correctly
 // see https://github.com/micronaut-projects/micronaut-data/issues/1064
 public class BPAAttributeGroup {
+
     @NotNull
     @ValidBPASchemaId
-    private String schemaId;
+    private UUID schemaId;
+
     @NotNull
     @Singular
     @Valid
     @DistinctAttributeNames
     private List<BPAAttribute> attributes;
+
     @NotNull
     @Builder.Default
     private Boolean nonRevoked = Boolean.FALSE;
+
     @NotNull
     @Builder.Default
     @Valid
@@ -82,5 +91,14 @@ public class BPAAttributeGroup {
                         .map(BPASchemaRestrictions::fromRepresentation)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    public Map<String, BPACondition> nameToCondition() {
+        return attributes != null ? attributes.stream()
+                .map(attr -> new ImmutablePair<>(attr.getName(),
+                        // Frontend does not support more than one
+                        CollectionUtils.isNotEmpty(attr.getConditions()) ? attr.getConditions().get(0) : null))
+                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll)
+                : Map.of();
     }
 }

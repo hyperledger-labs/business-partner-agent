@@ -61,7 +61,7 @@ public class AriesProofExchange {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
         return b
                 .id(p.getId())
-                .partnerId(p.getPartnerId())
+                .partnerId(p.getPartner().getId())
                 .state(p.getState())
                 .proofRequest(p.getProofRequest() != null ? p.getProofRequest().getIndy() : null)
                 .role(p.getRole())

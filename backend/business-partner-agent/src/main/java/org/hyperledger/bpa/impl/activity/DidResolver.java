@@ -85,31 +85,30 @@ public class DidResolver {
         }
         try {
             if (cr.isPresent()) {
-                partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
-                    if (p.getVerifiablePresentation() == null
-                            && p.getIncoming() != null
-                            && p.getIncoming()) {
-                        Optional<DIDDocument> didDocument = Optional.empty();
-                        try {
-                            // check if not a public did
-                            didDocument = ur.getDidDocument(p.getDid());
-                        } catch (PartnerException e) {
-                            log.error("{}", e.getMessage());
-                        }
-                        if (didDocument.isEmpty() && pp.getProof() != null) {
-                            // TODO only works if the did is set in the revealed attributes
-                            Object pubDid = pp.getProof().getIndy().get("did");
-                            if (pubDid != null) {
-                                log.debug("Resolved did: {}", pubDid);
-                                final PartnerAPI pAPI = partnerLookup.lookupPartner(pubDid.toString());
-                                p.setDid(pubDid.toString());
-                                p.setValid(pAPI.getValid());
-                                p.setVerifiablePresentation(pAPI.getVerifiablePresentation());
-                                partnerRepo.update(p);
-                            }
+                Partner p = pp.getPartner();
+                if (p.getVerifiablePresentation() == null
+                        && p.getIncoming() != null
+                        && p.getIncoming()) {
+                    Optional<DIDDocument> didDocument = Optional.empty();
+                    try {
+                        // check if not a public did
+                        didDocument = ur.getDidDocument(p.getDid());
+                    } catch (PartnerException e) {
+                        log.error("{}", e.getMessage());
+                    }
+                    if (didDocument.isEmpty() && pp.getProof() != null) {
+                        // TODO only works if the did is set in the revealed attributes
+                        Object pubDid = pp.getProof().getIndy().get("did");
+                        if (pubDid != null) {
+                            log.debug("Resolved did: {}", pubDid);
+                            final PartnerAPI pAPI = partnerLookup.lookupPartner(pubDid.toString());
+                            p.setDid(pubDid.toString());
+                            p.setValid(pAPI.getValid());
+                            p.setVerifiablePresentation(pAPI.getVerifiablePresentation());
+                            partnerRepo.update(p);
                         }
                     }
-                });
+                }
             }
         } catch (Exception e) {
             log.error("Could not lookup public did.", e);

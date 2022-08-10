@@ -1,13 +1,23 @@
-# Debugging
+# Demoing/Debugging
 
-## Frontend and Backend debugging with gitpod
 Gitpod can be used to launch two agents just for experimenting or even to do development (backend and/or frontend)
 
 Just click on the Gitpod button in our [main readme](../README.md) which opens gitpod via [this link](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent).
 
 The IDE - based on [Visual Studio Code](https://code.visualstudio.com/) - will be launched with the source code already checked-out and the software pre-built.
-Additionally, you will find 3 terminals in the bottom right corner:
-- One is launching an Acapy needed for the *agent1* (including the database) and a full *agent2*
+
+## Frontend and Backend demo with gitpod
+
+The stack takes a while to start up, once its up and running you can open the remote explorer on the left-hand side (second to last icon):
+
+<img width="408" alt="Screenshot 2022-06-01 at 11 55 28" src="https://user-images.githubusercontent.com/13498217/171378424-8e45ef92-d8aa-47a7-b470-65cdccf62477.png">
+
+Clicking on open browser, for ports 8081 and 8090 gives you two BPA instances that you can connect to each other.
+
+## Frontend and Backend debugging with gitpod
+
+Once everything is up and running, you will find 3 terminals in the bottom right corner:
+- One is launching an acapy needed for the *agent1* (including the database) and a full *agent2*
 - One is launching the java backend for *agent1*.
 - One is launching the frontend for *agent1* (with hot-reload of source code enabled).
 

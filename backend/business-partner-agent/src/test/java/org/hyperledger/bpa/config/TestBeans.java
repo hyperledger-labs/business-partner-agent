@@ -23,6 +23,7 @@ import io.micronaut.context.env.Environment;
 import jakarta.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.RunWithAries;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
 import org.hyperledger.bpa.impl.messaging.email.EmailService;
 import org.mockito.Mockito;
 
@@ -43,5 +44,10 @@ public class TestBeans {
     @Singleton
     EmailService getEmailService() {
         return Mockito.mock(EmailService.class);
+    }
+
+    @Singleton
+    LDContextResolver getSchemaContextResolver() {
+        return Mockito.mock(LDContextResolver.class);
     }
 }

@@ -26,7 +26,6 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
-import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Test;

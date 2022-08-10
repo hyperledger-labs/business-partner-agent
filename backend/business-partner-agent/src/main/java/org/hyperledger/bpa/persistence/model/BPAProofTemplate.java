@@ -29,12 +29,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
+import org.hyperledger.bpa.impl.verification.prooftemplates.SameSchemaType;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroups;
 
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -45,6 +47,7 @@ import java.util.stream.Stream;
 @Builder
 @Introspected
 @Entity
+@SameSchemaType
 @Table(name = "bpa_proof_template")
 public class BPAProofTemplate {
     @Id
@@ -58,12 +61,11 @@ public class BPAProofTemplate {
     @NotEmpty
     String name;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private CredentialType type = CredentialType.INDY;
+    private CredentialType type;
 
-    @NotEmpty
     @Valid
+    @NotNull
     @Column(name = "attribute_groups_json")
     @TypeDef(type = DataType.JSON)
     // using a concrete class instead of a generic list does not unmarshal correctly
@@ -76,21 +78,30 @@ public class BPAProofTemplate {
 
     public ProofTemplate toRepresentation() {
         return new ProofTemplate(
-                id.toString(),
+                id,
                 createdAt,
                 name,
+                type,
                 attributeGroups.toRepresentation());
     }
 
     public static BPAProofTemplate fromRepresentation(ProofTemplate proofTemplate) {
         UUID id = null;
         if (proofTemplate.getId() != null) {
-            id = UUID.fromString(proofTemplate.getId());
+            id = proofTemplate.getId();
         }
         return BPAProofTemplate.builder()
                 .id(id)
                 .name(proofTemplate.getName())
                 .attributeGroups(BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups()))
                 .build();
+    }
+
+    public boolean typeIsIndy() {
+        return CredentialType.INDY.equals(type);
+    }
+
+    public boolean typeIsJsonLD() {
+        return CredentialType.JSON_LD.equals(type);
     }
 }

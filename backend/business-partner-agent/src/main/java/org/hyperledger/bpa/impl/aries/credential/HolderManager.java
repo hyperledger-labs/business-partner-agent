@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
@@ -49,11 +48,10 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
-import org.hyperledger.bpa.impl.aries.jsonld.HolderLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.CryptoUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
@@ -93,9 +91,6 @@ public class HolderManager extends CredentialManagerBase {
     ApplicationEventPublisher eventPublisher;
 
     @Inject
-    Converter conv;
-
-    @Inject
     MyDocumentRepository docRepo;
 
     @Inject
@@ -106,6 +101,9 @@ public class HolderManager extends CredentialManagerBase {
 
     @Inject
     Identity identity;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     // Credential Management - Called By User
 
@@ -256,9 +254,9 @@ public class HolderManager extends CredentialManagerBase {
                         ac.credentialW3CRemove(c.getReferent());
                     }
                 }
-            } catch (AriesException | IOException e) {
-                // if we fail here it's not good, but also no deal-breaker, so log and continue
+            } catch (IOException e) {
                 log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
+                throw new NetworkException("acapy.unavailable");
             }
             holderCredExRepo.deleteById(id);
             if (isPublic) {

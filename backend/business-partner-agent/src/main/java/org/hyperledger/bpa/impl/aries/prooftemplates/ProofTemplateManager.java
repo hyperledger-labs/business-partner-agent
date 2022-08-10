@@ -24,14 +24,19 @@ import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
-import org.hyperledger.bpa.api.exception.ProofTemplateException;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +53,9 @@ public class ProofTemplateManager {
     ProofManager proofManager;
 
     @Inject
+    SchemaService schemaService;
+
+    @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId) {
@@ -57,17 +65,29 @@ public class ProofTemplateManager {
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
             @Nullable ExchangeVersion version) {
         BPAProofTemplate proofTemplate = repo.findById(id)
-                .orElseThrow(() -> new ProofTemplateException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
-        version = version != null ? version : ExchangeVersion.V1;
-        proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);
+        if (proofTemplate.typeIsIndy()) {
+            version = version != null ? version : ExchangeVersion.V1;
+            proofManager.sendPresentProofRequestIndy(partnerId, proofTemplate, version);
+        } else if (proofTemplate.typeIsJsonLD()) {
+            proofManager.sendPresentProofRequestJsonLD(partnerId, proofTemplate);
+        }
     }
 
     public Optional<BPAProofTemplate> getProofTemplate(@NonNull UUID id) {
         return repo.findById(id);
     }
 
-    public BPAProofTemplate addProofTemplate(@NonNull BPAProofTemplate template) {
+    public BPAProofTemplate addProofTemplate(@NonNull @Valid BPAProofTemplate template) {
+        UUID sId = template.streamAttributeGroups()
+                .map(BPAAttributeGroup::getSchemaId)
+                .findFirst()
+                .orElseThrow(WrongApiUsageException::new);
+        CredentialType type = schemaService.getSchema(sId)
+                .orElseThrow(WrongApiUsageException::new)
+                .getType();
+        template.setType(type);
         return repo.save(template);
     }
 
@@ -83,7 +103,10 @@ public class ProofTemplateManager {
         }
     }
 
-    public Set<String> getKnownConditionOperators() {
+    public Set<String> getKnownConditionOperators(@Nullable CredentialType type) {
+        if (CredentialType.JSON_LD.equals(type)) {
+            return Set.of(ValueOperators.EQUALS.getValue());
+        }
         return Arrays.stream(ValueOperators.values()).map(ValueOperators::getValue).collect(Collectors.toSet());
     }
 }

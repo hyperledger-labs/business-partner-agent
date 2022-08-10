@@ -186,7 +186,7 @@
   "moment": {
     "ignore": false,
     "name": "moment",
-    "version": "2.29.3",
+    "version": "2.29.4",
     "authors": "Iskren Ivov Chernev <iskren.chernev@gmail.com> (https://github.com/ichernev)",
     "url": "https://github.com/moment/moment",
     "license": "MIT",

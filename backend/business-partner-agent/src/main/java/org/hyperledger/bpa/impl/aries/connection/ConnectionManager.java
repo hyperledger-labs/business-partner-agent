@@ -22,6 +22,8 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -365,6 +367,18 @@ public class ConnectionManager {
                                         record.getPresentationExchangeId(), e);
                             }
                         }));
+                // TODO needed, but needs new client release
+//                ac.presentProofV2Records(V2PresentProofRecordsFilter
+//                        .builder()
+//                        .connectionId(connectionId)
+//                        .build()).ifPresent(records -> records.forEach(record -> {
+//                            try {
+//                                ac.presentProofV2RecordsRemove(record.getPresentationExchangeId());
+//                            } catch (IOException | AriesException e) {
+//                                log.error("Could not delete v2 presentation exchange record: {}",
+//                                        record.getPresentationExchangeId(), e);
+//                            }
+//                        }));
                 ac.issueCredentialRecords(IssueCredentialRecordsFilter
                         .builder()
                         .connectionId(connectionId)
@@ -393,8 +407,8 @@ public class ConnectionManager {
         }
 
         holderCredExRepo.setPartnerIdToNull(partner.getId());
-        final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId());
-        if (CollectionUtils.isNotEmpty(proofs)) {
+        final Page<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId(), Pageable.unpaged());
+        if (CollectionUtils.isNotEmpty(proofs.getContent())) {
             partnerProofRepo.deleteAll(proofs);
         }
         eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner).build());

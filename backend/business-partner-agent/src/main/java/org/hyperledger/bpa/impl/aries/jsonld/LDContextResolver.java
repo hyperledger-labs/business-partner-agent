@@ -15,17 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.impl.aries.jsonld;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.ExchangeVersion;
+import lombok.NonNull;
 
-import java.util.UUID;
-
-@Data
-@NoArgsConstructor
-public class RequestCredentialRequest {
-    public UUID documentId;
-    public ExchangeVersion exchangeVersion;
+public interface LDContextResolver {
+    String resolve(@NonNull String uri, @NonNull String type);
 }

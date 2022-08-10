@@ -74,11 +74,15 @@
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <AttributeEdit v-model="proofTemplate.attributeGroups[idx]" />
+                  <AttributeEdit
+                    v-model="proofTemplate.attributeGroups[idx]"
+                    :type="proofTemplate.type"
+                  />
 
                   <!-- Schema Restrictions -->
                   <RestrictionsEdit
                     v-model="proofTemplate.attributeGroups[idx]"
+                    :type="proofTemplate.type"
                   />
 
                   <v-card-actions>
@@ -118,11 +122,12 @@
                 <v-list-item
                   v-for="(schema, idx) in schemas"
                   :key="idx"
-                  @click="addAttributeGroup(schema.id)"
+                  @click="addAttributeGroup(schema)"
                   :disabled="
                     proofTemplate.attributeGroups.some(
                       (existingAttributeGroup) =>
-                        existingAttributeGroup.schemaId === schema.id
+                        existingAttributeGroup.schemaId === schema.id ||
+                        proofTemplate.type !== schema.type
                     )
                   "
                 >
@@ -146,6 +151,7 @@
         <v-layout align-center align-end justify-end>
           <v-switch
             v-if="expertMode && enableV2Switch"
+            :disabled="'INDY' !== this.proofTemplate.type"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
@@ -221,6 +227,7 @@ export default {
       useV2Exchange: false,
       proofTemplate: {
         name: "",
+        type: "",
         attributeGroups: new Array<AttributeGroup & AttributeGroupUi>(),
       },
       snackbar: {
@@ -246,7 +253,8 @@ export default {
     },
     schemas(): SchemaAPI[] {
       return this.$store.getters.getSchemas.filter(
-        (schema: SchemaAPI) => schema.type === "INDY"
+        (schema: SchemaAPI) =>
+          schema.type === "INDY" || schema.type === "JSON_LD"
       );
     },
     overallValidationErrors() {
@@ -284,8 +292,11 @@ export default {
       );
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
-    addAttributeGroup: function (schemaId: string) {
+    addAttributeGroup: function (schema: SchemaAPI) {
+      const schemaId = schema.id;
       const schemaLevelRestrictions: SchemaLevelRestriction[] = [];
+
+      this.proofTemplate.type = schema.type;
 
       const { schemaAttributeNames, trustedIssuer } = this.schemas.find(
         (s: SchemaAPI) => s.id === schemaId

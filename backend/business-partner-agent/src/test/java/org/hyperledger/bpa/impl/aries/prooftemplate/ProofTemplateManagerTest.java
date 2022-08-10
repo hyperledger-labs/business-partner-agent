@@ -21,14 +21,17 @@ import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.bpa.api.exception.ProofTemplateException;
-import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
+import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,12 +48,6 @@ import static org.mockito.Mockito.*;
 @MicronautTest
 class ProofTemplateManagerTest {
 
-    @Inject
-    private BPAProofTemplateRepository repo;
-
-    @Inject
-    ProofManager proofManager;
-
     @MockBean(ProofManager.class)
     ProofManager proofManager() {
         return Mockito.mock(ProofManager.class);
@@ -62,50 +59,72 @@ class ProofTemplateManagerTest {
     }
 
     @Inject
-    BPAMessageSource.DefaultMessageSource msg;
+    ProofManager proofManager;
+
+    @Inject
+    SchemaMockFactory.SchemaMock schemaMock;
+
+    @Inject
+    BPAProofTemplateRepository repo;
+
+    @Inject
+    ProofTemplateManager sut;
 
     @Test
     void testThatProofManagerIsInvokeWithPartnerIdAndProofTemplate() {
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
+
         UUID partnerId = UUID.randomUUID();
         BPAProofTemplate template = repo.save(
                 BPAProofTemplate.builder()
                         .name("myTemplate")
+                        .type(CredentialType.INDY)
                         .attributeGroups(
                                 BPAAttributeGroups.builder()
+                                        .attributeGroup(BPAAttributeGroup.builder()
+                                                .schemaId(schemaId)
+                                                .attribute(BPAAttribute.builder()
+                                                        .name("something")
+                                                        .build())
+                                                .build())
                                         .build())
                         .build());
         // reset created at with value from db., because Java's value is more detailed
         // that the database's.
         repo.findById(template.getId()).map(BPAProofTemplate::getCreatedAt).ifPresent(template::setCreatedAt);
-        doNothing().when(proofManager).sendPresentProofRequest(eq(partnerId), eq(template));
+        doNothing().when(proofManager).sendPresentProofRequestIndy(eq(partnerId), eq(template), eq(ExchangeVersion.V1));
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
 
-        verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template, ExchangeVersion.V1);
+        verify(proofManager, times(1)).sendPresentProofRequestIndy(partnerId, template, ExchangeVersion.V1);
     }
 
     @Test
     void testThatProofManagerIsNotInvokedIfProofTemplateDoesNotExist() {
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
-
         Assertions.assertThrows(
-                ProofTemplateException.class,
+                EntityNotFoundException.class,
                 () -> sut.invokeProofRequestByTemplate(UUID.randomUUID(), UUID.randomUUID()),
                 "Expected a ProofTemplateException if there is ProofTemplate with the given id.");
-        verify(proofManager, never()).sendPresentProofRequest(any(UUID.class), any(BPAProofTemplate.class));
+        verify(proofManager, never()).sendPresentProofRequestIndy(any(UUID.class), any(BPAProofTemplate.class),
+                any(ExchangeVersion.class));
     }
 
     @Test
     void testAddProofTemplate() {
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
         BPAProofTemplate template = BPAProofTemplate.builder()
                 .name("myTemplate")
+                .type(CredentialType.INDY)
                 .attributeGroups(
                         BPAAttributeGroups.builder()
+                                .attributeGroup(BPAAttributeGroup.builder()
+                                        .schemaId(schemaId)
+                                        .attribute(BPAAttribute.builder()
+                                                .name("something")
+                                                .build())
+                                        .build())
                                 .build())
                 .build();
-
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
         Assertions.assertEquals(0, repo.count(), "There should be no templates initially.");
         BPAProofTemplate expected = sut.addProofTemplate(template);
@@ -125,17 +144,25 @@ class ProofTemplateManagerTest {
 
         Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> new ProofTemplateManager(repo, proofManager, msg).addProofTemplate(template),
+                () -> sut.addProofTemplate(template),
                 "ProofTemplateManager#addProofTemplate should reject invalid templates with a ConstraintViolationException");
         Assertions.assertEquals(0, repo.count(), "There should be no templates persisted.");
     }
 
     @Test
     void listProofTemplates() {
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
         BPAProofTemplate.BPAProofTemplateBuilder templateBuilder = BPAProofTemplate.builder()
                 .name("myFirstTemplate")
+                .type(CredentialType.INDY)
                 .attributeGroups(
                         BPAAttributeGroups.builder()
+                                .attributeGroup(BPAAttributeGroup.builder()
+                                        .schemaId(schemaId)
+                                        .attribute(BPAAttribute.builder()
+                                                .name("something")
+                                                .build())
+                                        .build())
                                 .build());
         repo.save(templateBuilder
                 .name("myFirstTemplate")
@@ -143,8 +170,6 @@ class ProofTemplateManagerTest {
         repo.save(templateBuilder
                 .name("mySecondTemplate")
                 .build());
-
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
         List<String> allTemplates = sut.listProofTemplates().map(BPAProofTemplate::getName).toList();
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
@@ -155,16 +180,23 @@ class ProofTemplateManagerTest {
 
     @Test
     void removeProofTemplate() {
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
         UUID templateId = repo.save(
                 BPAProofTemplate.builder()
-                        .name("myTemplate")
+                        .name("myFirstTemplate")
+                        .type(CredentialType.INDY)
                         .attributeGroups(
                                 BPAAttributeGroups.builder()
+                                        .attributeGroup(BPAAttributeGroup.builder()
+                                                .schemaId(schemaId)
+                                                .attribute(BPAAttribute.builder()
+                                                        .name("something")
+                                                        .build())
+                                                .build())
                                         .build())
                         .build())
                 .getId();
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         assertTrue(repo.findById(templateId).isPresent(), "The to-be-removed proof template should exist.");
         sut.removeProofTemplate(templateId);
         assertTrue(repo.findById(templateId).isEmpty(), "The proof template was not removed.");

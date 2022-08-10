@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -15,17 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -34,8 +33,7 @@ import java.util.List;
 @Introspected
 public class AttributeGroup {
     @NotNull
-    @ValidUUID
-    private String schemaId;
+    private UUID schemaId;
 
     private String attributeGroupName;
 

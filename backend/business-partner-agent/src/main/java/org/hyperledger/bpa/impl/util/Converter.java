@@ -307,26 +307,33 @@ public class Converter {
      */
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
-        PresentProofRequest.ProofRequest indy = Objects
+        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = Objects
                 .requireNonNullElseGet(p.getProofRequest(),
-                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
-                .getIndy();
-        if (indy != null && !"proof-request".equals(indy.getName())) {
-            return indy.getName();
-        }
-        if (indy != null
-                && indy.getRequestedAttributes() != null
-                && indy.getRequestedAttributes().size() == 1) {
-            return indy.getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
-                if (attr.getValue().getRestrictions() != null && attr.getValue().getRestrictions().size() == 1) {
-                    JsonObject jo = attr.getValue().getRestrictions().get(0);
-                    String credDefId = jo.get("cred_def_id") != null ? jo.get("cred_def_id").getAsString() : null;
-                    if (credDefId != null) {
-                        return StringUtils.replace(AriesStringUtil.credDefIdGetTag(credDefId), "-", " ");
+                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new);
+        if (p.typeIsIndy() && pr.getIndy() != null) {
+            PresentProofRequest.ProofRequest indy = pr.getIndy();
+            if (!"proof-request".equals(indy.getName())) {
+                return indy.getName();
+            }
+            if (indy.getRequestedAttributes() != null
+                    && indy.getRequestedAttributes().size() == 1) {
+                return indy.getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
+                    if (attr.getValue().getRestrictions() != null && attr.getValue().getRestrictions().size() == 1) {
+                        JsonObject jo = attr.getValue().getRestrictions().get(0);
+                        String credDefId = jo.get("cred_def_id") != null ? jo.get("cred_def_id").getAsString() : null;
+                        if (credDefId != null) {
+                            return StringUtils.replace(AriesStringUtil.credDefIdGetTag(credDefId), "-", " ");
+                        }
                     }
-                }
-                return defaultLabel;
-            }).orElse(defaultLabel);
+                    return defaultLabel;
+                }).orElse(defaultLabel);
+            }
+        } else if (p.typeIsJsonLd() && pr.getJsonLD() != null) {
+            V2DIFProofRequest ld = pr.getJsonLD();
+            String name = ld.getPresentationDefinition() != null ? ld.getPresentationDefinition().getName() : null;
+            if (StringUtils.isNotEmpty(name)) {
+                return name;
+            }
         }
         return defaultLabel;
     }

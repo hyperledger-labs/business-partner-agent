@@ -50,7 +50,7 @@ export default {
   },
 
   toggleCredentialVisibility(id: string): Promise<AxiosResponse<void>> {
-    return appAxios().get(
+    return appAxios().put(
       `${ApiRoutes.WALLET}/credential/${id}/toggle-visibility`
     );
   },
