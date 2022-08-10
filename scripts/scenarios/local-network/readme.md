@@ -31,7 +31,7 @@ This folder enables easy setup of an entire isolated network for local developme
   `./infra.sh stop` and
   `./infra.sh start`. This will keep the ledger including registered DIDs, schemas, etc. 
   If you want to restart from scratch with a new ledger, run
-  `./infra.sh prune`.
+  `./infra.sh purge`.
 
 ## Wiping Clean
 
