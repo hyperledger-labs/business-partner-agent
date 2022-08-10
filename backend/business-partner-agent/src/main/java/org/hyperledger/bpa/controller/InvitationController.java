@@ -18,15 +18,16 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -35,17 +36,25 @@ import org.hyperledger.bpa.controller.api.invitation.AcceptInvitationRequest;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationRequest;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
+import org.hyperledger.bpa.impl.oob.OOBCredentialOffer;
+
+import java.util.UUID;
 
 @Slf4j
-@Controller("/api/invitations")
+@Controller(InvitationController.INVITATION_CONTROLLER_BASE_URL)
 @Tag(name = "Invitation Management")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class InvitationController {
 
+    public static final String INVITATION_CONTROLLER_BASE_URL = "/api/invitations";
+
     @Inject
     ConnectionManager cm;
+
+    @Inject
+    OOBCredentialOffer offerManager;
 
     /**
      * Check invitation (receive)
@@ -80,6 +89,23 @@ public class InvitationController {
     public HttpResponse<APICreateInvitationResponse> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
         return HttpResponse.ok(cm.createConnectionInvitation(req));
+    }
+
+    /**
+     * Handle OOB credential/presentation exchange with attachment step 2 - redirect
+     * with encoded attachment
+     *
+     * @param id {@link UUID}
+     * @return Redirect with encoded credential-offer/presentation-request
+     *         attachment in the location header
+     */
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Hidden
+    @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
+    @Get("/oob-attachment/{id}")
+    public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
+        return HttpResponse.status(HttpStatus.MOVED_PERMANENTLY).header("location",
+                offerManager.handleConnectionLess(id));
     }
 
 }

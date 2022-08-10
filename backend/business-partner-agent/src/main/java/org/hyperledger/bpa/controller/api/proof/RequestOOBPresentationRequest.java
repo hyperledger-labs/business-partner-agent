@@ -15,19 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api.proof;
 
+import io.micronaut.core.annotation.Introspected;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
+import org.hyperledger.bpa.persistence.model.Tag;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 
+@Introspected
 @Data
 @NoArgsConstructor
-public class SendProofRequest implements ExchangeVersionTranslator {
-    private UUID partnerId;
-    private UUID myCredentialId;
+public class RequestOOBPresentationRequest implements ExchangeVersionTranslator {
+
+    // connection
+    private String alias;
+    private List<Tag> tag;
+    private Boolean trustPing;
+
+    // bpa internal id
+    @NotNull
+    private UUID templateId;
+
     private ExchangeVersion exchangeVersion;
 }

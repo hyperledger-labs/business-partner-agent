@@ -27,6 +27,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
@@ -68,17 +69,14 @@ public abstract class IssueCredentialRequest {
     @NoArgsConstructor
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)
-    public static final class IssueIndyCredentialRequest extends IssueCredentialRequest {
+    public static final class IssueIndyCredentialRequest extends IssueCredentialRequest
+            implements ExchangeVersionTranslator {
 
         @NotBlank
         private UUID credDefId;
 
         /** credential exchange api version */
         private ExchangeVersion exchangeVersion;
-
-        public boolean exchangeIsV1() {
-            return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
-        }
     }
 
     @Introspected

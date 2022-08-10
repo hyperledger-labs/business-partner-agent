@@ -23,27 +23,32 @@ import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.Tag;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
 @Introspected
 @Data
 @NoArgsConstructor
-public class IssueOOBCredentialRequest {
+public class IssueOOBCredentialRequest implements ExchangeVersionTranslator {
 
+    // connection
     private String alias;
     private List<Tag> tag;
     private Boolean trustPing;
 
     // bpa internal id
-    @NotBlank
+    @NotNull
     private UUID credDefId;
 
     /** credential body key value pairs */
     @JsonRawValue
     @Schema(example = "{}")
     private JsonNode document;
+
+    private ExchangeVersion exchangeVersion;
 }

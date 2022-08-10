@@ -21,16 +21,13 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
@@ -40,16 +37,14 @@ import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.aries.creddef.CredDefManager;
 import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
-import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.oob.OOBCredentialOffer;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hyperledger.bpa.controller.IssuerController.ISSUER_CONTROLLER_BASE_URL;
-
-@Controller(ISSUER_CONTROLLER_BASE_URL)
+@Controller(IssuerController.ISSUER_CONTROLLER_BASE_URL)
 @Tag(name = "Credential Issuance Management")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -104,7 +99,7 @@ public class IssuerController {
     }
 
     /**
-     * Delete a indy credential definition (will not delete it from the ledger)
+     * Delete an indy credential definition (will not delete it from the ledger)
      *
      * @param id {@link UUID} the cred def id
      * @return {@link HttpResponse}
@@ -140,21 +135,6 @@ public class IssuerController {
     public HttpResponse<APICreateInvitationResponse> issueCredentialConnectionLess(
             @Valid @Body IssueOOBCredentialRequest req) {
         return HttpResponse.ok(connectionLess.issueConnectionLess(req));
-    }
-
-    /**
-     * Issue OOB credential step 2 - redirect with encoded offer
-     *
-     * @param id {@link UUID}
-     * @return Redirect with encoded credential offer in the location header
-     */
-    @Secured(SecurityRule.IS_ANONYMOUS)
-    @Hidden
-    @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
-    @Get("/issue-credential/oob-attachment/{id}")
-    public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
-        return HttpResponse.status(HttpStatus.MOVED_PERMANENTLY).header("location",
-                connectionLess.handleConnectionLess(id));
     }
 
     /**
