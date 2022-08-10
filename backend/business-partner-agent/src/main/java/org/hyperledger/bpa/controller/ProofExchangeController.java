@@ -65,8 +65,8 @@ public class ProofExchangeController {
     BPAMessageSource.DefaultMessageSource msg;
 
     /**
-     * Manual proof exchange flow. Get matching wallet credentials before sending or
-     * declining the proof request.
+     * Manual proof exchange flow: Get matching indy credentials before sending or
+     * declining the proof request
      *
      * @param id {@link UUID} the presentationExchangeId
      * @return list of {@link PresentationRequestCredentialsIndy}
@@ -76,13 +76,20 @@ public class ProofExchangeController {
         return HttpResponse.ok(proofM.getMatchingIndyCredentials(id));
     }
 
+    /**
+     * Manual proof exchange flow: Get matching w3c credentials before sending or
+     * declining the proof request
+     *
+     * @param id {@link UUID} the presentationExchangeId
+     * @return list of {@link PresentationRequestCredentialsIndy}
+     */
     @Get("/{id}/matching-credentials-ld")
     public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingLDCredentials(@PathVariable UUID id) {
         return HttpResponse.ok(proofM.getMatchingLDCredentials(id));
     }
 
     /**
-     * Manual proof exchange flow. Answer ProofRequest with matching attributes
+     * Manual proof exchange flow: Answer ProofRequest with matching attributes
      *
      * @param id  {@link UUID} the presentationExchangeId
      * @param req {@link ApproveProofRequest}
@@ -95,7 +102,7 @@ public class ProofExchangeController {
     }
 
     /**
-     * Manual proof exchange flow. Reject ProofRequest received from a partner
+     * Manual proof exchange flow: Reject ProofRequest received from a partner
      *
      * @param id  {@link UUID} the presentationExchangeId
      * @param req {@link DeclineExchangeRequest}

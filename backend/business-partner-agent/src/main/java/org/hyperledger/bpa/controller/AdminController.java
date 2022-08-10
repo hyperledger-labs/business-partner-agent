@@ -287,6 +287,8 @@ public class AdminController {
     }
 
     /**
+     * Returns true if a TAA needs to be accepted before writing to the ledger
+     *
      * @return true if endpoint registration is required
      */
     @Get("/endpoints/registrationRequired")
