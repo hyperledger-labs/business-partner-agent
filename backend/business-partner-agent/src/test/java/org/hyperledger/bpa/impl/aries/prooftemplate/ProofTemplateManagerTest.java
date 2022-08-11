@@ -176,8 +176,10 @@ class ProofTemplateManagerTest {
                 .name("mySecondTemplate")
                 .build());
 
-        List<String> allTemplates = sut.listProofTemplates("", Pageable.unpaged()).map(ProofTemplate::getName)
-                .getContent();
+        List<String> allTemplates = sut.listProofTemplates("", Pageable.unpaged())
+              .map(BPAProofTemplate::toRepresentation)
+              .map(ProofTemplate::getName)
+              .getContent();
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
         assertTrue(allTemplates.contains("myFirstTemplate"), "Expected myFirstTemplate in the listed proof templates");
         assertTrue(allTemplates.contains("mySecondTemplate"),

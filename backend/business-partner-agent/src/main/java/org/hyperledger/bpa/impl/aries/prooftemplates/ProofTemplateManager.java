@@ -31,7 +31,6 @@ import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
@@ -92,10 +91,9 @@ public class ProofTemplateManager {
         return repo.save(template);
     }
 
-    public Page<ProofTemplate> listProofTemplates(@Nullable String name, @NonNull Pageable pageable) {
-        Page<ProofTemplate> proofTemplates;
-        name = "%" + name + "%";
-        proofTemplates = repo.findByNameIlike(name, pageable).map(BPAProofTemplate::toRepresentation);
+    public Page<BPAProofTemplate> listProofTemplates(@Nullable String name, @NonNull Pageable pageable) {
+        Page<BPAProofTemplate> proofTemplates;
+        proofTemplates = repo.findByNameContains(name, pageable);
         return proofTemplates;
     }
 

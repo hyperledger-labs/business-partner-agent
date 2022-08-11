@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
-import io.micronaut.context.annotation.Executable;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.Page;
@@ -32,6 +31,5 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAProofTemplateRepository extends PageableRepository<BPAProofTemplate, UUID> {
 
-    @Executable
-    Page<BPAProofTemplate> findByNameIlike(@Nullable String name, @NonNull Pageable pageable);
+    Page<BPAProofTemplate> findByNameContains(@Nullable String name, @NonNull Pageable pageable);
 }

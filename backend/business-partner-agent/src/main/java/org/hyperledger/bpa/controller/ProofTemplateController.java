@@ -60,12 +60,13 @@ public class ProofTemplateController {
      */
     @Get("{?pc*}")
     public HttpResponse<Page<ProofTemplate>> listProofTemplates(
-            @Nullable String name,
+            @QueryValue("name") @Nullable String name,
             @Valid @Nullable PaginationCommand pc) {
         return HttpResponse.ok(
                 proofTemplateManager.listProofTemplates(
                         name,
-                        pc != null ? pc.toPageable() : Pageable.unpaged()));
+                        pc != null ? pc.toPageable() : Pageable.unpaged()).map(BPAProofTemplate::toRepresentation)
+        );
     }
 
     /**

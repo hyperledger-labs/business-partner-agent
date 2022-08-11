@@ -29,7 +29,6 @@
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button
                 v-bind="attrs"
-                :loading="this.isBusy"
                 v-on="on"
                 color="primary"
                 @click="proofTemplateCreate()"
