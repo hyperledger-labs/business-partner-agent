@@ -18,6 +18,7 @@ create new ones
       @change="loadProofTemplates"
       single-line
       hide-details
+      clearable
     ></v-text-field>
     <v-data-table
       :hide-default-footer="hideFooter"
@@ -28,7 +29,6 @@ create new ones
       :show-select="showCheckboxes"
       :headers="headers"
       :items="proofTemplates"
-      :search="search"
       sort-by="createdAt"
       sort-desc
       single-select
@@ -79,6 +79,9 @@ export default {
     },
     search: {
       handler() {
+        if (!this.search) {
+          this.search = "";
+        }
         this.loadProofTemplates();
       },
     },
