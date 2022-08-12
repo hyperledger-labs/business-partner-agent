@@ -84,6 +84,16 @@ jobs:
       - name: Test with Maven 
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check pmd:cpd-check license:check dependency-check:check -Ddependency-check.skip=false
 
+      - name: Add code coverage report to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.2
+        if: ${{ github.ref != 'refs/heads/main' && github.event_name == 'pull_request' }}
+        with:
+          paths: ${{ github.workspace }}/backend/business-partner-agent/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # min-coverage-overall: 40
+          # min-coverage-changed-files: 60
+
       # Attribution Phase
 
       - name: Frontend attribution
