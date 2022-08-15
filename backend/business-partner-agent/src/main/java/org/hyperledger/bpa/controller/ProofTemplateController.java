@@ -65,8 +65,7 @@ public class ProofTemplateController {
         return HttpResponse.ok(
                 proofTemplateManager.listProofTemplates(
                         name,
-                        pc != null ? pc.toPageable() : Pageable.unpaged()).map(BPAProofTemplate::toRepresentation)
-        );
+                        pc != null ? pc.toPageable() : Pageable.unpaged()).map(BPAProofTemplate::toRepresentation));
     }
 
     /**

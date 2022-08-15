@@ -32,14 +32,14 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAProofTemplateRepository extends PageableRepository<BPAProofTemplate, UUID> {
 
-  @Query(
-    value = "SELECT * " +
-      "FROM \"bpa_proof_template\" bpaproof_template_ " +
-      "WHERE bpaproof_template_.name " +
-      "ILIKE CONCAT('%',:name,'%')",
-    countQuery = "SELECT COUNT(*) " +
-      "FROM \"bpa_proof_template\" bpaproof_template_ " +
-      "WHERE bpaproof_template_.name " +
-      "ILIKE CONCAT('%',:name,'%')")
-  Page<BPAProofTemplate> findByNameContains(@Nullable String name, @NonNull Pageable pageable);
+    @Query(
+            value = "SELECT * " +
+                    "FROM \"bpa_proof_template\" bpaproof_template_ " +
+                    "WHERE bpaproof_template_.name " +
+                    "ILIKE CONCAT('%',:name,'%')",
+            countQuery = "SELECT COUNT(*) " +
+                    "FROM \"bpa_proof_template\" bpaproof_template_ " +
+                    "WHERE bpaproof_template_.name " +
+                    "ILIKE CONCAT('%',:name,'%')")
+    Page<BPAProofTemplate> findByNameContains(@Nullable String name, @NonNull Pageable pageable);
 }

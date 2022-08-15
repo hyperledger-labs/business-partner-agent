@@ -14,7 +14,6 @@ import {
   AriesProofExchange,
   DeclineExchangeRequest,
   PresentationRequestCredentials,
-  CredentialInfo,
 } from "@/services/types-services";
 
 export default {
