@@ -16,6 +16,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      discussions: write
 
     steps:
       - uses: actions/checkout@v2
@@ -88,8 +90,6 @@ jobs:
         uses: madrapps/jacoco-report@v1.2
         if: ${{ github.ref != 'refs/heads/main' && github.event_name == 'pull_request' }}
         with:
-          permissions:
-            discussions: write
           paths: ${{ github.workspace }}/backend/business-partner-agent/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           debug-mode: true
