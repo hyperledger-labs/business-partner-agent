@@ -18,6 +18,10 @@
 package org.hyperledger.bpa.persistence.model.converter;
 
 import lombok.*;
+import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.present_proof.BasePresExRecord;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -52,6 +56,16 @@ public class ExchangePayload<I, L> implements ExchangeTypeTranslator {
             return ExchangePayload.indy(v1.getPresentationRequest());
         } else if (presEx instanceof V20PresExRecord v2) {
             return ExchangePayload.jsonLD(v2.resolveDifPresentationRequest());
+        }
+        return null;
+    }
+
+    public static ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> buildForCredentialOffer(
+            @NonNull BaseCredExRecord credEx) {
+        if (credEx instanceof V1CredentialExchange v1) {
+            return ExchangePayload.indy(v1.getCredentialProposalDict().getCredentialProposal());
+        } else if (credEx instanceof V20CredExRecord v2) {
+            return ExchangePayload.jsonLD(v2.resolveLDCredOffer());
         }
         return null;
     }

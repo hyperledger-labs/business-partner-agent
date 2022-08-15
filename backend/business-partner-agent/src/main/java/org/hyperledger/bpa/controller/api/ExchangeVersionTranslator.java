@@ -15,19 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
-import java.util.UUID;
+public interface ExchangeVersionTranslator {
 
-@Data
-@NoArgsConstructor
-public class SendProofRequest implements ExchangeVersionTranslator {
-    private UUID partnerId;
-    private UUID myCredentialId;
-    private ExchangeVersion exchangeVersion;
+    ExchangeVersion getExchangeVersion();
+
+    @JsonIgnore
+    default boolean exchangeIsV1() {
+        return getExchangeVersion() == null || ExchangeVersion.V1.equals(getExchangeVersion());
+    }
+
+    @JsonIgnore
+    default boolean exchangeIsV2() {
+        return ExchangeVersion.V2.equals(getExchangeVersion());
+    }
 }

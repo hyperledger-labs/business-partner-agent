@@ -26,6 +26,8 @@ import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -37,9 +39,13 @@ import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
+import org.jetbrains.annotations.NotNull;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -64,9 +70,7 @@ public class ProofTemplateManager {
 
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
             @Nullable ExchangeVersion version) {
-        BPAProofTemplate proofTemplate = repo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
+        BPAProofTemplate proofTemplate = findProofTemplate(id);
         if (proofTemplate.typeIsIndy()) {
             version = version != null ? version : ExchangeVersion.V1;
             proofManager.sendPresentProofRequestIndy(partnerId, proofTemplate, version);
@@ -75,8 +79,18 @@ public class ProofTemplateManager {
         }
     }
 
-    public Optional<BPAProofTemplate> getProofTemplate(@NonNull UUID id) {
-        return repo.findById(id);
+    public RenderedTemplate renderTemplate(@NonNull UUID id) {
+        BPAProofTemplate proofTemplate = findProofTemplate(id);
+        if (proofTemplate.typeIsIndy()) {
+            return new RenderedTemplate(CredentialType.INDY, proofManager.renderIndyProofRequest(proofTemplate), null);
+        }
+        return new RenderedTemplate(CredentialType.JSON_LD, null, proofManager.renderLDProofRequest(proofTemplate));
+    }
+
+    public BPAProofTemplate findProofTemplate(@NotNull UUID id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
     }
 
     public BPAProofTemplate addProofTemplate(@NonNull @Valid BPAProofTemplate template) {
@@ -110,5 +124,8 @@ public class ProofTemplateManager {
             return Set.of(ValueOperators.EQUALS.getValue());
         }
         return Arrays.stream(ValueOperators.values()).map(ValueOperators::getValue).collect(Collectors.toSet());
+    }
+
+    public record RenderedTemplate(CredentialType type, PresentProofRequest indy, V2DIFProofRequest dif) {
     }
 }

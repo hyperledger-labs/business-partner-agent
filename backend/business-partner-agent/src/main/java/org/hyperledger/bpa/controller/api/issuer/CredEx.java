@@ -26,6 +26,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Map;
@@ -35,7 +36,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CredEx {
+public class CredEx implements ExchangeVersionTranslator {
 
     private UUID id;
     private Long createdAt;

@@ -33,12 +33,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
+import org.hyperledger.bpa.controller.api.proof.RequestOOBPresentationRequest;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
+import org.hyperledger.bpa.impl.oob.OOBPresentationRequest;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -56,11 +59,14 @@ public class ProofExchangeController {
     ProofManager proofM;
 
     @Inject
+    OOBPresentationRequest oob;
+
+    @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
     /**
-     * Manual proof exchange flow. Get matching wallet credentials before sending or
-     * declining the proof request.
+     * Manual proof exchange flow: Get matching indy credentials before sending or
+     * declining the proof request
      *
      * @param id {@link UUID} the presentationExchangeId
      * @return list of {@link PresentationRequestCredentialsIndy}
@@ -70,13 +76,20 @@ public class ProofExchangeController {
         return HttpResponse.ok(proofM.getMatchingIndyCredentials(id));
     }
 
+    /**
+     * Manual proof exchange flow: Get matching w3c credentials before sending or
+     * declining the proof request
+     *
+     * @param id {@link UUID} the presentationExchangeId
+     * @return list of {@link PresentationRequestCredentialsIndy}
+     */
     @Get("/{id}/matching-credentials-ld")
     public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingLDCredentials(@PathVariable UUID id) {
         return HttpResponse.ok(proofM.getMatchingLDCredentials(id));
     }
 
     /**
-     * Manual proof exchange flow. Answer ProofRequest with matching attributes
+     * Manual proof exchange flow: Answer ProofRequest with matching attributes
      *
      * @param id  {@link UUID} the presentationExchangeId
      * @param req {@link ApproveProofRequest}
@@ -89,7 +102,7 @@ public class ProofExchangeController {
     }
 
     /**
-     * Manual proof exchange flow. Reject ProofRequest received from a partner
+     * Manual proof exchange flow: Reject ProofRequest received from a partner
      *
      * @param id  {@link UUID} the presentationExchangeId
      * @param req {@link DeclineExchangeRequest}
@@ -120,6 +133,19 @@ public class ProofExchangeController {
         }
         proofM.sendPresentProofRequestIndy(req.getPartnerId(), req);
         return HttpResponse.ok();
+    }
+
+    /**
+     * OOB presentation request step 1 - prepares presentation request and returns
+     * URL for use within the barcode
+     *
+     * @param req {@link RequestOOBPresentationRequest}
+     * @return {@link APICreateInvitationResponse}
+     */
+    @Post("/proof-request/oob-attachment")
+    public HttpResponse<APICreateInvitationResponse> connectionLessPresentationRequest(
+            @Valid @Body RequestOOBPresentationRequest req) {
+        return HttpResponse.ok(oob.requestConnectionLess(req));
     }
 
     /**

@@ -203,6 +203,19 @@
                         </v-list-item-action>
                       </v-list-item>
                     </v-col>
+                    <v-col v-if="expertMode">
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title
+                            class="grey--text text--darken-2 font-weight-medium"
+                            >{{ $t("button.useV2") }}</v-list-item-title
+                          >
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-switch v-model="useV2Exchange"></v-switch>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-col>
                   </div>
                 </v-card-text>
               </v-card>
@@ -273,6 +286,7 @@ import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
 import QrcodeVue from "qrcode.vue";
+import { ExchangeVersion } from "@/constants";
 
 export default {
   name: "IssueCredentialIndyOob",
@@ -296,6 +310,7 @@ export default {
       selectedTags: new Array<Tag>(),
       // Disable trust ping for invitation to mobile wallets by default
       trustPing: false,
+      useV2Exchange: false,
       invitationUrl: "",
       createDisabled: true,
       expertLoad: {
@@ -378,6 +393,9 @@ export default {
         alias: this.alias,
         tag: tags,
         trustPing: this.trustPing,
+        exchangeVersion: this.useV2Exchange
+          ? ExchangeVersion.V2
+          : ExchangeVersion.V1,
         credDefId: this.credDef.id,
         document: document,
       };
