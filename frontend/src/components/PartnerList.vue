@@ -62,7 +62,7 @@ import { EventBus } from "@/main";
 import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
-import { CredentialTypes, PartnerStates } from "@/constants";
+import { CredentialTypes } from "@/constants";
 import { PartnerAPI, partnerService, PageOptions } from "@/services";
 
 export default {
@@ -144,13 +144,6 @@ export default {
     expertMode() {
       return this.$store.getters.getExpertMode;
     },
-    // filteredData() {
-    //   return !this.showInvitations
-    //     ? this.items.filter((partner: PartnerAPI & { address: string }) => {
-    //         return partner.state !== PartnerStates.INVITATION.value;
-    //       })
-    //     : this.items;
-    // },
     partnerNotifications() {
       return this.$store.getters.partnerNotifications;
     },

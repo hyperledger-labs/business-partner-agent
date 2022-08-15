@@ -41,14 +41,8 @@ create new ones
   </v-container>
 </template>
 <script lang="ts">
-import store from "@/store";
 import { EventBus } from "@/main";
-import {
-  Page,
-  PageOptions,
-  ProofTemplate,
-  proofTemplateService,
-} from "@/services";
+import { PageOptions, ProofTemplate, proofTemplateService } from "@/services";
 
 export default {
   props: {
