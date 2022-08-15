@@ -16,8 +16,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
+    permissions: write-all
 
     steps:
       - uses: actions/checkout@v2
@@ -92,7 +91,6 @@ jobs:
         with:
           paths: ${{ github.workspace }}/backend/business-partner-agent/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          debug-mode: true
           # min-coverage-overall: 40
           # min-coverage-changed-files: 60
 
