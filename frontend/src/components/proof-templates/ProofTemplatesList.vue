@@ -15,7 +15,7 @@ create new ones
       v-model="search"
       append-icon="$vuetify.icons.search"
       :label="$t('app.search')"
-      @change="loadProofTemplates"
+      v-on:input="loadProofTemplates"
       single-line
       hide-details
       clearable
@@ -77,14 +77,6 @@ export default {
         this.loadProofTemplates();
       },
     },
-    search: {
-      handler() {
-        if (!this.search) {
-          this.search = "";
-        }
-        this.loadProofTemplates();
-      },
-    },
   },
   computed: {
     headers() {
@@ -112,6 +104,9 @@ export default {
     async loadProofTemplates() {
       this.isBusy = true;
       this.proofTemplates = [];
+      if (!this.search) {
+        this.search = "";
+      }
       const params = PageOptions.toUrlSearchParams(this.options);
       try {
         const response = await proofTemplateService.getProofTemplates(
