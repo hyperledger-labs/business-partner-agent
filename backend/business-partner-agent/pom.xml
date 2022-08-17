@@ -252,15 +252,12 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
@@ -359,6 +356,26 @@
             </activation>
             <build>
                 <plugins>
+                    <!-- Install the unofficial version from https://github.com/JD-CSTx/license-maven-plugin -->
+                    <plugin>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-own-maven-license-plugin</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>${project.basedir}/../../bin/license-maven-plugin-2.1.0-SNAPSHOT.jar</file>
+                                    <groupId>org.codehaus.mojo</groupId>
+                                    <artifactId>license-maven-plugin</artifactId>
+                                    <version>2.1.0-SNAPSHOT</version>
+                                    <packaging>jar</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- mvn license:third-party-report -->
                     <!-- mvn license:aggregate-download-licenses -->
                     <plugin>
@@ -383,13 +400,12 @@
                             <excludedArtifacts>business-partner-agent-core</excludedArtifacts>
                             <licenseMerges>
                                 <licenseMerge>The Apache Software License, Version 2.0|The Apache License, Version 2.0|Apache License, Version 2.0|Apache License 2.0|Apache 2.0</licenseMerge>
-                                <licenseMerge>The MIT License|MIT License</licenseMerge>
+                                <licenseMerge>The MIT License (MIT)|The MIT License|MIT License|MIT-0</licenseMerge>
                             </licenseMerges>
                         </configuration>
                     </plugin>
                     <!-- LGPL requirement, copy spotbugs sources jar -->
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
                         <version>${maven.dependency.plugin.version}</version>
                         <executions>
@@ -469,7 +485,6 @@
                     </plugin>
                     <!-- Copy frontend artifacts to resource folder -->
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>3.3.0</version>
                         <executions>
