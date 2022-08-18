@@ -1,4 +1,4 @@
-name: CI/CD
+name: License Attribution
 
 on:
   pull_request:
@@ -53,7 +53,7 @@ jobs:
       # Build phase
 
       - name: Build maven-license-plugin
-        run: mvn -f bin/maven-license-plugin/pom.xml clean install -DskipTests=true
+        run: mvn -f bin/license-maven-plugin/pom.xml clean install -DskipTests=true
 
       # Attribution Phase
 
