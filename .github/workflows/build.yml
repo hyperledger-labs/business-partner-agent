@@ -26,7 +26,7 @@ jobs:
       # Setup Phase
 
       - name: Setup node and install deps
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
           check-latest: true
@@ -38,13 +38,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           check-latest: true
-
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          cache: 'maven'
 
       - name: Prepare docker tags for bpa image
         id: preparetags
