@@ -17,21 +17,20 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
-import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Async;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.bpa.config.security.oauth2.client.RequiresMissingKeycloak;
 import org.hyperledger.bpa.persistence.model.BPAUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Slf4j
 @Singleton
-@Requires(notEnv = { Environment.TEST })
+@RequiresMissingKeycloak
 public class DBOperations {
 
     @Inject
