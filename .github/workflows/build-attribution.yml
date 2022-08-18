@@ -53,7 +53,7 @@ jobs:
       # Build phase
 
       - name: Build maven-license-plugin
-        run: mvn -f bin/license-maven-plugin/pom.xml clean install -DskipTests=true
+        run: mvn -f bin/license-maven-plugin/pom.xml clean editorconfig:format install -DskipITs=true -DskipTests=true
 
       # Attribution Phase
 
