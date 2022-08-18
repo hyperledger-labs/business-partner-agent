@@ -21,7 +21,7 @@
 .mtj.tmp/
 
 # Package Files #
-backend/**/*.jar
+*.jar
 *.war
 *.nar
 *.ear

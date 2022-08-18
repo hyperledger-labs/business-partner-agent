@@ -46,22 +46,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v14  
-        with:
-          plugin_groups: '[ "com.spotify" ]' 
-
-      - name: Prepare docker tags for license image
-        id: preparetagslicense
-        uses: docker/metadata-action@v3
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        with:
-          images: ghcr.io/hyperledger-labs/business-partner-agent-license
-          tags: |
-            type=ref,event=tag
-            type=edge,branch=main
-            type=sha
-
       - name: Prepare docker tags for bpa image
         id: preparetags
         uses: docker/metadata-action@v3
@@ -83,14 +67,6 @@ jobs:
 
       - name: Test with Maven 
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check pmd:cpd-check license:check dependency-check:check -Ddependency-check.skip=false
-
-      # Attribution Phase
-
-      - name: Frontend attribution
-        run: npm --prefix frontend run license
-      
-      - name: Backend attribution
-        run: mvn -f backend/pom.xml compile -Pbackend-license
 
       # Build Phase
  
@@ -122,15 +98,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner}}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push license container
-        uses: docker/build-push-action@v2
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        with:
-          context: .
-          push: true
-          file: Dockerfile.license
-          tags: ${{ steps.preparetagslicense.outputs.tags }}
 
       - name: Build and push container
         uses: docker/build-push-action@v2
