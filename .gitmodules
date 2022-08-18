@@ -1,0 +1,3 @@
+[submodule "bin/license-maven-plugin"]
+	path = bin/license-maven-plugin
+	url = https://github.com/JD-CSTx/license-maven-plugin
