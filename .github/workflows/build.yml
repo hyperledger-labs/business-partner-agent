@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # needed for the license header check
           fetch-depth: 0
@@ -26,41 +26,19 @@ jobs:
       # Setup Phase
 
       - name: Setup node and install deps
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
           check-latest: true
       - run: npm --prefix frontend ci --legacy-peer-deps
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
           check-latest: true
-
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v14  
-        with:
-          plugin_groups: '[ "com.spotify" ]' 
-
-      - name: Prepare docker tags for license image
-        id: preparetagslicense
-        uses: docker/metadata-action@v3
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        with:
-          images: ghcr.io/hyperledger-labs/business-partner-agent-license
-          tags: |
-            type=ref,event=tag
-            type=edge,branch=main
-            type=sha
+          cache: 'maven'
 
       - name: Prepare docker tags for bpa image
         id: preparetags
@@ -83,14 +61,6 @@ jobs:
 
       - name: Test with Maven 
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check pmd:cpd-check license:check dependency-check:check -Ddependency-check.skip=false
-
-      # Attribution Phase
-
-      - name: Frontend attribution
-        run: npm --prefix frontend run license
-      
-      - name: Backend attribution
-        run: mvn -f backend/pom.xml compile -Pbackend-license
 
       # Build Phase
  
@@ -122,15 +92,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner}}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push license container
-        uses: docker/build-push-action@v2
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        with:
-          context: .
-          push: true
-          file: Dockerfile.license
-          tags: ${{ steps.preparetagslicense.outputs.tags }}
 
       - name: Build and push container
         uses: docker/build-push-action@v2
