@@ -133,7 +133,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.27</version>
+            <version>0.7.28-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -160,7 +160,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.7.2</version>
+            <version>5.7.3</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>

@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.server.StatusConfig;
 import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
@@ -98,6 +99,8 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
 
     List<MessageTrigger> messageTrigger;
 
+    String writeLedgerId;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
@@ -123,10 +126,11 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
         }
 
         try {
-            this.tailsServerConfigured = ac
-                    .statusConfig()
-                    .flatMap(c -> c.getAs("tails_server_base_url", String.class))
-                    .isPresent();
+            StatusConfig serverConfig = ac.statusConfigTyped().orElseThrow();
+            tailsServerConfigured = serverConfig.isTailsServerConfigured();
+            writeLedgerId = serverConfig.findWriteLedger()
+                    .map(StatusConfig.LedgerConfigEntry::getId)
+                    .orElse(null);
         } catch (IOException e) {
             log.warn("aca-py is not reachable");
         }

@@ -23,10 +23,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.server.AdminConfig;
 import org.hyperledger.bpa.impl.StartupTasks;
 
 import java.io.IOException;
@@ -55,24 +53,20 @@ public class AcaPyConfig implements ApplicationEventListener<StartupTasks.AcaPyR
     @Override
     public void onApplicationEvent(StartupTasks.AcaPyReady event) {
         try {
-            ac.statusConfig().ifPresent(c -> {
-                autoAcceptInvites = resolveFromConfig(c, "debug.auto_accept_invites");
-                autoAcceptRequests = resolveFromConfig(c, "debug.auto_accept_requests");
-                autoRespondMessages = resolveFromConfig(c, "debug.auto_respond_messages");
-                autoRespondCredentialOffer = resolveFromConfig(c, "debug.auto_respond_credential_offer");
-                autoRespondCredentialProposal = resolveFromConfig(c, "debug.auto_respond_credential_proposal");
-                autoRespondCredentialRequest = resolveFromConfig(c, "debug.auto_respond_credential_request");
-                autoRespondPresentationProposal = resolveFromConfig(c, "debug.auto_respond_presentation_proposal");
-                autoRespondPresentationRequest = resolveFromConfig(c, "debug.auto_respond_presentation_request");
-                autoStoreCredential = resolveFromConfig(c, "debug.auto_store_credential");
-                autoVerifyPresentation = resolveFromConfig(c, "debug.auto_verify_presentation");
+            ac.statusConfigTyped().ifPresent(c -> {
+                autoAcceptInvites = c.isAutoAcceptInvites();
+                autoAcceptRequests = c.isAutoAcceptRequests();
+                autoRespondMessages = c.isAutoRespondMessages();
+                autoRespondCredentialOffer = c.isAutoRespondCredentialOffer();
+                autoRespondCredentialProposal = c.isAutoRespondCredentialProposal();
+                autoRespondCredentialRequest = c.isAutoRespondCredentialRequest();
+                autoRespondPresentationProposal = c.isAutoRespondPresentationProposal();
+                autoRespondPresentationRequest = c.isAutoRespondPresentationRequest();
+                autoStoreCredential = c.isAutoStoreCredential();
+                autoVerifyPresentation = c.isAutoVerifyPresentation();
             });
         } catch (IOException e) {
             log.warn("aca-py not reachable");
         }
-    }
-
-    private static Boolean resolveFromConfig(@NonNull AdminConfig c, @NonNull String key) {
-        return Boolean.TRUE.equals(c.getUnwrapped(key, Boolean.class));
     }
 }
