@@ -22,6 +22,7 @@ import io.micronaut.security.authentication.*;
 import io.reactivex.rxjava3.core.Maybe;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.hyperledger.bpa.config.security.oauth2.client.RequiresMissingKeycloak;
 import org.hyperledger.bpa.persistence.model.BPAUser;
 import org.hyperledger.bpa.persistence.repository.BPAUserRepository;
 import org.reactivestreams.Publisher;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Singleton
+@RequiresMissingKeycloak
 public class LocalAuthProvider implements AuthenticationProvider {
 
     @Inject
