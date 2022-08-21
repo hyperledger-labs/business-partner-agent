@@ -47,7 +47,6 @@
 import { EventBus } from "@/main";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
 import VBpaButton from "@/components/BpaButton";
-import store from "@/store";
 
 export default {
   name: "ProofTemplates",
@@ -62,10 +61,6 @@ export default {
     };
   },
   methods: {
-    onProofTemplateCreated() {
-      store.dispatch("loadProofTemplates");
-      this.proofTemplateCreateDialog = false;
-    },
     proofTemplateCreate() {
       this.isBusy = true;
       this.$router.push({

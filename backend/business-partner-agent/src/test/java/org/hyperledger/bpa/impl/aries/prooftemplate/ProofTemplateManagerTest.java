@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.prooftemplate;
 
-import io.micronaut.context.BeanContext;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -50,8 +49,6 @@ import static org.mockito.Mockito.*;
 
 @MicronautTest
 class ProofTemplateManagerTest {
-    @Inject
-    BeanContext beanContext;
 
     @MockBean(ProofManager.class)
     ProofManager proofManager() {

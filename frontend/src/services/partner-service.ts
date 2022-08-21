@@ -32,18 +32,23 @@ export default {
   // Query used only for partners that can issue credentials of specified schema
   getPartners(
     schemaId?: string,
-    showInvitations?: boolean,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
-    let query = "";
-    // TODO: BasicMessages.vue uses getPartners too, but has no showinvitations param, consider this here.
-    query =
-      schemaId &&
-      schemaId.length > 0 &&
-      (showInvitations || showInvitations === false)
-        ? `schemaId=${schemaId}&showInvitations=${showInvitations}`
-        : `showInvitations=${showInvitations.toString()}`;
-    return appAxios().get(`${ApiRoutes.PARTNERS}?${query}`, {
+    const schemaIdPresent = schemaId && schemaId.length > 0;
+    if (schemaIdPresent) {
+      params.set("schemaId", schemaId);
+    }
+    return appAxios().get(`${ApiRoutes.PARTNERS}`, {
+      params: params,
+    });
+  },
+
+  getPartnersByInvitationStatus(
+    invitation: boolean,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
+    params.set("showInvitations", invitation.toString());
+    return appAxios().get(`${ApiRoutes.PARTNERS}`, {
       params: params,
     });
   },
@@ -95,17 +100,7 @@ export default {
     id: string,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<AriesProofExchange[]>>> {
-    params.set("partnerId", id);
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`, {
-      params: params,
-    });
-  },
-  getPartnersByInvitation(
-    invitation: string,
-    params: URLSearchParams = new URLSearchParams()
-  ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
-    params.set("invitations", invitation);
-    return appAxios().get(`${ApiRoutes.PARTNERS}`, {
       params: params,
     });
   },

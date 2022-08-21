@@ -37,7 +37,6 @@ import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 
 import javax.validation.Valid;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -76,12 +75,7 @@ public class ProofTemplateController {
      */
     @Get("/{id}")
     public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable UUID id) {
-        Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(id);
-        if (proofTemplate.isPresent()) {
-            return HttpResponse.ok(proofTemplate.get().toRepresentation());
-        } else {
-            return HttpResponse.notFound();
-        }
+        return HttpResponse.ok(proofTemplateManager.findProofTemplate(id).toRepresentation());
     }
 
     /**

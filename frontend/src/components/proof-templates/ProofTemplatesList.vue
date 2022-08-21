@@ -116,6 +116,11 @@ export default {
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
+      // FIXME: this part triggers another query due to altering the paging options (watch: options handler)
+      //  but is needed to reset to page 1 after filtering.
+      if (this.hideFooter && this.options.page > 1) {
+        this.$set(this.options, "page", 1);
+      }
       this.isBusy = false;
     },
     openItem(proofTemplate: ProofTemplate) {

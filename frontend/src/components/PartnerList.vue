@@ -154,6 +154,12 @@ export default {
         this.fetch();
       },
     },
+    showInvitations: {
+      handler() {
+        this.fetch();
+        this.$set(this.options, "page", 1);
+      },
+    },
     refresh: function (newValue: boolean) {
       if (newValue) {
         this.fetch();
@@ -176,25 +182,17 @@ export default {
         },
       });
     },
-
     async fetch() {
       this.isBusy = true;
-      // this.$store.dispatch("loadPartnerSelectList");
       this.items = [];
       const params = PageOptions.toUrlSearchParams(this.options);
       try {
-        const response = await partnerService.getPartners(
-          this.onlyIssuersForSchema,
+        const response = await partnerService.getPartnersByInvitationStatus(
           this.showInvitations,
           params
         );
         if (response.status === 200) {
           const { itemsPerPage } = this.options;
-          if (this.onlyAries) {
-            response.data.content = response.data.content.filter((item) => {
-              return item.ariesSupport === true;
-            });
-          }
           this.items = response.data.content.map((partner: PartnerAPI) => {
             const tempPartner: PartnerAPI & { address: string } = {
               address: this.getProfileAddress(partner),

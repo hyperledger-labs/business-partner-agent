@@ -9,7 +9,7 @@ import { PartnerAPI } from "@/services";
 import { IStatePartners } from "@/store/state-type";
 import partnerService from "@/services/partner-service";
 import { EventBus } from "@/main";
-
+// TODO: sever side paging makes this script useless: remove in future story if possible
 const state: IStatePartners = {
   partnerList: new Array<PartnerAPI>(),
 };

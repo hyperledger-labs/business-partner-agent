@@ -6,10 +6,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import partnerService from "@/services/partner-service";
-import { PartnerStates } from "@/constants";
 import { EventBus } from "@/main";
 import { IStatePartnerSelectList } from "@/store/state-type";
 import { PartnerAPI } from "@/services";
+// FIXME: sever side paging makes this script useless: remove in future story if possible
 
 const state: IStatePartnerSelectList = {
   partnerSelectList: new Array<PartnerAPI>(),
@@ -25,16 +25,11 @@ export default {
   actions: {
     async loadPartnerSelectList(context: any) {
       partnerService
-        .getPartners()
+        .getPartnersByInvitationStatus(false)
         .then((result) => {
           if (result.status === 200) {
             // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-            const partners: PartnerAPI[] = result.data.content.filter(
-              (partner) => {
-                return partner.state !== PartnerStates.INVITATION.value;
-              }
-            );
-
+            const partners = result.data.content;
             context.commit("setPartnerSelectList", partners);
           }
         })
