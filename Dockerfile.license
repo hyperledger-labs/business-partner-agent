@@ -1,4 +1,4 @@
-# Dockerfile to ship 3rd party license information, mainly used withon the build pipeline
+# Dockerfile to ship 3rd party license information, only used within the build pipeline
 
 FROM busybox
 
