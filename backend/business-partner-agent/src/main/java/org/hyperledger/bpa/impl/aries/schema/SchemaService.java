@@ -37,6 +37,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
@@ -73,6 +74,9 @@ public class SchemaService {
 
     @Inject
     Identity id;
+
+    @Inject
+    RuntimeConfig runtimeConfig;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -263,11 +267,11 @@ public class SchemaService {
                     dbSchema -> log.debug("Schema with id {} already exists", schema.getId()),
                     () -> {
                         try {
-                            SchemaAPI schemaAPI;
+                            SchemaAPI schemaAPI = null;
                             if (CredentialType.JSON_LD.equals(schema.getType())) {
                                 schemaAPI = addJsonLDSchema(schema.getId(), schema.getLabel(),
                                         schema.getDefaultAttributeName(), schema.getLdType(), schema.getAttributes());
-                            } else {
+                            } else if (StringUtils.equals(runtimeConfig.getWriteLedgerId(), schema.getLedgerId())) {
                                 schemaAPI = addIndySchema(schema.getId(), schema.getLabel(),
                                         schema.getDefaultAttributeName());
                             }

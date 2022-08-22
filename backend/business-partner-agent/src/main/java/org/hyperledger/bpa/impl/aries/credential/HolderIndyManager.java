@@ -158,7 +158,7 @@ public class HolderIndyManager {
         if (credEx instanceof V1CredentialExchange) {
             schemaId = ((V1CredentialExchange) credEx).getSchemaId();
         } else if (credEx instanceof V20CredExRecord) {
-            schemaId = V2ToV1IndyCredentialConverter.INSTANCE()
+            schemaId = V2ToV1IndyCredentialConverter
                     .toV1Offer((V20CredExRecord) credEx).getCredentialProposalDict().getSchemaId();
         }
         if (schemaId != null) {
