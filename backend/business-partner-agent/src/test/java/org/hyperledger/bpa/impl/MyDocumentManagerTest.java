@@ -229,7 +229,7 @@ class MyDocumentManagerTest extends RunWithAries {
         assertFalse(vp.isPresent());
 
         final MyDocumentAPI vc = createAndSavePublicDummyCredential();
-        waitForVP(vpMgmt, false);
+        waitForVP(vpMgmt, true);
 
         vp = vpMgmt.getVerifiablePresentation();
         assertTrue(vp.isPresent());

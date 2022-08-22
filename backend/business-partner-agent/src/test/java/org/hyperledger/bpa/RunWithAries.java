@@ -47,17 +47,17 @@ public abstract class RunWithAries extends BaseTest {
     private static final GenericContainer<?> ariesContainer = new GenericContainer<>(ARIES_VERSION)
             .withExposedPorts(ARIES_ADMIN_PORT)
             .withCommand("start"
-                        + " -it http 0.0.0.0 8030"
-                        + " -ot http --admin 0.0.0.0 " + ARIES_ADMIN_PORT
-                        + " --admin-insecure-mode"
-                        + " -e http://0.0.0.0"
-                        + " --log-level info"
-                        + " --no-ledger"
-                        + " --wallet-type askar"
-                        + " --wallet-name testWallet"
-                        + " --wallet-key testKey"
-                        + " --auto-provision"
-                        + " --plugin aries_cloudagent.messaging.jsonld")
+                    + " -it http 0.0.0.0 8030"
+                    + " -ot http --admin 0.0.0.0 " + ARIES_ADMIN_PORT
+                    + " --admin-insecure-mode"
+                    + " -e http://0.0.0.0"
+                    + " --log-level info"
+                    + " --no-ledger"
+                    + " --wallet-type askar"
+                    + " --wallet-name testWallet"
+                    + " --wallet-key testKey"
+                    + " --auto-provision"
+                    + " --plugin aries_cloudagent.messaging.jsonld")
             .waitingFor(Wait.defaultWaitStrategy())
             .withLogConsumer(new Slf4jLogConsumer(log));
 
