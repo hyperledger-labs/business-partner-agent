@@ -92,7 +92,7 @@ export default {
       this.rooms = [];
       this.currentRoomId = undefined;
       const _rooms = [];
-      const partners = await partnerService.getPartnersByInvitationStatus(
+      const partners = await partnerService.getAllWithoutInvites(
         false // TODO: look for a more elegant way than hardcode this
       );
       if (Array.isArray(partners.data.content)) {

@@ -32,7 +32,7 @@ export default {
   actions: {
     async loadPartners(context: any) {
       partnerService
-        .getPartners()
+        .getAll()
         .then((result) => {
           if (result.status === 200) {
             context.commit("loadPartnersFinished", result.data);

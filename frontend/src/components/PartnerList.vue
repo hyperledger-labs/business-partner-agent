@@ -187,7 +187,7 @@ export default {
       this.items = [];
       const params = PageOptions.toUrlSearchParams(this.options);
       try {
-        const response = await partnerService.getPartnersByInvitationStatus(
+        const response = await partnerService.getAllWithoutInvites(
           this.showInvitations,
           params
         );

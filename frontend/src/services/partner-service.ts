@@ -30,7 +30,7 @@ export default {
   },
 
   // Query used only for partners that can issue credentials of specified schema
-  getPartners(
+  getAll(
     schemaId?: string,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
@@ -43,7 +43,7 @@ export default {
     });
   },
 
-  getPartnersByInvitationStatus(
+  getAllWithoutInvites(
     invitation: boolean,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {

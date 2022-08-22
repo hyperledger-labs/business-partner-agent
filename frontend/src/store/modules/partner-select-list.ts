@@ -25,7 +25,7 @@ export default {
   actions: {
     async loadPartnerSelectList(context: any) {
       partnerService
-        .getPartnersByInvitationStatus(false)
+        .getAllWithoutInvites(false)
         .then((result) => {
           if (result.status === 200) {
             // filter out partners that are only at the invitation stage, we can't do anything until they accept.
