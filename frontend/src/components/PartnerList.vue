@@ -191,18 +191,16 @@ export default {
           this.showInvitations,
           params
         );
-        if (response.status === 200) {
-          const { itemsPerPage } = this.options;
-          this.items = response.data.content.map((partner: PartnerAPI) => {
-            const tempPartner: PartnerAPI & { address: string } = {
-              address: this.getProfileAddress(partner),
-              ...partner,
-            };
-            return tempPartner;
-          });
-          this.totalNumberOfElements = response.data.totalSize;
-          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
-        }
+        const { itemsPerPage } = this.options;
+        this.items = response.data.content.map((partner: PartnerAPI) => {
+          const tempPartner: PartnerAPI & { address: string } = {
+            address: this.getProfileAddress(partner),
+            ...partner,
+          };
+          return tempPartner;
+        });
+        this.totalNumberOfElements = response.data.totalSize;
+        this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }

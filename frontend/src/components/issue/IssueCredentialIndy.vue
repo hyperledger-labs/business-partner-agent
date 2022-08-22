@@ -308,10 +308,7 @@ export default {
       };
       try {
         const resp = await issuerService.issueCredentialSendIndy(data);
-
-        if (resp.status === 200) {
-          return resp.data;
-        }
+        return resp.data;
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }

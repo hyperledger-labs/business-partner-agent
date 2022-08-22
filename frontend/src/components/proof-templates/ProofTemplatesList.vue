@@ -107,12 +107,10 @@ export default {
           this.search,
           params
         );
-        if (response.status === 200) {
-          const { itemsPerPage } = this.options;
-          this.proofTemplates = response.data.content;
-          this.totalNumberOfElements = response.data.totalSize;
-          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
-        }
+        const { itemsPerPage } = this.options;
+        this.proofTemplates = response.data.content;
+        this.totalNumberOfElements = response.data.totalSize;
+        this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
