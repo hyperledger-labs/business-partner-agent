@@ -43,6 +43,7 @@ public class SchemaConfig {
 
     private String label;
     private String id;
+    private String ledgerId;
     private String defaultAttributeName;
     // Generic structure - [{key: value, key: value}, {key: value}]
     private List<Map<String, String>> restrictions;

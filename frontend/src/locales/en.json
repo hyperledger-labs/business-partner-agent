@@ -451,6 +451,7 @@
         "uniResolverUrl": "Universal Resolver",
         "ledgerBrowser": "Ledger Browser",
         "ledgerPrefix": "Ledger DID Prefix",
+        "writeLedgerId": "Write Ledger ID",
         "uptime": "Uptime HH:mm:ss.SSS",
         "buildVersion": "Version"
       },

@@ -58,7 +58,8 @@ public abstract class BaseTest {
     public static void waitForVP(@NonNull VPManager vpMgmt, boolean waitForVC) throws Exception {
         Instant timeout = Instant.now().plusSeconds(30);
         while (vpMgmt.getVerifiablePresentation().isEmpty()
-                || (waitForVC && vpMgmt.getVerifiablePresentation().get().getVerifiableCredential() == null)) {
+                || (waitForVC && CollectionUtils
+                        .isEmpty(vpMgmt.getVerifiablePresentation().get().getVerifiableCredential()))) {
             Thread.sleep(15);
             if (Instant.now().isAfter(timeout)) {
                 fail("Timeout reached while waiting for the VP to be created");

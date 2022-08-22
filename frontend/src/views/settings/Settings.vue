@@ -183,6 +183,10 @@ export default {
           value: "ledgerPrefix",
         },
         {
+          text: this.$t("view.settings.header.writeLedgerId"),
+          value: "writeLedgerId",
+        },
+        {
           text: this.$t("view.settings.header.uptime"),
           value: "uptime",
         },

@@ -450,6 +450,7 @@
         "uniResolverUrl": "Universal Resolver",
         "ledgerBrowser": "Ledger Browser",
         "ledgerPrefix": "Ledger DID Prefix",
+        "writeLedgerId": "Write Ledger ID",
         "uptime": "Betriebszeit HH:mm:ss.SSS",
         "buildVersion": "Version"
       },
