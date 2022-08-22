@@ -27,6 +27,7 @@ export interface paths {
     post: operations["registerEndpoints"];
   };
   "/api/admin/endpoints/registrationRequired": {
+    /** Returns true if a TAA needs to be accepted before writing to the ledger */
     get: operations["isEndpointsWriteRequired"];
   };
   "/api/admin/schema": {
@@ -244,18 +245,19 @@ export interface paths {
     delete: operations["deleteProofExchangeById"];
   };
   "/api/proof-exchanges/{id}/decline": {
-    /** Manual proof exchange flow. Reject ProofRequest received from a partner */
+    /** Manual proof exchange flow: Reject ProofRequest received from a partner */
     post: operations["declinePresentProofRequest"];
   };
   "/api/proof-exchanges/{id}/matching-credentials": {
-    /** Manual proof exchange flow. Get matching wallet credentials before sending or declining the proof request. */
+    /** Manual proof exchange flow: Get matching indy credentials before sending or declining the proof request */
     get: operations["getMatchingCredentials"];
   };
   "/api/proof-exchanges/{id}/matching-credentials-ld": {
+    /** Manual proof exchange flow: Get matching w3c credentials before sending or declining the proof request */
     get: operations["getMatchingLDCredentials"];
   };
   "/api/proof-exchanges/{id}/prove": {
-    /** Manual proof exchange flow. Answer ProofRequest with matching attributes */
+    /** Manual proof exchange flow: Answer ProofRequest with matching attributes */
     post: operations["responseToProofRequest"];
   };
   "/api/proof-templates": {
@@ -874,6 +876,12 @@ export interface components {
     };
     Number: { [key: string]: unknown };
     Object: { [key: string]: unknown };
+    Page_ActivityItem_: components["schemas"]["Slice_ActivityItem_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
     Page_AriesCredential_: components["schemas"]["Slice_AriesCredential_"] & {
       /** Format: int64 */
       totalSize: number;
@@ -893,6 +901,18 @@ export interface components {
       totalPages?: number;
     };
     Page_MyDocumentAPI_: components["schemas"]["Slice_MyDocumentAPI_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Page_PartnerAPI_: components["schemas"]["Slice_PartnerAPI_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Page_ProofTemplate_: components["schemas"]["Slice_ProofTemplate_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
@@ -1198,6 +1218,19 @@ export interface components {
       myCredentialId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
+    Slice_ActivityItem_: {
+      content: components["schemas"]["ActivityItem"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
     Slice_AriesCredential_: {
       content: components["schemas"]["AriesCredential"][];
       pageable: components["schemas"]["Pageable"];
@@ -1239,6 +1272,32 @@ export interface components {
     };
     Slice_MyDocumentAPI_: {
       content: components["schemas"]["MyDocumentAPI"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_PartnerAPI_: {
+      content: components["schemas"]["PartnerAPI"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_ProofTemplate_: {
+      content: components["schemas"]["ProofTemplate"][];
       pageable: components["schemas"]["Pageable"];
       /** Format: int32 */
       pageNumber?: number;
@@ -1396,6 +1455,8 @@ export interface operations {
   listActivities: {
     parameters: {
       query: {
+        /** PaginationCommand */
+        pc?: components["schemas"]["PaginationCommand"] | null;
         activity?: boolean | null;
         task?: boolean | null;
         type?: components["schemas"]["ActivityType"] | null;
@@ -1405,7 +1466,7 @@ export interface operations {
       /** list of ActivityItem */
       200: {
         content: {
-          "application/json": components["schemas"]["ActivityItem"][];
+          "application/json": components["schemas"]["Page_ActivityItem_"];
         };
       };
     };
@@ -1434,6 +1495,7 @@ export interface operations {
       };
     };
   };
+  /** Returns true if a TAA needs to be accepted before writing to the ledger */
   isEndpointsWriteRequired: {
     responses: {
       /** true if endpoint registration is required */
@@ -2138,15 +2200,19 @@ export interface operations {
   getPartners: {
     parameters: {
       query: {
+        /** PaginationCommand */
+        pc?: components["schemas"]["PaginationCommand"] | null;
         /** schema id */
         schemaId?: string | null;
+        /** Filter Partners by connection state */
+        showInvitations?: boolean | null;
       };
     };
     responses: {
       /** list of partners */
       200: {
         content: {
-          "application/json": components["schemas"]["PartnerAPI"][];
+          "application/json": components["schemas"]["Page_PartnerAPI_"];
         };
       };
     };
@@ -2499,7 +2565,7 @@ export interface operations {
       200: unknown;
     };
   };
-  /** Manual proof exchange flow. Reject ProofRequest received from a partner */
+  /** Manual proof exchange flow: Reject ProofRequest received from a partner */
   declinePresentProofRequest: {
     parameters: {
       path: {
@@ -2518,7 +2584,7 @@ export interface operations {
       };
     };
   };
-  /** Manual proof exchange flow. Get matching wallet credentials before sending or declining the proof request. */
+  /** Manual proof exchange flow: Get matching indy credentials before sending or declining the proof request */
   getMatchingCredentials: {
     parameters: {
       path: {
@@ -2535,14 +2601,16 @@ export interface operations {
       };
     };
   };
+  /** Manual proof exchange flow: Get matching w3c credentials before sending or declining the proof request */
   getMatchingLDCredentials: {
     parameters: {
       path: {
+        /** UUID the presentationExchangeId */
         id: string;
       };
     };
     responses: {
-      /** getMatchingLDCredentials 200 response */
+      /** list of PresentationRequestCredentialsIndy */
       200: {
         content: {
           "application/json": components["schemas"]["PresentationRequestCredentialsIndy"][];
@@ -2550,7 +2618,7 @@ export interface operations {
       };
     };
   };
-  /** Manual proof exchange flow. Answer ProofRequest with matching attributes */
+  /** Manual proof exchange flow: Answer ProofRequest with matching attributes */
   responseToProofRequest: {
     parameters: {
       path: {
@@ -2571,11 +2639,19 @@ export interface operations {
   };
   /** List configured templates */
   listProofTemplates: {
+    parameters: {
+      query: {
+        /** String */
+        name?: string | null;
+        /** PaginationCommand */
+        pc?: components["schemas"]["PaginationCommand"] | null;
+      };
+    };
     responses: {
       /** list of ProofTemplate */
       200: {
         content: {
-          "application/json": components["schemas"]["ProofTemplate"][];
+          "application/json": components["schemas"]["Page_ProofTemplate_"];
         };
       };
     };
