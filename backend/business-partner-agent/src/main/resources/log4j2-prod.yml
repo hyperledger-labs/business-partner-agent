@@ -3,16 +3,18 @@ Configuration:
 
   Appenders:
     Console:
-      name: ConsolePatternAppender
+      name: ConsoleJSONAppender
       target: SYSTEM_OUT
-      PatternLayout:
-        Pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %c{1} - %replace{%msg}{[\r\n]+}{}%n"
+      JsonLayout:
+        compact: true
+        properties: true
+        eventEol: true
 
   Loggers:
     Root:
       level: warn
       AppenderRef:
-        ref: ConsolePatternAppender
+        ref: ConsoleJSONAppender
     Logger:
       - name: io.micronaut.context
         level: info
