@@ -1,3 +1,5 @@
+# Production log config, json appender that logs lots of details.
+
 Configuration:
   status: warn
 
@@ -31,6 +33,6 @@ Configuration:
       - name: org.hyperledger.bpa.impl.aries
         level: trace
       - name: org.hyperledger.aries
-        level: trace
+        level: debug
       - name: org.hyperledger.aries.BaseClient # set to trace to debug rest request payload
         level: debug
