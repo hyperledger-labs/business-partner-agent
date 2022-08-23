@@ -42,7 +42,7 @@ jobs:
 
       - name: Prepare docker tags for bpa image
         id: preparetags
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/hyperledger-labs/business-partner-agent-new
           tags: |
