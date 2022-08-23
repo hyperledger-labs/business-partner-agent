@@ -105,6 +105,7 @@
             v-if="expertMode && enableV2Switch"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
+            :disabled="isV2"
           ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()">{{
             $t("button.cancel")
@@ -146,6 +147,12 @@ import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
 import Credential from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
+import {
+  CredentialType,
+  MyDocumentAPI,
+  WalletDocumentRequest,
+  walletService,
+} from "@/services";
 
 export default {
   name: "Document",
@@ -188,12 +195,13 @@ export default {
       this.document.isPublic = this.isProfile(this.document.type);
       this.isReady = true;
       this.intDoc = { ...this.document };
+      this.useV2Exchange = this.isV2;
     }
   },
   data: () => {
     return {
-      document: {},
-      intDoc: {},
+      document: {} as MyDocumentAPI,
+      intDoc: {} as MyDocumentAPI,
       isBusy: false,
       isReady: false,
       useV2Exchange: false,
@@ -205,7 +213,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     schemaLabel() {
       if (this.schemaId) {
@@ -221,12 +229,17 @@ export default {
         ? this.createButtonLabel
         : this.$t("button.save");
     },
+    isV2(): boolean {
+      return (
+        this.document && CredentialTypes.JSON_LD.type === this.document.type
+      );
+    },
   },
   watch: {},
   methods: {
     getDocument() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
+      walletService
+        .getDocumentById(this.id)
         .then((result) => {
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
@@ -244,11 +257,11 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    saveDocument(closeDocument) {
+    saveDocument(closeDocument: boolean) {
       this.isBusy = true;
       if (this.id) {
-        this.$axios
-          .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, {
+        walletService
+          .updateDocument(this.id, {
             document: this.document.documentData,
             isPublic: this.document.isPublic,
             label: this.isProfile(this.document.type)
@@ -277,15 +290,15 @@ export default {
 
         // create new document
       } else {
-        const documentForSave = {
+        const documentForSave: WalletDocumentRequest = {
           document: this.$refs.doc.intDoc.documentData,
           label: this.$refs.doc.intDoc.label,
           isPublic: this.document.isPublic,
           type: this.type,
           schemaId: this.schemaId,
         };
-        this.$axios
-          .post(`${this.$apiBaseUrl}/wallet/document`, documentForSave)
+        walletService
+          .addDocument(documentForSave)
           .then((response) => {
             console.log(response);
             this.$emit("received-document-id", {
@@ -306,8 +319,8 @@ export default {
       }
     },
     deleteDocument() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
+      walletService
+        .deleteDocument(this.id)
         .then((result) => {
           if (result.status === 200) {
             EventBus.$emit(
@@ -324,7 +337,7 @@ export default {
     cancel() {
       this.$router.go(-1);
     },
-    isProfile(schemaType) {
+    isProfile(schemaType: CredentialType): boolean {
       return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
@@ -333,7 +346,7 @@ export default {
       });
       this.docModified();
     },
-    documentDataFieldChanged(credChanged) {
+    documentDataFieldChanged(credChanged: boolean) {
       this.credChanged = credChanged;
       this.docModified();
     },
@@ -353,9 +366,5 @@ export default {
 <style scoped>
 .bg-light {
   background-color: #fafafa;
-}
-
-.bg-light-2 {
-  background-color: #ececec;
 }
 </style>

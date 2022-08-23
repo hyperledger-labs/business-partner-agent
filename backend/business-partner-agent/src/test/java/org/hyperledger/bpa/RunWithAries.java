@@ -33,7 +33,8 @@ import java.net.URL;
 @Testcontainers
 public abstract class RunWithAries extends BaseTest {
 
-    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3";
+    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4";
+
     /** Container local port, the mapped port is random */
     private static final Integer ARIES_ADMIN_PORT = 8031;
 
@@ -43,23 +44,25 @@ public abstract class RunWithAries extends BaseTest {
     private String url;
 
     @Container
-    private final GenericContainer<?> ariesContainer;
+    private static final GenericContainer<?> ariesContainer = new GenericContainer<>(ARIES_VERSION)
+            .withExposedPorts(ARIES_ADMIN_PORT)
+            .withCommand("start"
+                    + " -it http 0.0.0.0 8030"
+                    + " -ot http --admin 0.0.0.0 " + ARIES_ADMIN_PORT
+                    + " --admin-insecure-mode"
+                    + " -e http://0.0.0.0"
+                    + " --log-level info"
+                    + " --no-ledger"
+                    + " --wallet-type askar"
+                    + " --wallet-name testWallet"
+                    + " --wallet-key testKey"
+                    + " --auto-provision"
+                    + " --plugin aries_cloudagent.messaging.jsonld")
+            .waitingFor(Wait.defaultWaitStrategy())
+            .withLogConsumer(new Slf4jLogConsumer(log));
 
     @SuppressWarnings("resource")
     public RunWithAries() {
-        ariesContainer = new GenericContainer<>(ARIES_VERSION)
-                .withExposedPorts(ARIES_ADMIN_PORT)
-                .withCommand("start"
-                        + " -it http 0.0.0.0 8030"
-                        + " -ot http --admin 0.0.0.0 " + ARIES_ADMIN_PORT
-                        + " --admin-insecure-mode"
-                        + " -e http://0.0.0.0"
-                        + " --log-level info"
-                        + " --no-ledger"
-                        + " --plugin aries_cloudagent.messaging.jsonld")
-                .waitingFor(Wait.defaultWaitStrategy())
-                .withLogConsumer(new Slf4jLogConsumer(log));
-
         runWithProxyIfConfigured(ariesContainer);
     }
 

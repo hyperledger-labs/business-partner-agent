@@ -17,6 +17,7 @@
             :label="$t('view.issueCredentials.cards.action.partnerLabel')"
             v-model="partner"
             :items="partnerList"
+            item-value="id"
             return-object
             class="mx-4"
             flat
@@ -35,7 +36,7 @@
                 :color="partnerStateColor(data.item)"
                 >$vuetify.icons.partnerState</v-icon
               >
-              {{ data.item.text }}
+              {{ data.item.name }}
             </template>
             <template v-slot:selection="data">
               <v-icon
@@ -44,13 +45,23 @@
                 :color="partnerStateColor(data.item)"
                 >$vuetify.icons.partnerState</v-icon
               >
-              {{ data.item.text }}
+              {{ data.item.name }}
             </template>
           </v-autocomplete>
+          <v-switch
+            style="display: block; height: 35px"
+            dense
+            inset
+            class="mx-2"
+            v-model="useJsonLd"
+            label="JSON-LD"
+            @change="resetDropdownAndIssueButton"
+          ></v-switch>
           <v-autocomplete
             :label="$t('view.issueCredentials.cards.action.credDefLabel')"
-            v-model="credDef"
-            :items="credDefList"
+            v-model="credDefIndyOrSchemaJsonLd"
+            item-value="id"
+            :items="credDefOrSchemasList"
             return-object
             class="mx-4"
             flat
@@ -61,7 +72,20 @@
             outlined
             clearable
             clear-icon="$vuetify.icons.delete"
-          ></v-autocomplete>
+          >
+            <template v-slot:item="data" v-if="useJsonLd"
+              >{{ data.item.label }} - {{ data.item.ldType }}</template
+            >
+            <template v-slot:item="data" v-else>{{
+              data.item.displayText
+            }}</template>
+            <template v-slot:selection="data" v-if="useJsonLd"
+              >{{ data.item.label }} - {{ data.item.ldType }}</template
+            >
+            <template v-slot:selection="data" v-else>{{
+              data.item.displayText
+            }}</template>
+          </v-autocomplete>
           <v-dialog
             v-model="issueCredentialDialog"
             persistent
@@ -78,14 +102,23 @@
                 }}</v-bpa-button
               >
             </template>
-            <IssueOobCredential
-              v-if="issueOutOfBoundCredential"
+            <IssueCredentialJsonLd
+              v-if="!issueOutOfBoundCredential && useJsonLd"
+              :schemaId="schemaJsonLdId"
+              :partnerId="partnerId"
+              :open="issueCredentialDialog"
+              @success="credentialIssued"
+              @cancelled="issueCredentialDialog = false"
+            >
+            </IssueCredentialJsonLd>
+            <IssueCredentialIndyOob
+              v-else-if="issueOutOfBoundCredential && !useJsonLd"
               :credDefId="credDefId"
               :open="issueCredentialDialog"
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
-            ></IssueOobCredential>
-            <IssueCredential
+            ></IssueCredentialIndyOob>
+            <IssueCredentialIndy
               v-else
               :credDefId="credDefId"
               :partnerId="partnerId"
@@ -93,7 +126,7 @@
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
             >
-            </IssueCredential>
+            </IssueCredentialIndy>
           </v-dialog>
         </v-layout>
       </v-card-actions>
@@ -108,10 +141,7 @@
         </v-layout>
       </v-card-title>
       <v-card-text>
-        <CredExList
-          :items="issuedCredentials"
-          :is-loading="isLoadingCredentials"
-        ></CredExList>
+        <CredExList ref="credExList" asIssuer />
       </v-card-text>
     </v-card>
   </v-container>
@@ -119,63 +149,78 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList.vue";
-import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
-import IssueOobCredential from "@/components/IssueOobCredential.vue";
+import IssueCredentialIndyOob from "@/components/issue/IssueCredentialIndyOob.vue";
+import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
+import { CredentialTypes } from "@/constants";
+import IssueCredentialJsonLd from "@/components/issue/IssueCredentialJsonLd.vue";
+import { CredDef, PartnerAPI, SchemaAPI } from "@/services";
 
 export default {
   name: "CredentialManagement",
   components: {
+    IssueCredentialJsonLd,
     VBpaButton,
-    IssueCredential,
-    IssueOobCredential,
+    IssueCredentialIndy,
+    IssueCredentialIndyOob,
     CredExList,
   },
   created() {
     EventBus.$emit("title", this.$t("view.issueCredentials.title"));
-    this.loadCredentials();
   },
   data: () => {
     return {
       isLoadingCredentials: false,
-      issuedCredentials: [],
-      partner: {},
+      partner: {} as PartnerAPI,
       partnerId: "",
-      credDef: {},
+      credDefIndyOrSchemaJsonLd: {},
       credDefId: "",
+      schemaJsonLdId: "",
       issueCredentialDisabled: true,
       issueCredentialDialog: false,
       issueOutOfBoundCredential: false,
       addSchemaDialog: false,
       createSchemaDialog: false,
+      useJsonLd: false,
     };
   },
   computed: {
     partnerList: {
-      get() {
+      get(): PartnerAPI[] {
         return [
-          {
-            text: this.$t(
-              "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
-            ),
-            id: "invitationWithAttachment",
-          },
-          { divider: true },
+          ...(!this.useJsonLd
+            ? [
+                {
+                  name: this.$t(
+                    "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
+                  ),
+                  id: "invitationWithAttachment",
+                },
+                { divider: true },
+              ]
+            : []),
           ...this.$store.getters.getPartnerSelectList,
         ];
       },
     },
-    credDefList: {
+    credDefOrSchemasList: {
       get() {
-        return this.$store.getters.getCredDefSelectList;
+        if (this.useJsonLd) {
+          const documentTypes = this.$store.getters.getSchemas;
+
+          return documentTypes.filter(
+            (schema: SchemaAPI) => schema.type === CredentialTypes.JSON_LD.type
+          );
+        } else {
+          return this.$store.getters.getCredDefSelectList;
+        }
       },
     },
   },
   watch: {
-    partner(value) {
+    partner(value: PartnerAPI) {
       const isNotSelected: boolean = !value || !value.id;
       this.issueCredentialDisabled =
         isNotSelected || !this.credDef || !this.credDef.id;
@@ -185,31 +230,31 @@ export default {
 
       this.partnerId = value ? value.id : "";
     },
-    credDef(value) {
+    credDefIndyOrSchemaJsonLd(value: SchemaAPI | CredDef) {
       this.issueCredentialDisabled =
         !value || !value.id || !this.partner || !this.partner.id;
-      this.credDefId = value ? value.id : "";
+
+      const id: string = value ? value.id : "";
+
+      if (this.useJsonLd) {
+        this.schemaJsonLdId = id;
+      } else {
+        this.credDefId = id;
+      }
     },
   },
   methods: {
-    partnerStateColor(p) {
-      return partnerUtils.getPartnerStateColor(p.state);
+    resetDropdownAndIssueButton() {
+      this.credDefIndyOrSchemaJsonLd = {};
+      this.issueCredentialDisabled = true;
+    },
+    partnerStateColor(partner: PartnerAPI) {
+      return partnerUtils.getPartnerStateColor(partner.state);
     },
     async loadCredentials() {
-      this.isLoadingCredentials = true;
-      this.issuedCredentials = [];
       this.partner = {};
       this.credDef = {};
-
-      try {
-        const iresp = await issuerService.listCredentialExchangesAsIssuer();
-        if (iresp.status === 200) {
-          this.issuedCredentials = iresp.data;
-        }
-      } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
-      }
-      this.isLoadingCredentials = false;
+      await this.$refs.credExList.loadCredentials();
     },
     credentialIssued() {
       this.issueCredentialDialog = false;

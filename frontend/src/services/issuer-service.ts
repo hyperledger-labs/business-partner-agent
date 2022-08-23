@@ -7,17 +7,19 @@
  */
 
 import { appAxios } from "@/services/interceptors";
-import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
+import { ApiRoutes } from "@/constants";
 import {
   CreateCredDefRequest,
-  SchemaApi,
+  SchemaAPI,
   CreateSchemaRequest,
   CredentialOfferRequest,
-  IssueCredentialRequest,
+  IssueCredentialRequestIndy,
   IssueOobCredentialRequest,
   CredDef,
-  ApiCreateInvitation,
   CredEx,
+  Page,
+  IssueCredentialRequestJsonLd,
+  APICreateInvitationResponse,
 } from "@/services/types-services";
 import { AxiosResponse } from "axios";
 
@@ -25,7 +27,7 @@ export default {
   //
   // Issuer API
   //
-  createSchema(data: CreateSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
+  createSchema(data: CreateSchemaRequest): Promise<AxiosResponse<SchemaAPI>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/schema`, data);
   },
 
@@ -41,8 +43,14 @@ export default {
     return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
   },
 
-  issueCredentialSend(
-    data: IssueCredentialRequest
+  issueCredentialSendIndy(
+    data: IssueCredentialRequestIndy
+  ): Promise<AxiosResponse<string>> {
+    return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
+  },
+
+  issueCredentialSendJsonLd(
+    data: IssueCredentialRequestJsonLd
   ): Promise<AxiosResponse<string>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
@@ -53,28 +61,26 @@ export default {
    */
   issueOobCredentialOfferCreate(
     data: IssueOobCredentialRequest
-  ): Promise<AxiosResponse<ApiCreateInvitation>> {
+  ): Promise<AxiosResponse<APICreateInvitationResponse>> {
     return appAxios().post(
       `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
       data
     );
   },
 
-  listCredentialExchanges(id: string): Promise<AxiosResponse<CredEx[]>> {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { partnerId: id },
-    });
-  },
-
   getCredExRecord(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(
-    id?: string
-  ): Promise<AxiosResponse<CredEx[]>> {
+  listCredentialExchanges(
+    id?: string,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<CredEx[]>>> {
+    if (id) {
+      params.set("partnerId", id);
+    }
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
+      params: params,
     });
   },
 

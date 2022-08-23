@@ -68,7 +68,9 @@
     "revoke": "Odwołać",
     "reissue": "Ponowne wydanie",
     "useV2": "Zastosowanie V2",
-    "writeToLedger": "Write endpoints to ledger"
+    "writeToLedger": "Write endpoints to ledger",
+    "copied": "Copied",
+    "clickToCopy": "Click to copy"
   },
   "credentialType": {
     "indy": "Indy",
@@ -305,7 +307,9 @@
       "createInvitation": "Wygeneruj zaproszenie (kod QR)",
       "invitationURL": "Adres URL zaproszenia",
       "useOOB": "Wykorzystanie poza pasmem",
-      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
+      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully",
+      "eventSuccessCopy": "Invitation copied",
+      "eventErrorCopy": "Can't copy Invitation"
     },
     "proofTemplate": {
       "title": "Szablony dowodów",
@@ -399,6 +403,7 @@
     "presentationRecord": {
       "role": "Role",
       "state": "State",
+      "type": "Type",
       "requestName": "Request Name",
       "requestContent": "Request Content",
       "issuer": "Issuer",
@@ -444,6 +449,7 @@
         "uniResolverUrl": "Universal Resolver",
         "ledgerBrowser": "Ledger Browser",
         "ledgerPrefix": "Ledger DID Prefix",
+        "writeLedgerId": "Write Ledger ID",
         "uptime": "Uptime HH:mm:ss.SSS",
         "buildVersion": "Version"
       },
@@ -535,7 +541,7 @@
       "eventSuccess": "New credential definition added"
     },
     "createSchema": {
-      "title": "Create Schema",
+      "title": "Create Indy Schema",
       "schemaInformation": "Schema Information",
       "labelSchema": "Schema Label",
       "labelName": "Schema Name",
@@ -584,6 +590,7 @@
       "title": "Wystaw uprawnienia",
       "partnerLabel": "Partner",
       "credDefLabel": "Definicja uprawnień",
+      "jsonLdSchemaLabel": "JSON-LD Schema",
       "successMessage": "Wydano uprawnienia",
       "attributesTitle": "Zawartość uprawnień",
       "options": {

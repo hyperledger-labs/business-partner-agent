@@ -78,6 +78,7 @@
 
 <script lang="ts">
 import * as textUtils from "@/utils/textUtils";
+import { MyDocumentAPI, SchemaAPI } from "@/services";
 
 export default {
   props: {
@@ -85,12 +86,12 @@ export default {
       type: Boolean,
       default: false,
     },
-    document: Object,
+    document: {} as MyDocumentAPI,
     showOnlyContent: Boolean,
     isNew: Boolean,
   },
   watch: {
-    document(value) {
+    document(value: MyDocumentAPI) {
       // document has been updated...
       if (value) {
         this.prepareDocument();
@@ -113,7 +114,11 @@ export default {
     };
   },
   computed: {
-    schema: function () {
+    schema: function (): {
+      type: string;
+      label: string;
+      fields: { type: string; label: string };
+    } {
       let schemaTemplate = this.createTemplateFromSchemaId(
         this.document.schemaId
       );
@@ -124,11 +129,11 @@ export default {
     },
   },
   methods: {
-    docDataFieldChanged(propertyName, event) {
-      if (this.origIntDoc[this.documentDataType][propertyName] !== event) {
-        this.intDoc[this.documentDataType][propertyName] = event;
+    docDataFieldChanged(propertyName: string, eventField: string) {
+      if (this.origIntDoc[this.documentDataType][propertyName] !== eventField) {
+        this.intDoc[this.documentDataType][propertyName] = eventField;
       } else {
-        this.intDoc[this.documentDataType][propertyName] = event;
+        this.intDoc[this.documentDataType][propertyName] = eventField;
       }
 
       const isDirty = !!Object.keys(
@@ -142,18 +147,18 @@ export default {
       this.$emit("doc-data-field-changed", isDirty);
     },
 
-    createTemplateFromSchemaId(schemaId) {
+    createTemplateFromSchemaId(schemaId: string) {
       // as a holder, i may not know the schema - schemaID is set only if we have stored the schema
       // return null if we do not have a schema id.
       if (!schemaId) return;
       const schemas = this.$store.getters.getSchemas;
-      let schema = schemas.find((s) => {
+      let schema = schemas.find((s: SchemaAPI) => {
         return s.schemaId === schemaId;
       });
       if (schema) {
         //TODO check if fields already available
         return Object.assign(schema, {
-          fields: schema.schemaAttributeNames.map((key) => {
+          fields: schema.schemaAttributeNames.map((key: string) => {
             return {
               type: key,
               label: textUtils.schemaAttributeLabel(key),
@@ -163,9 +168,9 @@ export default {
       }
     },
 
-    createTemplateFromSchema(objectData) {
+    createTemplateFromSchema(objectData: MyDocumentAPI) {
       const documentDataTypes = ["documentData", "credentialData", "proofData"];
-      const dataType = documentDataTypes.find((value) => {
+      const dataType: string = documentDataTypes.find((value) => {
         if (
           objectData &&
           Object.prototype.hasOwnProperty.call(objectData, value)
@@ -176,20 +181,20 @@ export default {
       return {
         type: objectData.type,
         label: "",
-        fields: Object.keys(dataType ? objectData[dataType] : objectData).map(
-          (key) => {
-            return {
-              type: key,
-              label: textUtils.schemaAttributeLabel(key),
-            };
-          }
-        ),
+        fields: Object.keys(
+          dataType ? objectData[dataType as keyof MyDocumentAPI] : objectData
+        ).map((key) => {
+          return {
+            type: key,
+            label: textUtils.schemaAttributeLabel(key),
+          };
+        }),
       };
     },
 
-    docFieldChanged(propertyName, event) {
-      this.intDoc[propertyName] = event;
-      this.$emit("doc-field-changed", { key: propertyName, value: event });
+    docFieldChanged(propertyName: string, eventLabel: string) {
+      this.intDoc[propertyName] = eventLabel;
+      this.$emit("doc-field-changed", { key: propertyName, value: eventLabel });
     },
 
     prepareDocument() {
@@ -198,7 +203,7 @@ export default {
         this.documentDataType = this.documentDataTypes[0];
         this.intDoc.label = "";
         this.intDoc[this.documentDataType] = Object.fromEntries(
-          this.schema.fields.map((field) => {
+          this.schema.fields.map((field: { type: string; label: string }) => {
             return [field.type, ""];
           })
         );

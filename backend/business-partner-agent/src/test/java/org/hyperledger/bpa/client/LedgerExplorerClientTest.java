@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -32,7 +32,7 @@ class LedgerExplorerClientTest extends BaseTest {
     // TODO migrate to okhttp mock
     void test() {
         LedgerExplorerClient c = new LedgerExplorerClient();
-        c.setUrl("https://indy-test.bosch-digital.de");
+        c.setUrl("https://indy-test.idu.network");
         c.setMapper(mapper);
 
         final Optional<List<PartnerCredentialType>> credDefIds = c.queryCredentialDefinitions(

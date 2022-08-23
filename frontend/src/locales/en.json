@@ -51,6 +51,7 @@
   },
   "button": {
     "accept": "Accept",
+    "edit": "Edit",
     "save": "Save",
     "saveAndSend": "Save and Send",
     "saveAndClose": "Save and Close",
@@ -68,7 +69,9 @@
     "revoke": "Revoke",
     "reissue": "ReIssue",
     "useV2": "Use V2",
-    "writeToLedger": "Write endpoints to ledger"
+    "writeToLedger": "Write endpoints to ledger",
+    "copied": "Copied",
+    "clickToCopy": "Click to copy"
   },
   "credentialType": {
     "indy": "Indy",
@@ -306,7 +309,9 @@
       "invitationURL": "Send the QR code or the equivalent URL below as the connection invitation",
       "useOOB": "Out of Band",
       "usePublicDid": "Use Public DID",
-      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
+      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully",
+      "eventSuccessCopy": "Invitation copied",
+      "eventErrorCopy": "Can't copy Invitation"
     },
     "proofTemplate": {
       "title": "Proof Templates",
@@ -400,6 +405,7 @@
     "presentationRecord": {
       "role": "Role",
       "state": "State",
+      "type": "Type",
       "requestName": "Request Name",
       "requestContent": "Request Content",
       "issuer": "Issuer",
@@ -445,6 +451,7 @@
         "uniResolverUrl": "Universal Resolver",
         "ledgerBrowser": "Ledger Browser",
         "ledgerPrefix": "Ledger DID Prefix",
+        "writeLedgerId": "Write Ledger ID",
         "uptime": "Uptime HH:mm:ss.SSS",
         "buildVersion": "Version"
       },
@@ -511,6 +518,7 @@
     "manageSchema": {
       "labelSchemaId": "Schema ID",
       "labelCheckbox": "My Schema",
+      "eventSuccessUpdate": "Schema updated",
       "eventSuccessCopy": "Schema ID copied",
       "eventErrorCopy": "Can't copy Schema ID",
       "eventSuccessDelete": "Schema deleted",
@@ -536,7 +544,7 @@
       "eventSuccess": "New credential definition added"
     },
     "createSchema": {
-      "title": "Create Schema",
+      "title": "Create Indy Schema",
       "schemaInformation": "Schema Information",
       "labelSchema": "Schema Label",
       "labelName": "Schema Name",
@@ -570,7 +578,10 @@
         "identifier": "Identifier",
         "sectionTitle": "Administrative Information",
         "companyName": "Organization Legal Name",
-        "companyAltName": "Organization Alternate Name"
+        "companyAltName": "Organization Alternate Name",
+        "myDID": "Organization Decentralized Identifier (DID)",
+        "eventSuccessCopy": "Schema ID copied",
+        "eventErrorCopy": "Can't copy Schema ID"
       },
       "addressInfo": {
         "sectionTitle": "Address",
@@ -585,6 +596,7 @@
       "title": "Issue Credential",
       "partnerLabel": "Partner",
       "credDefLabel": "Credential Definition",
+      "jsonLdSchemaLabel": "JSON-LD Schema",
       "successMessage": "Credential issued",
       "attributesTitle": "Credential Details",
       "options": {

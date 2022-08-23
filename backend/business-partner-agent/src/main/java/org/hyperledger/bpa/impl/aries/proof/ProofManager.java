@@ -22,8 +22,12 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
@@ -32,11 +36,12 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.*;
-import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
-import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
-import org.hyperledger.aries.api.present_proof_v2.V20PresSpecByFormatRequest;
+import org.hyperledger.aries.api.present_proof_v2.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.*;
 import org.hyperledger.bpa.api.notification.PresentationRequestDeclinedEvent;
@@ -44,15 +49,17 @@ import org.hyperledger.bpa.api.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
-import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
+import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -96,18 +103,19 @@ public class ProofManager {
     ProofTemplateConversion proofTemplateConversion;
 
     @Inject
+    ProverLDManager ldProver;
+
+    @Inject
+    VerifierLDManager ldVerifier;
+
+    @Inject
     CredentialInfoResolver credentialInfoResolver;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    // request proof from partner via proof template with exchange version 1
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
-        sendPresentProofRequest(partnerId, proofTemplate, ExchangeVersion.V1);
-    }
-
     // request proof from partner via proof template
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
+    public void sendPresentProofRequestIndy(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
             @NonNull ExchangeVersion version) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
@@ -116,8 +124,11 @@ public class ProofManager {
             // that was not part of the template and set during proof request creation.
             // using null for issuerId and schemaId because the template could have multiple
             // of each.
+            Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
             if (version.isV1()) {
-                ac.presentProofSendRequest(proofRequest).ifPresent(persistProof(partnerId, proofTemplate));
+                ac.presentProofSendRequest(proofRequest)
+                        .ifPresent(persistProof(PersistProofCmd.builder()
+                                .partner(p).type(CredentialType.INDY).proofTemplate(proofTemplate).build()));
             } else {
                 ac.presentProofV2SendRequest(V20PresSendRequestRequest
                         .builder()
@@ -127,15 +138,48 @@ public class ProofManager {
                                 .build())
                         .build())
                         .map(V20PresExRecordToV1Converter::toV1)
-                        .ifPresent(persistProof(partnerId, proofTemplate));
+                        .ifPresent(persistProof(PersistProofCmd.builder()
+                                .partner(p).type(CredentialType.INDY).proofTemplate(proofTemplate).build()));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
     }
 
+    /**
+     * Renders the proof-request, not bound to any connection
+     *
+     * @param proofTemplate {@link BPAProofTemplate}
+     * @return {@link PresentProofRequest}
+     */
+    public PresentProofRequest renderIndyProofRequest(@NonNull @Valid BPAProofTemplate proofTemplate) {
+        return proofTemplateConversion.templateToProofRequest(proofTemplate).build();
+    }
+
+    public void sendPresentProofRequestJsonLD(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+        Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
+        try {
+            ac.presentProofV2SendRequest(V20PresSendRequestRequest
+                    .builder()
+                    .connectionId(p.getConnectionId())
+                    .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                            .dif(renderLDProofRequest(proofTemplate))
+                            .build())
+                    .build())
+                    .ifPresent(persistProof(PersistProofCmd.builder()
+                            .partner(p).type(CredentialType.JSON_LD).proofTemplate(proofTemplate).build()));
+        } catch (IOException e) {
+            throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
+        }
+
+    }
+
+    public V2DIFProofRequest renderLDProofRequest(@NonNull @Valid BPAProofTemplate proofTemplate) {
+        return ldVerifier.prepareRequest(proofTemplate);
+    }
+
     // request proof from partner - currently not used by the frontend
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
+    public void sendPresentProofRequestIndy(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
             final Partner partner = partnerRepo.findById(partnerId)
                     .orElseThrow(() -> new PartnerException(
@@ -153,10 +197,10 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 Set.copyOf(schema.getAttrNames()), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partnerId, null));
+                        persistProof(PersistProofCmd.builder().partner(partner).type(CredentialType.INDY).build()));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partnerId, null));
+                        persistProof(PersistProofCmd.builder().partner(partner).type(CredentialType.INDY).build()));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -167,17 +211,30 @@ public class ProofManager {
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
             @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
-            ExchangeVersion v = version != null ? version : ExchangeVersion.V1;
-            Credential cred = Objects.requireNonNull(c.getIndyCredential());
+            if (StringUtils.isEmpty(p.getConnectionId())) {
+                throw new WrongApiUsageException(ms.getMessage("api.partner.no.connection"));
+            }
+            ExchangeVersion v = VersionHelper.determineVersion(version, c);
             try {
-                if (v.isV1()) {
-                    ac.presentProofSendProposal(PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
-                            .ifPresent(persistProof(partnerId, null));
-                } else {
-                    ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(
-                            p.getConnectionId(), cred, AriesStringUtil.schemaGetName(cred.getSchemaId())))
-                            .map(V20PresExRecordToV1Converter::toV1)
-                            .ifPresent(persistProof(partnerId, null));
+                if (c.typeIsIndy()) {
+                    Credential cred = Objects.requireNonNull(c.getIndyCredential());
+                    if (v.isV1()) {
+                        ac.presentProofSendProposal(
+                                PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
+                                .ifPresent(persistProof(PersistProofCmd.builder()
+                                        .partner(p).type(CredentialType.INDY).credentialExchange(c).build()));
+                    } else if (v.isV2()) {
+                        ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(
+                                p.getConnectionId(), cred, AriesStringUtil.schemaGetName(cred.getSchemaId())))
+                                .map(V20PresExRecordToV1Converter::toV1)
+                                .ifPresent(persistProof(PersistProofCmd.builder()
+                                        .partner(p).type(CredentialType.INDY).credentialExchange(c).build()));
+                    }
+                } else if (c.typeIsJsonLd()) {
+                    V20PresProposalRequest proofProposal = ldProver.prepareProposal(p.getConnectionId(), c);
+                    ac.presentProofV2SendProposal(proofProposal)
+                            .ifPresent(persistProof(PersistProofCmd.builder()
+                                    .partner(p).type(CredentialType.JSON_LD).credentialExchange(c).build()));
                 }
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -185,20 +242,21 @@ public class ProofManager {
         }));
     }
 
-    private Consumer<PresentationExchangeRecord> persistProof(
-            @NonNull UUID partnerId, @Nullable BPAProofTemplate proofTemplate) {
+    private Consumer<BasePresExRecord> persistProof(@NonNull PersistProofCmd cmd) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
-                    .partnerId(partnerId)
                     .state(exchange.getState())
+                    .type(cmd.type)
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
-                    .proofRequest(exchange.getPresentationRequest())
-                    .proofTemplate(proofTemplate)
-                    .exchangeVersion(exchange.getVersion() != null ? exchange.getVersion() : ExchangeVersion.V1)
+                    .proofRequest(ExchangePayload.buildForProofRequest(exchange))
+                    .proofTemplate(cmd.proofTemplate)
+                    .exchangeVersion(exchange.getVersion())
                     .pushStateChange(exchange.getState(), Instant.now())
+                    .partner(cmd.partner)
+                    .credentialExchange(cmd.credentialExchange)
                     .build();
             pProofRepo.save(pp);
             eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
@@ -208,23 +266,43 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public List<PresentationRequestCredentials> getMatchingCredentials(@NonNull UUID partnerProofId) {
+    public List<PresentationRequestCredentialsIndy> getMatchingIndyCredentials(@NonNull UUID partnerProofId) {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
-        return getMatchingCredentials(partnerProof.getPresentationExchangeId(), partnerProof.getExchangeVersion())
-                .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
+        return getMatchingIndyCredentials(partnerProof.getPresentationExchangeId(), partnerProof.getExchangeVersion())
+                .map(pres -> pres.stream().map(rec -> PresentationRequestCredentialsIndy
                         .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
                         .collect(Collectors.toList()))
                 .orElse(List.of());
     }
 
-    private Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> getMatchingCredentials(
+    // exchange functionality
+    public List<PresentationRequestCredentialsIndy> getMatchingLDCredentials(@NonNull UUID partnerProofId) {
+        PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
+        try {
+            return ac.presentProofV2RecordsCredentialsDif(partnerProof.getPresentationExchangeId(), null)
+                    .orElseThrow()
+                    .stream()
+                    .map(match -> credentialInfoResolver.populateCredentialInfo(match))
+                    .map(i -> PresentationRequestCredentialsIndy.builder().credentialInfo(i).build())
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
+        }
+    }
+
+    private Optional<List<PresentationRequestCredentials>> getMatchingIndyCredentials(
             @NonNull String presentationExchangeId, @NonNull ExchangeVersion version) {
         try {
-            Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> matches;
+            Optional<List<PresentationRequestCredentials>> matches;
+            // TODO this allows for paging, but there is no easy way to expose this in the
+            // UI
+            PresentationRequestCredentialsFilter filter = PresentationRequestCredentialsFilter.builder()
+                    .count("100")
+                    .build();
             if (version.isV1()) {
-                matches = ac.presentProofRecordsCredentials(presentationExchangeId);
+                matches = ac.presentProofRecordsCredentials(presentationExchangeId, filter);
             } else {
-                matches = ac.presentProofV2RecordsCredentials(presentationExchangeId, null);
+                matches = ac.presentProofV2RecordsCredentials(presentationExchangeId, filter);
             }
             return matches;
         } catch (IOException e) {
@@ -265,14 +343,19 @@ public class ProofManager {
                 List<String> referents = (req == null) ? null : req.getReferents();
                 // find all the matching credentials using the (optionally) provided referent
                 // data
-                Optional<PresentationExchangeRecord> record;
+                BasePresExRecord record;
                 if (proofEx.getExchangeVersion().isV1()) {
-                    record = ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId());
+                    record = ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId()).orElseThrow();
                 } else {
-                    record = ac.presentProofV2RecordsGetById(proofEx.getPresentationExchangeId())
-                            .map(V20PresExRecordToV1Converter::toV1);
+                    V20PresExRecord v2 = ac.presentProofV2RecordsGetById(proofEx.getPresentationExchangeId())
+                            .orElseThrow();
+                    if (v2.isDif()) {
+                        record = v2;
+                    } else {
+                        record = V20PresExRecordToV1Converter.toV1(v2);
+                    }
                 }
-                record.ifPresent(per -> this.presentProofAcceptSelected(per, referents, proofEx.getExchangeVersion()));
+                this.presentProofAcceptSelected(record, referents, proofEx.getExchangeVersion());
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
             }
@@ -281,48 +364,67 @@ public class ProofManager {
         }
     }
 
-    void presentProofAcceptSelected(@NonNull PresentationExchangeRecord presentationExchangeRecord,
+    private void presentProofAcceptSelected(@NonNull BasePresExRecord presExRecord,
             @Nullable List<String> referents, @NonNull ExchangeVersion version) {
-        if (presentationExchangeRecord.stateIsRequestReceived()) {
-            getMatchingCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
-                    .ifPresentOrElse(creds -> {
-                        if (CollectionUtils.isNotEmpty(creds)) {
-                            List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
-                                    creds, referents);
-                            PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
-                                    .ifPresent(pr -> {
-                                        try {
-                                            if (version.isV1()) {
-                                                ac.presentProofRecordsSendPresentation(
-                                                        presentationExchangeRecord.getPresentationExchangeId(),
-                                                        pr);
-
-                                            } else {
-                                                ac.presentProofV2RecordsSendPresentation(
-                                                        presentationExchangeRecord.getPresentationExchangeId(),
-                                                        V20PresSpecByFormatRequest.builder()
-                                                                .indy(pr)
-                                                                .build());
-                                            }
-                                        } catch (IOException e) {
-                                            log.error(ms.getMessage("acapy.unavailable"), e);
-                                        }
-                                    });
-                        } else {
-                            String msg = ms.getMessage("api.proof.exchange.no.match",
-                                    Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
-                            log.warn(msg);
-                            pProofRepo.findByPresentationExchangeId(
-                                    presentationExchangeRecord.getPresentationExchangeId())
-                                    .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
-                            throw new PresentationConstructionException(msg);
-                        }
-                    }, () -> log.error("Could not load matching credentials from aca-py"));
+        if (presExRecord.roleIsProverAndRequestReceived()) {
+            if (presExRecord instanceof PresentationExchangeRecord indy) {
+                acceptSelectedIndyCredentials(referents, version, indy);
+            } else if (presExRecord instanceof V20PresExRecord dif) {
+                ldProver.acceptSelectedDifCredentials(dif, referents);
+            }
+        } else {
+            throw new WrongApiUsageException(ms.getMessage("api.present.proof.wrong.state"));
         }
     }
 
-    private List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> getPresentationRequestCredentials(
-            List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> creds,
+    void acceptDifCredentialsFromProposal(@NonNull V20PresExRecord dif, @Nullable PartnerProof partnerProof) {
+        if (partnerProof != null
+                && partnerProof.getCredentialExchange() != null
+                && partnerProof.getCredentialExchange().getReferent() != null) {
+            ldProver.acceptDifCredentialsFromProposal(dif, partnerProof.getCredentialExchange().getReferent());
+        }
+    }
+
+    void acceptSelectedIndyCredentials(@Nullable List<String> referents, @NonNull ExchangeVersion version,
+            @NonNull PresentationExchangeRecord presentationExchangeRecord) {
+        getMatchingIndyCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
+                .ifPresentOrElse(creds -> {
+                    if (CollectionUtils.isNotEmpty(creds)) {
+                        List<PresentationRequestCredentials> selected = getPresentationRequestCredentials(
+                                creds, referents);
+                        PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
+                                .ifPresent(pr -> {
+                                    try {
+                                        if (version.isV1()) {
+                                            ac.presentProofRecordsSendPresentation(
+                                                    presentationExchangeRecord.getPresentationExchangeId(),
+                                                    pr);
+
+                                        } else {
+                                            ac.presentProofV2RecordsSendPresentation(
+                                                    presentationExchangeRecord.getPresentationExchangeId(),
+                                                    V20PresSpecByFormatRequest.builder()
+                                                            .indy(pr)
+                                                            .build());
+                                        }
+                                    } catch (IOException e) {
+                                        log.error(ms.getMessage("acapy.unavailable"), e);
+                                    }
+                                });
+                    } else {
+                        String msg = ms.getMessage("api.proof.exchange.no.match",
+                                Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
+                        log.warn(msg);
+                        pProofRepo.findByPresentationExchangeId(
+                                presentationExchangeRecord.getPresentationExchangeId())
+                                .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                        throw new PresentationConstructionException(msg);
+                    }
+                }, () -> log.error("Could not load matching credentials from aca-py"));
+    }
+
+    private List<PresentationRequestCredentials> getPresentationRequestCredentials(
+            List<PresentationRequestCredentials> creds,
             List<String> referents) {
         if (CollectionUtils.isEmpty(referents)) {
             return creds;
@@ -333,19 +435,45 @@ public class ProofManager {
                 .collect(Collectors.toList());
     }
 
-    PartnerProof handleAckedOrVerifiedProofEvent(@NonNull PresentationExchangeRecord proof, @NonNull PartnerProof pp) {
-        Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttributeGroups = proof
-                .findRevealedAttributeGroups();
+    PartnerProof handleAckedOrVerifiedProofEvent(@NonNull BasePresExRecord proof, @NonNull PartnerProof pp) {
         pp
                 .setValid(proof.isVerified())
-                .pushStates(proof.getState(), proof.getUpdatedAt())
-                .setProofRequest(proof.getPresentationRequest())
-                .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
-                        ? conv.toMap(proof.findRevealedAttributeGroups())
-                        : conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers()));
-        final PartnerProof savedProof = pProofRepo.update(pp);
-        didRes.resolveDid(savedProof, proof.getIdentifiers());
-        return savedProof;
+                .pushStates(proof.getState(), proof.getUpdatedAt());
+        if (proof instanceof PresentationExchangeRecord indy) {
+            Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttributeGroups = indy
+                    .findRevealedAttributeGroups();
+            pp
+                    .setProofRequest(ExchangePayload.indy(indy.getPresentationRequest()))
+                    .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
+                            ? ExchangePayload.indy(indy.findRevealedAttributeGroups())
+                            : ExchangePayload.indy(
+                                    conv.revealedAttrsToGroup(indy.findRevealedAttributedFull(),
+                                            indy.getIdentifiers())));
+            didRes.resolveDid(pp, indy.getIdentifiers());
+        } else if (proof instanceof V20PresExRecord dif) {
+            VerifiablePresentation<VerifiableCredential> ldProof = dif.resolveDifPresentation();
+            if (CollectionUtils.isEmpty(ldProof.getVerifiableCredential())) {
+                // received empty presentation, this happens if there was no match
+                // as aca-py only verifies the signatures the presentation is still marked valid
+                pp.setValid(Boolean.FALSE);
+            }
+            pp
+                    .setProofRequest(ExchangePayload.jsonLD(dif.resolveDifPresentationRequest()))
+                    .setProof(ExchangePayload.jsonLD(ldProof));
+        }
+        return pProofRepo.update(pp);
+    }
+
+    void handleVerifierPresentationReceived(@NonNull ExchangeVersion version, @NonNull String presentationExchangeId) {
+        try {
+            if (version.isV1()) {
+                ac.presentProofRecordsVerifyPresentation(presentationExchangeId);
+            } else {
+                ac.presentProofV2RecordsVerifyPresentation(presentationExchangeId);
+            }
+        } catch (IOException e) {
+            log.error(ms.getMessage("acapy.unavailable"), e);
+        }
     }
 
     private void sendPresentProofProblemReport(@NonNull String presentationExchangeId,
@@ -363,11 +491,11 @@ public class ProofManager {
     }
 
     // CRUD methods
-
-    public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
-        return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
-                .map(conv::toAPIObject)
-                .collect(Collectors.toList());
+    public Page<AriesProofExchange> listPartnerProofs(
+            @NonNull UUID partnerId,
+            @NonNull Pageable pageable) {
+        Page<PartnerProof> pExchanges = pProofRepo.findByPartnerId(partnerId, pageable);
+        return pExchanges.map(conv::toAPIObject);
     }
 
     public AriesProofExchange getPartnerProofById(@NonNull UUID id) {
@@ -393,5 +521,23 @@ public class ProofManager {
             }
             pProofRepo.deleteById(id);
         });
+    }
+
+    @Data
+    private static final class PersistProofCmd {
+        private Partner partner;
+        private BPAProofTemplate proofTemplate;
+        private CredentialType type;
+        private BPACredentialExchange credentialExchange;
+
+        @Builder
+        public PersistProofCmd(
+                @NonNull Partner partner, @Nullable BPAProofTemplate proofTemplate,
+                @NonNull CredentialType type, @Nullable BPACredentialExchange credentialExchange) {
+            this.partner = partner;
+            this.proofTemplate = proofTemplate;
+            this.type = type;
+            this.credentialExchange = credentialExchange;
+        }
     }
 }

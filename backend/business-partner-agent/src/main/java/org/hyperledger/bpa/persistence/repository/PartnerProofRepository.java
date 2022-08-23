@@ -21,19 +21,24 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUID> {
+public interface PartnerProofRepository extends PageableRepository<PartnerProof, UUID> {
 
     @Override
     @NonNull
@@ -47,6 +52,8 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
 
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credentialExchange", type = Join.Type.LEFT_FETCH)
     Optional<PartnerProof> findByPresentationExchangeId(String presentationExchangeId);
 
     @NonNull
@@ -55,18 +62,12 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
 
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
-    List<PartnerProof> findByPartnerId(UUID partnerId);
-
-    @NonNull
-    @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
-    List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
-
-    void updateState(@Id UUID id, PresentationExchangeState state);
+    Page<PartnerProof> findByPartnerId(@NonNull UUID partnerId, @NonNull Pageable pageable);
 
     void updateProblemReport(@Id UUID id, String problemReport);
 
     long updateReceivedProof(@Id UUID id, Boolean valid, PresentationExchangeState state,
-            Map<String, Object> proof);
+            ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> proof);
 
     Long countByStateEquals(PresentationExchangeState state);
 

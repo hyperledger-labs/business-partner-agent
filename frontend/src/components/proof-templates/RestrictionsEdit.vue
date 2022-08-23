@@ -39,7 +39,7 @@
           <td :colspan="headers.length" style="padding: 0">
             <v-simple-table>
               <tbody>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{ $t("view.proofTemplate.restrictions.schemaName") }}
                   </td>
@@ -51,7 +51,7 @@
                     ></v-text-field>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{ $t("view.proofTemplate.restrictions.schemaVersion") }}
                   </td>
@@ -63,7 +63,7 @@
                     ></v-text-field>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{ $t("view.proofTemplate.restrictions.schemaIssuerDid") }}
                   </td>
@@ -88,7 +88,7 @@
                     ></v-text-field>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{
                       $t(
@@ -159,12 +159,20 @@
 </template>
 <script lang="ts">
 import VBpaButton from "@/components/BpaButton";
+import {
+  AttributeGroup,
+  AttributeGroupUi,
+  SchemaAPI,
+  SchemaRestrictions,
+  TrustedIssuer,
+} from "@/services";
 
 export default {
   name: "RestrictionsEdit",
   components: { VBpaButton },
   props: {
     value: {},
+    type: undefined,
   },
   data: () => {
     return {
@@ -175,11 +183,14 @@ export default {
     };
   },
   computed: {
+    typeIsIndy() {
+      return this.type === "INDY";
+    },
     attributeGroup: {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: AttributeGroup & AttributeGroupUi) {
         this.$emit("input", value);
       },
     },
@@ -203,12 +214,12 @@ export default {
         },
       ];
     },
-    schemaTrustedIssuers() {
+    schemaTrustedIssuers(): TrustedIssuer[] {
       const schemas = this.$store.getters.getSchemas.filter(
-        (schema) => schema.type === "INDY"
+        (schema: SchemaAPI) => schema.type === "INDY"
       );
 
-      let trustedIssuerArrays = [];
+      let trustedIssuerArrays = new Array<TrustedIssuer>();
 
       for (const schema of schemas) {
         if (schema.trustedIssuer !== undefined) {
@@ -222,9 +233,9 @@ export default {
     },
   },
   methods: {
-    getIssuerLabel(restriction) {
+    getIssuerLabel(restriction: SchemaRestrictions) {
       const filteredIssuers = this.schemaTrustedIssuers.find(
-        (s) => s.issuerDid === restriction.issuerDid
+        (s: TrustedIssuer) => s.issuerDid === restriction.issuerDid
       );
 
       return filteredIssuers !== undefined &&
@@ -236,7 +247,7 @@ export default {
       this.addTrustedIssuerDialog.visible = false;
       this.addTrustedIssuerDialog.did = "";
     },
-    addTrustedIssuerRestrictionObject(attributeGroup) {
+    addTrustedIssuerRestrictionObject(attributeGroup: AttributeGroup) {
       attributeGroup.schemaLevelRestrictions.push({
         schemaId: "",
         schemaName: "",

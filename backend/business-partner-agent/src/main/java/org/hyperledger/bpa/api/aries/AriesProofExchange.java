@@ -23,6 +23,7 @@ import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import java.util.Map;
@@ -43,6 +44,7 @@ public class AriesProofExchange {
     private ExchangeVersion exchangeVersion;
     private PresentationExchangeState state;
     private PresentationExchangeRole role;
+    private CredentialType type;
 
     private Long updatedAt;
     public Map<PresentationExchangeState, Long> stateToTimestamp;
@@ -59,10 +61,11 @@ public class AriesProofExchange {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
         return b
                 .id(p.getId())
-                .partnerId(p.getPartnerId())
+                .partnerId(p.getPartner().getId())
                 .state(p.getState())
-                .proofRequest(p.getProofRequest())
+                .proofRequest(p.getProofRequest() != null ? p.getProofRequest().getIndy() : null)
                 .role(p.getRole())
+                .type(p.getType())
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())
                 .stateToTimestamp(p.getStateToTimestamp() != null ? p.getStateToTimestamp().toApi() : null)

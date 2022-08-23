@@ -8,22 +8,42 @@
 <template>
   <v-container>
     <v-card class="my-10">
-      <v-card-title class="bg-light">{{
-        $t("view.wallet.credentials.title")
-      }}</v-card-title>
+      <v-card-title class="bg-light"
+        >{{ $t("view.wallet.credentials.title")
+        }}<v-layout justify-end>
+          <v-bpa-button
+            color="primary"
+            icon
+            @click="$refs.myCredentialList.fetch()"
+          >
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout></v-card-title
+      >
       <MyCredentialList
         v-bind:headers="credHeaders"
         type="credential"
         :indicateNew="true"
+        ref="myCredentialList"
       ></MyCredentialList>
     </v-card>
     <v-card class="my-4">
-      <v-card-title class="bg-light">{{
-        $t("view.wallet.documents.title")
-      }}</v-card-title>
+      <v-card-title class="bg-light"
+        >{{ $t("view.wallet.documents.title") }}
+        <v-layout justify-end>
+          <v-bpa-button
+            color="primary"
+            icon
+            @click="$refs.myDocumentList.fetch()"
+          >
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout></v-card-title
+      >
       <MyCredentialList
         v-bind:headers="docHeaders"
         type="document"
+        ref="myDocumentList"
       ></MyCredentialList>
       <v-card-actions>
         <v-menu>
@@ -68,11 +88,14 @@
 import { CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import { EventBus } from "@/main";
+import VBpaButton from "@/components/BpaButton";
+import { SchemaAPI } from "@/services";
 
 export default {
   name: "Wallet",
   components: {
     MyCredentialList,
+    VBpaButton,
   },
   created() {
     EventBus.$emit("title", this.$t("view.wallet.title"));
@@ -85,16 +108,12 @@ export default {
     };
   },
   methods: {
-    createDocument: function (documentType) {
-      documentType =
-        documentType && documentType.type
-          ? documentType
-          : CredentialTypes.UNKNOWN;
+    createDocument: function (document: SchemaAPI) {
       this.$router.push({
         name: "DocumentAdd",
         params: {
-          type: documentType.type,
-          schemaId: documentType.schemaId,
+          type: document.type,
+          schemaId: document.schemaId,
         },
       });
     },
@@ -117,6 +136,7 @@ export default {
         {
           text: this.$t("view.wallet.credentials.headers.issuedAt"),
           value: "issuedAt",
+          sortable: false,
         },
         {
           text: this.$t("view.wallet.credentials.headers.revoked"),
@@ -140,11 +160,11 @@ export default {
         },
         {
           text: this.$t("view.wallet.documents.headers.createdDate"),
-          value: "createdDate",
+          value: "createdAt",
         },
         {
           text: this.$t("view.wallet.documents.headers.updatedDate"),
-          value: "updatedDate",
+          value: "updatedAt",
         },
         {
           text: this.$t("view.wallet.documents.headers.isPublic"),
@@ -156,7 +176,7 @@ export default {
       let documentTypes = this.$store.getters.getSchemas;
       if (this.$store.getters.getOrganizationalProfile) {
         documentTypes = documentTypes.filter(
-          (schema) => schema.type !== CredentialTypes.PROFILE.type
+          (schema: SchemaAPI) => schema.type !== CredentialTypes.PROFILE.type
         );
       }
       return documentTypes;
@@ -164,12 +184,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.truncate {
-  max-width: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>

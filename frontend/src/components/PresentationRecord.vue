@@ -8,11 +8,12 @@
 
 <template>
   <v-container>
+    <!-- Exchange States -->
     <v-list-item>
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.role") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ record.role | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
@@ -21,8 +22,17 @@
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.state") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ (record.state ? record.state.replace("_", " ") : "") | capitalize }}
+      </v-list-item-subtitle>
+    </v-list-item>
+
+    <v-list-item v-if="expertMode">
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        {{ $t("view.presentationRecord.type") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ (record.type ? record.type.replace("_", " ") : "") | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -30,19 +40,19 @@
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.requestName") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ record.proofRequest ? record.proofRequest.name : "" }}
       </v-list-item-subtitle>
     </v-list-item>
+
     <!-- Timeline  -->
-    <Timeline :time-entries="record.stateToTimestamp"></Timeline>
+    <Timeline :time-entries="record.stateToTimestampUiTimeline"></Timeline>
 
     <!-- Request Content -->
     <template v-if="!isStateProposalSent">
       <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}:</h4>
 
       <!-- Requested Attributes -->
-
       <v-expansion-panels v-model="contentPanels" multiple accordion flat>
         <template v-for="type in RequestTypes">
           <v-expansion-panel
@@ -128,6 +138,7 @@
                           restrValue
                         }}</v-list-item-subtitle>
                       </v-list-item>
+                      <v-divider v-if="group.restrictions.length > 1" />
                     </v-list-item-group>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -198,14 +209,22 @@ import {
   Restrictions,
 } from "@/constants";
 import Timeline from "@/components/Timeline.vue";
+import {
+  AriesProofExchange,
+  PresentationRequestCredentials,
+  ProofRequestedAttributes,
+  SchemaAPI,
+} from "@/services";
 export default {
   name: "PresentationRecord",
   props: {
-    record: Object,
+    record: {} as AriesProofExchange & {
+      stateToTimestampUiTimeline: [string, number][];
+    },
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     isStateVerified() {
       return this.record.state === PresentationExchangeStates.VERIFIED;
@@ -230,19 +249,22 @@ export default {
           return [];
         }
       },
+      set: function () {
+        return;
+      },
     },
   },
   methods: {
-    selectCredential(group, credential) {
+    selectCredential(group: any, credential: PresentationRequestCredentials) {
       group.cvalues = {};
-      this.names(group).map((name) => {
+      this.names(group).map((name: string) => {
         group.cvalues[name] = credential.credentialInfo.attrs[name];
       });
     },
-    names(item) {
+    names(item: ProofRequestedAttributes): string[] {
       return item.names ? item.names : [item.name];
     },
-    toRestrictionLabel(restrType) {
+    toRestrictionLabel(restrType: string) {
       const index = Object.values(Restrictions).findIndex((restriction) => {
         return restriction.value === restrType;
       });
@@ -250,7 +272,7 @@ export default {
         ? Object.values(Restrictions)[index].label
         : restrType;
     },
-    toCredentialLabel(matchedCred) {
+    toCredentialLabel(matchedCred: PresentationRequestCredentials) {
       if (matchedCred.credentialInfo) {
         const credInfo = matchedCred.credentialInfo;
         let revokedLabel = "";
@@ -265,7 +287,7 @@ export default {
         } else if (credInfo.schemaLabel) {
           return credInfo.issuerLabel
             ? `${credInfo.schemaLabel} (${credInfo.credentialId}) - ${credInfo.issuerLabel} ${revokedLabel}`
-            : `${credInfo.schemaLabel} ${revokedLabel}`;
+            : `${credInfo.schemaLabel} (${credInfo.credentialId}) ${revokedLabel}`;
         } else {
           return `${credInfo.credentialId} ${revokedLabel}`;
         }
@@ -275,14 +297,14 @@ export default {
         );
       }
     },
-    renderSchemaLabel(attributeGroupName) {
+    renderSchemaLabel(attributeGroupName: string) {
       // If groupName contains schema id, try to render label else show group name
       const end = attributeGroupName.lastIndexOf(".");
 
       if (end !== -1) {
         const schemaId = attributeGroupName.slice(0, Math.max(0, end + 2));
         const schema = this.$store.getters.getSchemas.find(
-          (s) => s.schemaId === schemaId
+          (s: SchemaAPI) => s.schemaId === schemaId
         );
 
         return schema && schema.label
@@ -295,7 +317,6 @@ export default {
   },
   data: () => {
     return {
-      matchingCredentials: undefined,
       Predicates,
       Restrictions,
       RequestTypes,
@@ -304,9 +325,3 @@ export default {
   components: { Timeline },
 };
 </script>
-
-<style scoped>
-.v-btn {
-  margin-left: 10px;
-}
-</style>

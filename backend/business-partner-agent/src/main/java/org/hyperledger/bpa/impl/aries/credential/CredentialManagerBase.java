@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.aries.credential;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -34,6 +36,7 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 
 import java.io.IOException;
@@ -41,7 +44,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Wraps all credential exchange logic that is common for indy and json-ld
@@ -92,25 +94,14 @@ public abstract class CredentialManagerBase {
         return credEx;
     }
 
-    public List<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
-        List<BPACredentialExchange> exchanges = issuerCredExRepo.listOrderByUpdatedAtDesc();
-        // now, lets get credentials...
-        return exchanges.stream()
-                .filter(x -> {
-                    if (role != null) {
-                        return role.equals(x.getRole());
-                    }
-                    return true;
-                })
-                .filter(x -> x.getPartner() != null)
-                .filter(x -> {
-                    if (partnerId != null) {
-                        return x.getPartner().getId().equals(partnerId);
-                    }
-                    return true;
-                })
-                .map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())))
-                .collect(Collectors.toList());
+    public Page<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId,
+            @NonNull Pageable pageable) {
+        List<CredentialExchangeRole> roles = role == null ? List.of(CredentialExchangeRole.values()) : List.of(role);
+        Page<BPACredentialExchange> exchanges = partnerId == null
+                ? issuerCredExRepo.findByRoleIn(roles, pageable)
+                : issuerCredExRepo.findByRoleInAndPartnerEquals(roles, Partner.builder().id(partnerId).build(),
+                        pageable);
+        return exchanges.map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())));
     }
 
     public CredEx findCredentialExchangeById(@NonNull UUID id) {

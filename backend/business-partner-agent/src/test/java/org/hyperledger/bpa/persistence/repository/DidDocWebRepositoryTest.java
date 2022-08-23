@@ -19,11 +19,11 @@ package org.hyperledger.bpa.persistence.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.persistence.model.DidDocWeb;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,17 +35,19 @@ class DidDocWebRepositoryTest {
 
     @Test
     void testCreateAndLoad() {
-        String json = "{\"bar\": {}}";
+        DIDDocument didDoc = DIDDocument.builder()
+                .controller("contr")
+                .build();
         repo.save(
                 DidDocWeb.builder()
-                        .didDoc(Map.of("key", json))
+                        .didDoc(didDoc)
                         .build());
 
         final Iterator<DidDocWeb> it = repo.findAll().iterator();
         assertTrue(it.hasNext());
         DidDocWeb found = it.next();
         assertNotNull(found.getDidDoc());
-        assertEquals(json, found.getDidDoc().get("key"));
+        assertEquals("contr", found.getDidDoc().getController());
     }
 
 }

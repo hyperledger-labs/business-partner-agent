@@ -22,6 +22,10 @@
             <v-layout align-center align-end justify-end>
               <v-switch
                 v-if="expertMode"
+                :disabled="
+                  this.selectedProofTemplate.length > 0 &&
+                  'INDY' !== this.selectedProofTemplate[0].type
+                "
                 v-model="useV2Exchange"
                 :label="$t('button.useV2')"
               ></v-switch>
@@ -53,7 +57,7 @@ import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
 import proofTemplateService from "@/services/proof-template-service";
 import { ExchangeVersion } from "@/constants";
-import { PresentationRequestVersion } from "@/services";
+import { PresentationRequestVersion, ProofTemplate } from "@/services";
 
 export default {
   name: "RequestPresentation",
@@ -67,15 +71,13 @@ export default {
   data: () => {
     return {
       isBusy: false,
-      selectedProofTemplate: [],
-      selectedSchema: [],
-      selectedIssuer: [],
+      selectedProofTemplate: [] as ProofTemplate[],
       useV2Exchange: false,
     };
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
   },
   methods: {

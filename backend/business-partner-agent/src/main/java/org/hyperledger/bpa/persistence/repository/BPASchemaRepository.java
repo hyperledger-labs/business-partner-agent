@@ -18,12 +18,13 @@
 package org.hyperledger.bpa.persistence.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 
 import java.util.List;
@@ -41,13 +42,14 @@ public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
     @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Iterable<BPASchema> findAll();
 
-    List<BPASchema> findByType(CredentialType type);
-
     @Override
     @NonNull
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
     @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Optional<BPASchema> findById(@NonNull UUID id);
 
-    void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
+    void updateDefaultAttributeName(@Id UUID id, @Nullable String defaultAttributeName);
+
+    @Query("select count(distinct type) from bpa_schema where id in (:id)")
+    Long countSchemaTypes(List<UUID> id);
 }

@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Update swagger file by building backend
-(cd ../backend/business-partner-agent/ || exit ; mvn install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true)
+(cd ../backend/ || exit ; mvn clean compile)
 
 # Convert swagger file to raw TypeScript typings
 npx openapi-typescript ../backend/business-partner-agent/target/classes/META-INF/swagger/business-partner-agent-0.1.yml --output backend-types.ts

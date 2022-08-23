@@ -30,7 +30,10 @@ export default {
     EventBus.$emit("title", this.$t("view.requestPresentation.title"));
   },
   methods: {
-    async submitRequest(proofTemplateIdAndExchangeVersion) {
+    async submitRequest(proofTemplateIdAndExchangeVersion: {
+      documentId: string;
+      useV2Exchange: boolean;
+    }) {
       const data = {
         exchangeVersion: proofTemplateIdAndExchangeVersion.useV2Exchange
           ? ExchangeVersion.V2

@@ -134,8 +134,8 @@ export default {
       },
     },
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag: Tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag: Tag) => tag.name)
         : [];
     },
   },
@@ -145,7 +145,7 @@ export default {
 
       const data: UpdatePartnerRequest = {
         alias: this.updatedAlias,
-        tag: this.$store.state.tags.filter((tag: Tag) => {
+        tag: this.$store.getters.getTags.filter((tag: Tag) => {
           return this.updatedTags.includes(tag.name);
         }),
         trustPing: this.updatedTrustPing,

@@ -22,8 +22,10 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 
@@ -32,7 +34,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
+public interface MyDocumentRepository extends PageableRepository<MyDocument, UUID> {
 
     @Override
     @NonNull
@@ -47,7 +49,7 @@ public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     List<MyDocument> findByIsPublicTrue();
 
-    List<MyDocument> findByTypeIn(List<CredentialType> type);
+    Page<MyDocument> findByTypeIn(List<CredentialType> type, Pageable pageable);
 
     boolean existsByTypeEqualsAndIsPublicTrue(CredentialType type);
 

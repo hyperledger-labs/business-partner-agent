@@ -18,9 +18,9 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -34,7 +34,6 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.repository.ActivityRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -127,29 +126,29 @@ public class ActivityManager {
     }
 
     public void completeCredentialOfferedTask(@NonNull AriesCredential credential) {
-        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
-            activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
-                    ActivityType.CREDENTIAL_EXCHANGE,
-                    ActivityRole.CREDENTIAL_EXCHANGE_HOLDER).ifPresentOrElse(activity -> {
-                        activity.setState(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED);
-                        activity.setCompleted(true);
-                        activityRepository.update(activity);
-                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-                    },
-                            () -> {
-                                Activity a = Activity.builder()
-                                        .linkId(credential.getId())
-                                        .partner(partner)
-                                        .type(ActivityType.CREDENTIAL_EXCHANGE)
-                                        .role(ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
-                                        .state(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED)
-                                        .completed(true)
-                                        .build();
-                                activityRepository.save(a);
-                                eventPublisher
-                                        .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
-                            });
-        });
+        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> activityRepository
+                .findByLinkIdAndTypeAndRole(credential.getId(),
+                        ActivityType.CREDENTIAL_EXCHANGE,
+                        ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
+                .ifPresentOrElse(activity -> {
+                    activity.setState(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED);
+                    activity.setCompleted(true);
+                    activityRepository.update(activity);
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                },
+                        () -> {
+                            Activity a = Activity.builder()
+                                    .linkId(credential.getId())
+                                    .partner(partner)
+                                    .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                    .role(ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
+                                    .state(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED)
+                                    .completed(true)
+                                    .build();
+                            activityRepository.save(a);
+                            eventPublisher
+                                    .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+                        }));
     }
 
     public void addCredentialOfferedTask(@NonNull AriesCredential credential) {
@@ -173,26 +172,26 @@ public class ActivityManager {
     }
 
     public void addCredentialIssuedActivity(@NonNull AriesCredential credential) {
-        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
-            activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
-                    ActivityType.CREDENTIAL_EXCHANGE,
-                    ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
-                        activity.setState(ActivityState.CREDENTIAL_EXCHANGE_SENT);
-                        activity.setCompleted(true);
-                        activityRepository.update(activity);
-                    },
-                            () -> {
-                                Activity a = Activity.builder()
-                                        .linkId(credential.getId())
-                                        .partner(partner)
-                                        .type(ActivityType.CREDENTIAL_EXCHANGE)
-                                        .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
-                                        .state(ActivityState.CREDENTIAL_EXCHANGE_SENT)
-                                        .completed(true)
-                                        .build();
-                                activityRepository.save(a);
-                            });
-        });
+        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> activityRepository
+                .findByLinkIdAndTypeAndRole(credential.getId(),
+                        ActivityType.CREDENTIAL_EXCHANGE,
+                        ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                .ifPresentOrElse(activity -> {
+                    activity.setState(ActivityState.CREDENTIAL_EXCHANGE_SENT);
+                    activity.setCompleted(true);
+                    activityRepository.update(activity);
+                },
+                        () -> {
+                            Activity a = Activity.builder()
+                                    .linkId(credential.getId())
+                                    .partner(partner)
+                                    .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                    .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                                    .state(ActivityState.CREDENTIAL_EXCHANGE_SENT)
+                                    .completed(true)
+                                    .build();
+                            activityRepository.save(a);
+                        }));
     }
 
     public void addCredentialAcceptedActivity(@NonNull AriesCredential credential) {
@@ -204,30 +203,29 @@ public class ActivityManager {
     }
 
     private void notifyCredentialIssuerActivity(@NonNull AriesCredential credential, ActivityState state) {
-        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
-            activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
-                    ActivityType.CREDENTIAL_EXCHANGE,
-                    ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
-                        activity.setState(state);
-                        activity.setCompleted(true);
-                        activityRepository.update(activity);
-                        eventPublisher
-                                .publishEventAsync(ActivityNotificationEvent.builder().activity(activity).build());
-                    },
-                            () -> {
-                                Activity a = Activity.builder()
-                                        .linkId(credential.getId())
-                                        .partner(partner)
-                                        .type(ActivityType.CREDENTIAL_EXCHANGE)
-                                        .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
-                                        .state(state)
-                                        .completed(true)
-                                        .build();
-                                activityRepository.save(a);
-                                eventPublisher
-                                        .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
-                            });
-        });
+        partnerRepo.findByConnectionId(credential.getConnectionId())
+                .ifPresent(partner -> activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
+                        ActivityType.CREDENTIAL_EXCHANGE,
+                        ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
+                            activity.setState(state);
+                            activity.setCompleted(true);
+                            activityRepository.update(activity);
+                            eventPublisher
+                                    .publishEventAsync(ActivityNotificationEvent.builder().activity(activity).build());
+                        },
+                                () -> {
+                                    Activity a = Activity.builder()
+                                            .linkId(credential.getId())
+                                            .partner(partner)
+                                            .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                            .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                                            .state(state)
+                                            .completed(true)
+                                            .build();
+                                    activityRepository.save(a);
+                                    eventPublisher
+                                            .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+                                }));
     }
 
     public void addPartnerAddedActivity(@NonNull Partner partner) {
@@ -271,80 +269,74 @@ public class ActivityManager {
     }
 
     public void addPresentationExchangeTask(@NonNull PartnerProof partnerProof) {
-        partnerRepo.findById(partnerProof.getPartnerId()).ifPresent(partner -> {
-            // in case event is fired multiple times, see if already exists.
-            ActivityRole role = getPresentationExchangeRole(partnerProof);
-            ActivityState state = getPresentationExchangeState(partnerProof);
+        // in case event is fired multiple times, see if already exists.
+        ActivityRole role = getPresentationExchangeRole(partnerProof);
+        ActivityState state = getPresentationExchangeState(partnerProof);
 
-            Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
-                    ActivityType.PRESENTATION_EXCHANGE,
-                    role);
+        Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
+                ActivityType.PRESENTATION_EXCHANGE,
+                role);
 
-            if (existing.isEmpty()) {
-                Activity a = Activity.builder()
-                        .linkId(partnerProof.getId())
-                        .partner(partner)
-                        .type(ActivityType.PRESENTATION_EXCHANGE)
-                        .role(role)
-                        .state(state)
-                        .completed(ActivityState.PRESENTATION_EXCHANGE_SENT.equals(state))
-                        .build();
-                activityRepository.save(a);
+        if (existing.isEmpty()) {
+            Activity a = Activity.builder()
+                    .linkId(partnerProof.getId())
+                    .partner(partnerProof.getPartner())
+                    .type(ActivityType.PRESENTATION_EXCHANGE)
+                    .role(role)
+                    .state(state)
+                    .completed(ActivityState.PRESENTATION_EXCHANGE_SENT.equals(state))
+                    .build();
+            activityRepository.save(a);
 
-                if (!a.isCompleted()) {
-                    // this looks like we created a task!
-                    eventPublisher.publishEventAsync(TaskAddedEvent.builder().activity(a).build());
-                } else {
-                    eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
-                }
+            if (!a.isCompleted()) {
+                // this looks like we created a task!
+                eventPublisher.publishEventAsync(TaskAddedEvent.builder().activity(a).build());
+            } else {
+                eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
             }
-        });
+        }
     }
 
     public void completePresentationExchangeTask(@NonNull PartnerProof partnerProof) {
-        partnerRepo.findById(partnerProof.getPartnerId()).ifPresent(partner -> {
-            // in case event is fired multiple times, see if already exists.
-            ActivityRole role = getPresentationExchangeRole(partnerProof);
-            ActivityState state = ActivityState.PRESENTATION_EXCHANGE_ACCEPTED;
+        // in case event is fired multiple times, see if already exists.
+        ActivityRole role = getPresentationExchangeRole(partnerProof);
+        ActivityState state = ActivityState.PRESENTATION_EXCHANGE_ACCEPTED;
 
-            activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
-                    ActivityType.PRESENTATION_EXCHANGE,
-                    role).ifPresentOrElse(activity -> {
-                        // set to completed and mark accepted
-                        activity.setState(state);
-                        activity.setCompleted(true);
-                        activityRepository.update(activity);
+        activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
+                ActivityType.PRESENTATION_EXCHANGE,
+                role).ifPresentOrElse(activity -> {
+                    // set to completed and mark accepted
+                    activity.setState(state);
+                    activity.setCompleted(true);
+                    activityRepository.update(activity);
 
-                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-                    }, () -> {
-                        // add in a completed activity
-                        Activity a = Activity.builder()
-                                .linkId(partnerProof.getId())
-                                .partner(partner)
-                                .type(ActivityType.PRESENTATION_EXCHANGE)
-                                .role(role)
-                                .state(state)
-                                .completed(true)
-                                .build();
-                        activityRepository.save(a);
-                    });
-        });
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                }, () -> {
+                    // add in a completed activity
+                    Activity a = Activity.builder()
+                            .linkId(partnerProof.getId())
+                            .partner(partnerProof.getPartner())
+                            .type(ActivityType.PRESENTATION_EXCHANGE)
+                            .role(role)
+                            .state(state)
+                            .completed(true)
+                            .build();
+                    activityRepository.save(a);
+                });
     }
 
     public void declinePresentationExchangeTask(@NonNull PartnerProof partnerProof) {
-        partnerRepo.findById(partnerProof.getPartnerId()).ifPresent(partner -> {
-            // in case event is fired multiple times, see if already exists.
-            ActivityRole role = getPresentationExchangeRole(partnerProof);
+        // in case event is fired multiple times, see if already exists.
+        ActivityRole role = getPresentationExchangeRole(partnerProof);
 
-            activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
-                    ActivityType.PRESENTATION_EXCHANGE,
-                    role).ifPresent(activity -> {
-                        activity.setState(ActivityState.PRESENTATION_EXCHANGE_DECLINED);
-                        activity.setCompleted(true);
-                        activityRepository.update(activity);
-                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-                    });
-        });
+        activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
+                ActivityType.PRESENTATION_EXCHANGE,
+                role).ifPresent(activity -> {
+                    activity.setState(ActivityState.PRESENTATION_EXCHANGE_DECLINED);
+                    activity.setCompleted(true);
+                    activityRepository.update(activity);
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                });
     }
 
     public void deletePresentationExchangeTask(@NonNull PartnerProof partnerProof) {
@@ -394,8 +386,11 @@ public class ActivityManager {
         }
     }
 
-    @NotNull
+    @io.micronaut.core.annotation.NonNull
     private ActivityRole getPresentationExchangeRole(@NonNull PartnerProof partnerProof) {
+        if (partnerProof.getRole() == null) {
+            throw new IllegalStateException("Partner proof always needs a role set");
+        }
         return PresentationExchangeRole.PROVER.equals(partnerProof.getRole())
                 ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
                 : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;

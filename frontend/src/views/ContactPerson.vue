@@ -117,11 +117,21 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: {
+        type: string;
+        salutation: string;
+        academicTitle: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+        mobilePhone: string;
+        country: string;
+      }) {
         this.$emit("input", value);
       },
     },
-    contactPersonTypes() {
+    contactPersonTypes(): string[] {
       return [
         this.$t("view.contactPerson.contactPersonTypes.ceo"),
         this.$t("view.contactPerson.contactPersonTypes.directorLogistics"),
@@ -132,7 +142,7 @@ export default {
         this.$t("view.contactPerson.contactPersonTypes.hseResponsible"),
       ];
     },
-    salutationTypes() {
+    salutationTypes(): string[] {
       return [
         this.$t("view.contactPerson.salutationTypes.mr"),
         this.$t("view.contactPerson.salutationTypes.mrs"),

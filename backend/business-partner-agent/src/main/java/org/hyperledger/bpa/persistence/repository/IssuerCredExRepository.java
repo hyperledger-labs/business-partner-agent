@@ -22,26 +22,35 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface IssuerCredExRepository extends CrudRepository<BPACredentialExchange, UUID> {
+public interface IssuerCredExRepository extends PageableRepository<BPACredentialExchange, UUID> {
 
+    @Override
     @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    Iterable<BPACredentialExchange> findAll();
+    List<BPACredentialExchange> findAll();
 
+    @Override
     @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
@@ -58,11 +67,18 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<BPACredentialExchange> listOrderByUpdatedAtDesc();
+    Page<BPACredentialExchange> findByRoleIn(@NonNull List<CredentialExchangeRole> role, @NonNull Pageable pageable);
+
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    Page<BPACredentialExchange> findByRoleInAndPartnerEquals(@NonNull List<CredentialExchangeRole> role,
+            @NonNull Partner partner, @NonNull Pageable pageable);
 
     Number updateCredential(@Id UUID id, Credential indyCredential);
 
-    Number updateCredential(@Id UUID id, BPACredentialExchange.ExchangePayload ldCredential);
+    Number updateCredential(@Id UUID id,
+            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> ldCredential);
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,

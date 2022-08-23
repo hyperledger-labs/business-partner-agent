@@ -18,11 +18,13 @@
 package org.hyperledger.bpa.controller.api.partner;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.persistence.model.Tag;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class AddPartnerRequest {
     private String did;
     private String alias;

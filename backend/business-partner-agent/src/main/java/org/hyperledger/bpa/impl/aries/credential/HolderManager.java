@@ -20,6 +20,8 @@ package org.hyperledger.bpa.impl.aries.credential;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -27,16 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
+import org.hyperledger.aries.api.revocation.RevocationNotificationBase;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -46,18 +48,17 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
-import org.hyperledger.bpa.impl.aries.jsonld.HolderLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.CryptoUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -65,7 +66,6 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Wraps all credential holder specific logic that is common for both indy and
@@ -91,9 +91,6 @@ public class HolderManager extends CredentialManagerBase {
     ApplicationEventPublisher eventPublisher;
 
     @Inject
-    Converter conv;
-
-    @Inject
     MyDocumentRepository docRepo;
 
     @Inject
@@ -104,6 +101,9 @@ public class HolderManager extends CredentialManagerBase {
 
     @Inject
     Identity identity;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     // Credential Management - Called By User
 
@@ -202,21 +202,20 @@ public class HolderManager extends CredentialManagerBase {
      * List credential that the user holds in the wallet
      *
      * @param typesToFilter filter by provided credential types
+     * @param pageable      {@link Pageable}
      * @return list of {@link AriesCredential}
      */
-    public List<AriesCredential> listHeldCredentials(@Nullable List<CredentialType> typesToFilter) {
-        return holderCredExRepo.findByRoleEqualsAndStateIn(
+    public Page<AriesCredential> listHeldCredentials(
+            @Nullable List<CredentialType> typesToFilter,
+            @NonNull Pageable pageable) {
+        List<CredentialType> types = CollectionUtils.isNotEmpty(typesToFilter)
+                ? typesToFilter
+                : List.of(CredentialType.values());
+        return holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
                 CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
-                .stream()
-                .filter(c -> {
-                    if (CollectionUtils.isEmpty(typesToFilter) || typesToFilter.contains(c.getType())) {
-                        return true;
-                    }
-                    return false;
-                })
-                .map(this::buildCredential)
-                .collect(Collectors.toList());
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
+                types, pageable)
+                .map(this::buildCredential);
     }
 
     /**
@@ -255,9 +254,9 @@ public class HolderManager extends CredentialManagerBase {
                         ac.credentialW3CRemove(c.getReferent());
                     }
                 }
-            } catch (AriesException | IOException e) {
-                // if we fail here it's not good, but also no deal-breaker, so log and continue
+            } catch (IOException e) {
                 log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
+                throw new NetworkException("acapy.unavailable");
             }
             holderCredExRepo.deleteById(id);
             if (isPublic) {
@@ -278,7 +277,6 @@ public class HolderManager extends CredentialManagerBase {
                     .setCredRevId(credEx.getCredential() != null ? credEx.getCredential().getCredRevId() : null)
                     .setRevRegId(credEx.getCredential() != null ? credEx.getCredential().getRevRegId() : null)
                     .setLabel(label)
-                    .setIssuer(resolveIssuer(db.getPartner()))
                     .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
             holderCredExRepo.update(db);
             fireCredentialAddedEvent(db);
@@ -288,11 +286,11 @@ public class HolderManager extends CredentialManagerBase {
     public void handleV2OfferReceived(@NonNull V20CredExRecord v2CredEx) {
         if (v2CredEx.payloadIsLdProof()) {
             handleOfferReceived(v2CredEx,
-                    BPACredentialExchange.ExchangePayload.jsonLD(v2CredEx.resolveLDCredOffer()),
+                    ExchangePayload.jsonLD(v2CredEx.resolveLDCredOffer()),
                     ExchangeVersion.V2);
         } else {
             handleOfferReceived(v2CredEx,
-                    BPACredentialExchange.ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
+                    ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
                             .toV1Offer(v2CredEx).getCredentialProposalDict().getCredentialProposal()),
                     ExchangeVersion.V2);
         }
@@ -300,7 +298,8 @@ public class HolderManager extends CredentialManagerBase {
 
     // credential offer event
     public void handleOfferReceived(@NonNull BaseCredExRecord credExBase,
-            @NonNull BPACredentialExchange.ExchangePayload payload, @NonNull ExchangeVersion version) {
+            @NonNull ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> payload,
+            @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credExBase.getCredentialExchangeId()).ifPresentOrElse(db -> {
             db.pushStates(credExBase.getState());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(), payload);
@@ -335,11 +334,10 @@ public class HolderManager extends CredentialManagerBase {
 
     public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(dbCred -> {
-            String issuer = resolveIssuer(dbCred.getPartner());
             if (dbCred.typeIsIndy()) {
-                indy.handleV2CredentialReceived(credEx, dbCred, issuer);
+                indy.handleV2CredentialReceived(credEx, dbCred);
             } else {
-                ld.handleV2CredentialReceived(credEx, dbCred, issuer);
+                ld.handleV2CredentialReceived(credEx, dbCred);
             }
             fireCredentialAddedEvent(dbCred);
         });
@@ -360,10 +358,10 @@ public class HolderManager extends CredentialManagerBase {
         });
     }
 
-    public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
-        AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil
-                .revocationEventToRevocationInfo(revocationNotification.getThreadId());
-        holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId())
+    // v1 and v2 revocation notifications
+    public void handleRevocationNotification(RevocationNotificationBase.RevocationInfo revocationNotification) {
+        holderCredExRepo
+                .findByRevRegIdAndCredRevId(revocationNotification.getRevRegId(), revocationNotification.getCredRevId())
                 .ifPresent(credEx -> {
                     credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
                     holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getState(),
@@ -399,14 +397,14 @@ public class HolderManager extends CredentialManagerBase {
      *         id is null
      */
     @Nullable
-    public String resolveIssuer(@Nullable Partner p) {
+    public static String resolveIssuer(@Nullable Partner p) {
         String issuer = null;
         if (p != null) {
             if (StringUtils.isNotEmpty(p.getAlias())) {
                 issuer = p.getAlias();
             } else if (p.getVerifiablePresentation() != null) {
-                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = conv
-                        .fromMap(Objects.requireNonNull(p.getVerifiablePresentation()), Converter.VP_TYPEREF);
+                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = Objects
+                        .requireNonNull(p.getVerifiablePresentation());
                 Optional<VerifiableCredential.VerifiableIndyCredential> profile = vp.getVerifiableCredential()
                         .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
                 if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
@@ -427,6 +425,7 @@ public class HolderManager extends CredentialManagerBase {
 
     private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         return AriesCredential.fromBPACredentialExchange(dbCred,
-                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null);
+                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null,
+                resolveIssuer(dbCred.getPartner()));
     }
 }

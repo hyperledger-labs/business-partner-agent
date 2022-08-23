@@ -18,12 +18,15 @@
 package org.hyperledger.bpa.impl.aries.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
+import org.hyperledger.aries.api.jsonld.ProofType;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
@@ -61,11 +64,15 @@ public class LDContextHelper {
     BPAMessageSource.DefaultMessageSource ms;
 
     public static String findSchemaId(@Nullable V20CredExRecordByFormat.LdProof ldProof) {
-        if (ldProof == null) {
-            return null;
-        }
+        return ldProof == null ? null : findSchemaId(ldProof.getCredential());
+    }
+
+    public static String findSchemaId(@Nullable VerifiableCredential vc) {
+        return vc == null ? null : findSchemaId(vc.getContext());
+    }
+
+    public static String findSchemaId(@NonNull List<Object> context) {
         // TODO this does not consider all use cases like complex schemas
-        List<Object> context = ldProof.getCredential().getContext();
         List<Object> contextCopy = new ArrayList<>(context);
         contextCopy.removeAll(CredentialType.JSON_LD.getContext());
         return (String) contextCopy.get(0);
@@ -82,19 +89,23 @@ public class LDContextHelper {
         if (!issuer) {
             document.put("id", identity.getMyDid());
         }
+        String ldType = Objects.requireNonNull(bpaSchema.getLdType());
+        JsonObject subject = GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject();
+        JsonArray subjectType = new JsonArray();
+        subjectType.add(ldType);
+        subject.add("type", subjectType);
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
                         .credential(VerifiableCredential.builder()
                                 .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
-                                .credentialSubject(GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject())
+                                .credentialSubject(subject)
                                 .issuanceDate(TimeUtil.toISOInstantTruncated(Instant.now()))
                                 .issuer(issuer ? identity.getMyDid() : findIssuerDidOrFallback(bpaSchema))
-                                .type(List.of(CredentialType.JSON_LD.getType().get(0),
-                                        Objects.requireNonNull(bpaSchema.getLdType())))
+                                .type(List.of(CredentialType.JSON_LD.getType().get(0), ldType))
                                 .build())
                         .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
                                 // TODO expose key type to user
-                                .proofType(V2CredentialExchangeFree.ProofType.Ed25519Signature2018)
+                                .proofType(ProofType.Ed25519Signature2018)
                                 .build())
                         .build())
                 .build();

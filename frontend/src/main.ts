@@ -9,27 +9,27 @@
 import "@/assets/scss/style.scss";
 
 import Vue from "vue";
-import axios from "axios";
+import { AxiosResponse } from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
 import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
 import router from "./router";
 import store from "./store";
-import SortUtil from "./utils/sortUtils";
 import "@/filters";
 
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 import vue_moment from "vue-moment";
+import { RuntimeConfig, settingsService } from "@/services";
 
 Vue.component("vue-json-pretty", VueJsonPretty);
 
 Vue.use(vue_moment);
-// @ts-ignore
-Vue.use(SortUtil);
 
-const apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
+const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
+  ? process.env.VUE_APP_API_BASE_URL
+  : "/api";
 const eventsHost = process.env.VUE_APP_EVENTS_HOST
   ? process.env.VUE_APP_EVENTS_HOST
   : window.location.host;
@@ -48,7 +48,7 @@ Vue.use(VueNativeSock, socketApi, {
   store: store,
   format: "json",
   reconnection: true,
-  passToStoreHandler: function (eventName, event) {
+  passToStoreHandler: function (eventName: string, event: any) {
     if (!eventName.startsWith("SOCKET_")) {
       return;
     }
@@ -71,7 +71,6 @@ Vue.use(VueNativeSock, socketApi, {
   },
 });
 
-Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 Vue.prototype.$config = {
@@ -84,19 +83,20 @@ Vue.prototype.$config = {
 // We need to load the configuration before the Vue application, so we can use the UX configuration
 (async () => {
   console.log("Loading configuration...");
-  const result = await axios
-    .get(`${apiBaseUrl}/admin/config`)
-    .catch((error) => {
-      console.error(error);
-    });
+
+  let result: AxiosResponse<RuntimeConfig>;
+
+  try {
+    result = await settingsService.getSettingsRuntimeConfig();
+  } catch (error) {
+    console.error(error);
+  }
 
   if (Object.prototype.hasOwnProperty.call(result, "data")) {
-    // @ts-ignore
     Vue.prototype.$config = result?.data;
     const ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
     const splitted = ledgerPrefix.split(":");
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
-    // @ts-ignore
     if (result?.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
       console.log("...Configuration loaded");
@@ -134,16 +134,17 @@ Vue.prototype.$config = {
     return error.toString();
   };
 
-  store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
   store.dispatch("loadPartners");
   store.dispatch("loadTags");
   store.dispatch("loadProofTemplates");
-  // lists for Dropdowns/Selects...
   store.dispatch("loadPartnerSelectList");
   store.dispatch("loadCredDefSelectList");
+  await store.dispatch("loadSettings");
+  await store.dispatch("loadStatus");
 
   console.log("Create the Vue application");
+
   new Vue({
     vuetify,
     router,

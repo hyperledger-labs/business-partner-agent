@@ -37,8 +37,10 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.persistence.model.BPASchema;
@@ -59,6 +61,9 @@ public class SchemaService {
     BPASchemaRepository schemaRepo;
 
     @Inject
+    LDContextResolver schemaContextResolver;
+
+    @Inject
     AriesClient ac;
 
     @Inject
@@ -69,6 +74,9 @@ public class SchemaService {
 
     @Inject
     Identity id;
+
+    @Inject
+    RuntimeConfig runtimeConfig;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -167,6 +175,9 @@ public class SchemaService {
         } catch (URISyntaxException e) {
             throw new WrongApiUsageException(ms.getMessage("api.schema.ld.id.parse.error"));
         }
+        if (schemaRepo.findBySchemaId(schemaId).isPresent()) {
+            throw new WrongApiUsageException(ms.getMessage("api.schema.already.exists", Map.of("id", schemaId)));
+        }
         validateDefaultAttribute(defaultAttributeName, attributes);
 
         BPASchema dbS = BPASchema.builder()
@@ -176,6 +187,7 @@ public class SchemaService {
                 .defaultAttributeName(defaultAttributeName)
                 .type(CredentialType.JSON_LD)
                 .ldType(ldType)
+                .expandedType(schemaContextResolver.resolve(schemaId, ldType))
                 .build();
         BPASchema saved = schemaRepo.save(dbS);
         return SchemaAPI.from(saved);
@@ -192,14 +204,7 @@ public class SchemaService {
     public List<SchemaAPI> listSchemas() {
         return StreamSupport.stream(schemaRepo.findAll().spliterator(), false)
                 .map(dbS -> SchemaAPI.from(dbS, id))
-                .collect(Collectors.toList());
-    }
-
-    public List<SchemaAPI> listLdSchemas() {
-        return schemaRepo
-                .findByType(CredentialType.JSON_LD)
-                .stream()
-                .map(s -> SchemaAPI.from(s, false, false))
+                .sorted(Comparator.comparing(SchemaAPI::getType))
                 .collect(Collectors.toList());
     }
 
@@ -228,14 +233,17 @@ public class SchemaService {
     @Cacheable("schema-attr-cache")
     public Set<String> getSchemaAttributeNames(@NonNull String schemaId) {
         Set<String> result = new LinkedHashSet<>();
-        try {
-            final Optional<SchemaSendResponse.Schema> schema = ac
-                    .schemasGetById(schemaId);
-            if (schema.isPresent()) {
-                result = new LinkedHashSet<>(schema.get().getAttrNames());
+        if (AriesStringUtil.isIndySchemaId(schemaId)) {
+            try {
+                List<String> attrs = ac.schemasGetById(schemaId)
+                        .map(SchemaSendResponse.Schema::getAttrNames)
+                        .orElse(List.of());
+                result = new LinkedHashSet<>(attrs);
+            } catch (IOException e) {
+                log.error("aca-py not reachable", e);
             }
-        } catch (IOException e) {
-            log.error("aca-py not reachable", e);
+        } else {
+            result = getSchemaFor(schemaId).map(BPASchema::getSchemaAttributeNames).orElseThrow();
         }
         return result;
     }
@@ -259,8 +267,14 @@ public class SchemaService {
                     dbSchema -> log.debug("Schema with id {} already exists", schema.getId()),
                     () -> {
                         try {
-                            SchemaAPI schemaAPI = addIndySchema(schema.getId(), schema.getLabel(),
-                                    schema.getDefaultAttributeName());
+                            SchemaAPI schemaAPI = null;
+                            if (CredentialType.JSON_LD.equals(schema.getType())) {
+                                schemaAPI = addJsonLDSchema(schema.getId(), schema.getLabel(),
+                                        schema.getDefaultAttributeName(), schema.getLdType(), schema.getAttributes());
+                            } else if (StringUtils.equals(runtimeConfig.getWriteLedgerId(), schema.getLedgerId())) {
+                                schemaAPI = addIndySchema(schema.getId(), schema.getLabel(),
+                                        schema.getDefaultAttributeName());
+                            }
                             if (schemaAPI != null) {
                                 restrictionsManager.addRestriction(
                                         schemaAPI.getId(), schema.getRestrictions());
@@ -277,5 +291,9 @@ public class SchemaService {
                 && !StringUtils.containsAnyIgnoreCase(defaultAttributeName, attributes.toArray(String[]::new))) {
             throw new WrongApiUsageException(ms.getMessage("api.schema.default.attribute.mismatch"));
         }
+    }
+
+    public boolean distinctSchemaType(@NonNull List<UUID> ids) {
+        return schemaRepo.countSchemaTypes(ids) == 1;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -20,12 +20,15 @@ package org.hyperledger.bpa.config;
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 import lombok.Data;
+import org.hyperledger.bpa.api.CredentialType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Schema configuration bean that maps the default schema configuration.
+ * Schema configuration bean that maps the default schema configuration. see:
+ * schemas.yml
  */
 @EachProperty("bpa.schemas")
 @Data
@@ -36,11 +39,18 @@ public class SchemaConfig {
      */
     private String name;
 
+    private CredentialType type;
+
     private String label;
     private String id;
+    private String ledgerId;
     private String defaultAttributeName;
     // Generic structure - [{key: value, key: value}, {key: value}]
     private List<Map<String, String>> restrictions;
+
+    // json-ld based schemas only
+    private String ldType;
+    private Set<String> attributes;
 
     public SchemaConfig(@Parameter String name) {
         this.name = name;

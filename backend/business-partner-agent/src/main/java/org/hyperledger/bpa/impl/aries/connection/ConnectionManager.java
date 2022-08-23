@@ -22,6 +22,8 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -39,6 +41,7 @@ import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
+import org.hyperledger.aries.api.present_proof_v2.V2PresentProofRecordsFilter;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -130,7 +133,9 @@ public class ConnectionManager {
                         .invitationUrl(invitationRecord.getInvitationUrl())
                         .invitationId(connId);
             }
-            createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing(), invitationRecord);
+            Partner partner = createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing(),
+                    invitationRecord);
+            invitation.partnerId(partner.getId().toString());
         } catch (IOException e) {
             throw new NetworkException("acapy.unavailable");
         }
@@ -341,62 +346,72 @@ public class ConnectionManager {
         }
     }
 
-    public void removeConnection(String connectionId) {
-        log.debug("Removing connection: {}", connectionId);
-        try {
+    public void removeConnection(@NonNull Partner partner) {
+        if (StringUtils.isNotEmpty(partner.getConnectionId())) {
+            String connectionId = partner.getConnectionId();
+            log.debug("Removing aca-py connection: {}", connectionId);
             try {
-                ac.connectionsRemove(connectionId);
-            } catch (IOException | AriesException e) {
-                log.warn("Could not delete aries connection.", e);
-            }
-
-            Optional<Partner> partner = partnerRepo.findByConnectionId(connectionId);
-            partner.ifPresent(p -> {
-                holderCredExRepo.setPartnerIdToNull(p.getId());
-                final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
-                if (CollectionUtils.isNotEmpty(proofs)) {
-                    partnerProofRepo.deleteAll(proofs);
+                try {
+                    ac.connectionsRemove(connectionId);
+                } catch (AriesException e) {
+                    log.warn("Could not delete aca-py connection.", e);
                 }
-            });
 
-            ac.presentProofRecords(PresentProofRecordsFilter
-                    .builder()
-                    .connectionId(connectionId)
-                    .build()).ifPresent(records -> records.forEach(record -> {
-                        try {
-                            ac.presentProofRecordsRemove(record.getPresentationExchangeId());
-                        } catch (IOException | AriesException e) {
-                            log.error("Could not delete presentation exchange record: {}",
-                                    record.getPresentationExchangeId(), e);
-                        }
-                    }));
-            ac.issueCredentialRecords(IssueCredentialRecordsFilter
-                    .builder()
-                    .connectionId(connectionId)
-                    .build()).ifPresent(records -> records.forEach(record -> {
-                        try {
-                            ac.issueCredentialRecordsRemove(record.getCredentialExchangeId());
-                        } catch (IOException | AriesException e) {
-                            log.error("Could not delete credential exchange record: {}",
-                                    record.getCredentialExchangeId(), e);
-                        }
-                    }));
-            ac.issueCredentialV2Records(V2IssueCredentialRecordsFilter
-                    .builder()
-                    .connectionId(connectionId)
-                    .build()).ifPresent(records -> records.forEach(record -> {
-                        try {
-                            ac.issueCredentialV2RecordsRemove(record.getCredExRecord().getCredExId());
-                        } catch (IOException | AriesException e) {
-                            log.error("Could not delete credential exchange record: {}",
-                                    record.getCredExRecord().getCredExId(), e);
-                        }
-                    }));
-            partner.ifPresent(value -> eventPublisher
-                    .publishEventAsync(PartnerRemovedEvent.builder().partner(value).build()));
-        } catch (IOException e) {
-            log.error("Could not delete connection: {}", connectionId, e);
+                ac.presentProofRecords(PresentProofRecordsFilter
+                        .builder()
+                        .connectionId(connectionId)
+                        .build()).ifPresent(records -> records.forEach(record -> {
+                            try {
+                                ac.presentProofRecordsRemove(record.getPresentationExchangeId());
+                            } catch (IOException | AriesException e) {
+                                log.error("Could not delete presentation exchange record: {}",
+                                        record.getPresentationExchangeId(), e);
+                            }
+                        }));
+                ac.presentProofV2Records(V2PresentProofRecordsFilter
+                        .builder()
+                        .connectionId(connectionId)
+                        .build()).ifPresent(records -> records.forEach(record -> {
+                            try {
+                                ac.presentProofV2RecordsRemove(record.getPresentationExchangeId());
+                            } catch (IOException | AriesException e) {
+                                log.error("Could not delete v2 presentation exchange record: {}",
+                                        record.getPresentationExchangeId(), e);
+                            }
+                        }));
+                ac.issueCredentialRecords(IssueCredentialRecordsFilter
+                        .builder()
+                        .connectionId(connectionId)
+                        .build()).ifPresent(records -> records.forEach(record -> {
+                            try {
+                                ac.issueCredentialRecordsRemove(record.getCredentialExchangeId());
+                            } catch (IOException | AriesException e) {
+                                log.error("Could not delete credential exchange record: {}",
+                                        record.getCredentialExchangeId(), e);
+                            }
+                        }));
+                ac.issueCredentialV2Records(V2IssueCredentialRecordsFilter
+                        .builder()
+                        .connectionId(connectionId)
+                        .build()).ifPresent(records -> records.forEach(record -> {
+                            try {
+                                ac.issueCredentialV2RecordsRemove(record.getCredExRecord().getCredExId());
+                            } catch (IOException | AriesException e) {
+                                log.error("Could not delete credential exchange record: {}",
+                                        record.getCredExRecord().getCredExId(), e);
+                            }
+                        }));
+            } catch (IOException e) {
+                log.error("Could not delete aca-py connection: {}", connectionId, e);
+            }
         }
+
+        holderCredExRepo.setPartnerIdToNull(partner.getId());
+        final Page<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId(), Pageable.unpaged());
+        if (CollectionUtils.isNotEmpty(proofs.getContent())) {
+            partnerProofRepo.deleteAll(proofs);
+        }
+        eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner).build());
     }
 
     public boolean sendMessage(String connectionId, String content) {
@@ -435,14 +450,14 @@ public class ConnectionManager {
                 .orElseThrow();
     }
 
-    private void createNewPartner(String alias, String invMsgId, List<Tag> tag,
+    private Partner createNewPartner(String alias, String invMsgId, List<Tag> tag,
             Boolean trustPing) {
-        createNewPartner(alias, null, invMsgId, tag, trustPing, null);
+        return createNewPartner(alias, null, invMsgId, tag, trustPing, null);
     }
 
-    private void createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,
+    private Partner createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,
             Boolean trustPing, InvitationRecord invitationRecord) {
-        partnerRepo.save(Partner
+        return partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
                 .alias(StringUtils.trimToNull(alias))

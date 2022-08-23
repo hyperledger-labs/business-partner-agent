@@ -2,6 +2,7 @@ bpa:
   schemas:
     #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
     bank-account:
+      ledgerId: "BoschTest"
       id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
@@ -10,12 +11,25 @@ bpa:
         - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
           label: "Demo Bank"
     commercial-register:
+      ledgerId: "BoschTest"
       id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
       restrictions:
         - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
           label: "Commercial Register"
+    permanent-resident:
+      id: "https://w3id.org/citizenship/v1"
+      type: "json_ld"
+      label: "Permanent Resident"
+      defaultAttributeName: "givenName"
+      ldType: "PermanentResident"
+      attributes:
+        - "givenName"
+        - "familyName"
+        - "gender"
+        - "birthCountry"
+        - "birthDate"
   tags:
     - "myInitTag"
     - "myOtherInitTag"

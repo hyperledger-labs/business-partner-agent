@@ -75,7 +75,7 @@ class ProofTemplateControllerTest {
                                 .name("aTemplate")
                                 .attributeGroup(
                                         AttributeGroup.builder()
-                                                .schemaId(schemaId.toString())
+                                                .schemaId(schemaId)
                                                 .attribute(
                                                         Attribute.builder()
                                                                 .name("myAttribute")
@@ -106,7 +106,7 @@ class ProofTemplateControllerTest {
                                 .name("aTemplate")
                                 .attributeGroup(
                                         AttributeGroup.builder()
-                                                .schemaId(schemaId.toString())
+                                                .schemaId(schemaId)
                                                 .attribute(
                                                         Attribute.builder()
                                                                 .name("myAttribute")

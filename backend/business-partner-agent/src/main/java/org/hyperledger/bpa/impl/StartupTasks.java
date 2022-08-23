@@ -124,7 +124,7 @@ public class StartupTasks {
                     msg = "Switching from aries to web mode is not supported";
                 }
                 log.error(msg);
-                throw new RuntimeException(msg);
+                throw new IllegalStateException(msg);
             }
             log.debug("Mode check succeeded");
         } else {
@@ -138,7 +138,7 @@ public class StartupTasks {
         while (it.hasNext()) {
             result = Optional.of(it.next());
             if (it.hasNext()) {
-                throw new RuntimeException("More then one state entry found, db is corrupted");
+                throw new IllegalStateException("More then one state entry found, db is corrupted");
             }
         }
         return result;

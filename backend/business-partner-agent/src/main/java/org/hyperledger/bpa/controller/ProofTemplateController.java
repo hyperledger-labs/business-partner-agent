@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -26,6 +27,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
@@ -33,7 +35,6 @@ import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -69,12 +70,7 @@ public class ProofTemplateController {
      */
     @Get("/{id}")
     public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable UUID id) {
-        Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(id);
-        if (proofTemplate.isPresent()) {
-            return HttpResponse.ok(proofTemplate.get().toRepresentation());
-        } else {
-            return HttpResponse.notFound();
-        }
+        return HttpResponse.ok(proofTemplateManager.findProofTemplate(id).toRepresentation());
     }
 
     /**
@@ -100,11 +96,12 @@ public class ProofTemplateController {
     /**
      * List configured proof condition operators
      *
+     * @param type {@link CredentialType} filter operators by type
      * @return list of {@link ValueOperators}
      */
     @Get("/known-condition-operators")
-    public HttpResponse<Set<String>> listKnownConditionOperators() {
-        return HttpResponse.ok(proofTemplateManager.getKnownConditionOperators());
+    public HttpResponse<Set<String>> listKnownConditionOperators(@Nullable @QueryValue CredentialType type) {
+        return HttpResponse.ok(proofTemplateManager.getKnownConditionOperators(type));
     }
 
     /**

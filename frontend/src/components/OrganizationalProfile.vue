@@ -178,7 +178,7 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: any) {
         this.$emit("input", value);
       },
     },
@@ -190,10 +190,10 @@ export default {
         type: "",
       });
     },
-    deleteIdentifier(index) {
+    deleteIdentifier(index: number) {
       this.documentData.identifier.splice(index, 1);
     },
-    onLegalNameChange(event) {
+    onLegalNameChange(event: string) {
       this.documentData.legalName = event;
       this.intDoc.label = event;
     },

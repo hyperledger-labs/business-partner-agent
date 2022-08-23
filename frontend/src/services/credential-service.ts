@@ -8,9 +8,10 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
+import { RequestCredentialRequest } from "@/services/types-services";
 
 export default {
-  sendCredentialRequest(partnerId, data) {
+  requestCredential(partnerId: string, data: RequestCredentialRequest) {
     return appAxios().post(
       `${ApiRoutes.PARTNERS}/${partnerId}/credential-request`,
       data

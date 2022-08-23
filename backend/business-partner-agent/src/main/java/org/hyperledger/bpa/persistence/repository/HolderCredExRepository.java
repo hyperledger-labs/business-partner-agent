@@ -23,12 +23,18 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,18 +42,23 @@ import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface HolderCredExRepository extends CrudRepository<BPACredentialExchange, UUID> {
+public interface HolderCredExRepository extends PageableRepository<BPACredentialExchange, UUID> {
 
     // find
 
     @NonNull
     @Override
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findById(@NonNull UUID id);
 
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
-    List<BPACredentialExchange> findByRoleEqualsAndStateIn(CredentialExchangeRole role,
-            List<CredentialExchangeState> state);
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    Page<BPACredentialExchange> findByRoleEqualsAndStateInAndTypeIn(
+            CredentialExchangeRole role,
+            List<CredentialExchangeState> state,
+            List<CredentialType> type,
+            Pageable pageable);
 
     Optional<BPACredentialExchange> findByReferent(String referent);
 
@@ -75,14 +86,12 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     void updateIsPublic(@Id UUID id, Boolean isPublic);
 
-    void updateState(@Id UUID id, CredentialExchangeState state);
-
     void updateStates(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp, @Nullable String errorMsg);
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-            BPACredentialExchange.ExchangePayload credentialOffer);
+            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 
@@ -92,10 +101,10 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     Number updateReferent(@Id UUID id, @Nullable String referent);
 
-    @Query("UPDATE bpa_credential_exchange SET issuer = :issuer WHERE partner_id = :partnerId AND role = 'HOLDER'")
-    Number updateIssuerByPartnerId(UUID partnerId, @Nullable String issuer);
-
-    @Query("UPDATE bpa_credential_exchange SET partner_id = null WHERE partner_id = :partnerId AND role = 'HOLDER'")
+    @Query("UPDATE bpa_credential_exchange SET partner_id = null " +
+            "WHERE partner_id = :partnerId " +
+            "AND role = 'HOLDER' " +
+            "AND state IN ('CREDENTIAL_ACKED', 'DONE')")
     Number setPartnerIdToNull(UUID partnerId);
 
     // count

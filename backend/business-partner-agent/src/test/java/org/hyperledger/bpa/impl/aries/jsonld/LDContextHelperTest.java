@@ -43,4 +43,11 @@ public class LDContextHelperTest {
                 .build());
         Assertions.assertEquals(sId, resolvedId);
     }
+
+    @Test
+    void testFindSchemaIdInObjectList() {
+        String expected = "https://w3id.org/citizenship/v1";
+        List<Object> ol = List.of(expected, "https://www.w3.org/2018/credentials/v1");
+        Assertions.assertEquals(expected, LDContextHelper.findSchemaId(ol));
+    }
 }

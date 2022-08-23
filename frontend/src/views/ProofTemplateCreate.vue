@@ -74,11 +74,15 @@
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <AttributeEdit v-model="proofTemplate.attributeGroups[idx]" />
+                  <AttributeEdit
+                    v-model="proofTemplate.attributeGroups[idx]"
+                    :type="proofTemplate.type"
+                  />
 
                   <!-- Schema Restrictions -->
                   <RestrictionsEdit
                     v-model="proofTemplate.attributeGroups[idx]"
+                    :type="proofTemplate.type"
                   />
 
                   <v-card-actions>
@@ -118,11 +122,12 @@
                 <v-list-item
                   v-for="(schema, idx) in schemas"
                   :key="idx"
-                  @click="addAttributeGroup(schema.id)"
+                  @click="addAttributeGroup(schema)"
                   :disabled="
                     proofTemplate.attributeGroups.some(
                       (existingAttributeGroup) =>
-                        existingAttributeGroup.schemaId === schema.id
+                        existingAttributeGroup.schemaId === schema.id ||
+                        proofTemplate.type !== schema.type
                     )
                   "
                 >
@@ -146,6 +151,7 @@
         <v-layout align-center align-end justify-end>
           <v-switch
             v-if="expertMode && enableV2Switch"
+            :disabled="'INDY' !== this.proofTemplate.type"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
@@ -183,7 +189,15 @@ import proofTemplateService from "@/services/proof-template-service";
 import AttributeEdit from "@/components/proof-templates/AttributeEdit.vue";
 import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit.vue";
 import { SchemaLevelRestriction } from "@/components/proof-templates/attribute-group";
-import { ProofTemplate } from "@/services";
+import {
+  Attribute,
+  AttributeGroup,
+  ProofTemplate,
+  AttributeGroupUi,
+  SchemaAPI,
+  SchemaRestrictions,
+  ValueCondition,
+} from "@/services";
 
 export default {
   name: "ProofTemplates",
@@ -208,12 +222,13 @@ export default {
   },
   data: () => {
     return {
-      openAttributeGroupPanels: [],
+      openAttributeGroupPanels: new Array<number>(),
       createButtonIsBusy: false,
       useV2Exchange: false,
       proofTemplate: {
         name: "",
-        attributeGroups: [],
+        type: "",
+        attributeGroups: new Array<AttributeGroup & AttributeGroupUi>(),
       },
       snackbar: {
         timeout: 3000,
@@ -224,7 +239,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     getCreateButtonLabel() {
       return this.createButtonLabel
@@ -233,23 +248,26 @@ export default {
     },
     rules() {
       return {
-        required: (value) => !!value || this.$t("app.rules.required"),
+        required: (value: string) => !!value || this.$t("app.rules.required"),
       };
     },
-    schemas() {
+    schemas(): SchemaAPI[] {
       return this.$store.getters.getSchemas.filter(
-        (schema) => schema.type === "INDY"
+        (schema: SchemaAPI) =>
+          schema.type === "INDY" || schema.type === "JSON_LD"
       );
     },
     overallValidationErrors() {
       const proofTemplateNameInvalid = this.proofTemplate.name === "";
       const noAttributeGroups = this.proofTemplate.attributeGroups.length === 0;
       const attributeGroupsInvalid = this.proofTemplate.attributeGroups.some(
-        (ag) => ag.ui.selectedAttributes.length === 0
+        (ag: AttributeGroup & AttributeGroupUi) =>
+          ag.ui.selectedAttributes.length === 0
       );
       const predicateConditionsInvalid =
         this.proofTemplate.attributeGroups.some(
-          (ag) => ag.ui.predicateConditionsErrorCount > 0
+          (ag: AttributeGroup & AttributeGroupUi) =>
+            ag.ui.predicateConditionsErrorCount > 0
         );
 
       return (
@@ -268,17 +286,20 @@ export default {
         this.proofTemplate.attributeGroups.length - 1
       );
     },
-    renderSchemaLabelId(attributeGroup) {
+    renderSchemaLabelId(attributeGroup: AttributeGroup) {
       const schema = this.$store.getters.getSchemas.find(
-        (s) => s.id === attributeGroup.schemaId
+        (s: SchemaAPI) => s.id === attributeGroup.schemaId
       );
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
-    addAttributeGroup: function (schemaId) {
+    addAttributeGroup: function (schema: SchemaAPI) {
+      const schemaId = schema.id;
       const schemaLevelRestrictions: SchemaLevelRestriction[] = [];
 
+      this.proofTemplate.type = schema.type;
+
       const { schemaAttributeNames, trustedIssuer } = this.schemas.find(
-        (s) => s.id === schemaId
+        (s: SchemaAPI) => s.id === schemaId
       );
 
       if (trustedIssuer) {
@@ -326,7 +347,7 @@ export default {
     },
     deleteAttributeGroup(attributeGroupIndex: number) {
       const schema = this.$store.getters.getSchemas.find(
-        (schema) =>
+        (schema: SchemaAPI) =>
           schema.id ===
           this.proofTemplate.attributeGroups[attributeGroupIndex].schemaId
       );
@@ -341,13 +362,13 @@ export default {
       let sanitizedAttributeGroupObjects = [];
 
       for (const ag of this.proofTemplate.attributeGroups) {
-        let attributesInGroup = [];
-        let restrictionsInGroup = [];
+        let attributesInGroup = new Array<Attribute>();
+        let restrictionsInGroup = new Array<SchemaRestrictions>();
 
         // sanitize attribute conditions (remove empty conditions)
         for (const a of ag.attributes) {
-          const sanitizedConditions = a.conditions.filter(
-            (c) => c.operator !== "" && c.value !== ""
+          const sanitizedConditions: ValueCondition[] = a.conditions.filter(
+            (condition: ValueCondition) => condition.value !== ""
           );
 
           // only use selected attributes
@@ -371,7 +392,7 @@ export default {
           );
 
           ag.ui.selectedRestrictionsByTrustedIssuer.map(
-            (selectedRestrictions) => {
+            (selectedRestrictions: SchemaRestrictions) => {
               if (
                 selectedRestrictions.issuerDid ===
                 schemaLevelRestrictionObject.issuerDid

@@ -27,12 +27,24 @@
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
           {{ $t("view.settings.walletDID") }}
         </v-list-item-title>
-        <v-list-item-subtitle align="end" id="did">
-          {{ this.status.did }}
+        <v-list-item-subtitle align="end">
+          {{ myDid }}
         </v-list-item-subtitle>
-        <v-btn icon x-small @click="copyDid">
-          <v-icon dark>$vuetify.icons.copy</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              icon
+              x-small
+              v-bind="attrs"
+              v-on="on"
+              @click="copyDid"
+              @mouseout="reset"
+            >
+              <v-icon dark>$vuetify.icons.copy</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ copyText }}</span>
+        </v-tooltip>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
@@ -124,21 +136,27 @@ import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
 import { LocaleMetaType } from "@/views/settings/locale-meta-type";
+import { BPAStats } from "@/services";
+import { VuetifyThemeItem } from "vuetify/types/services/theme";
 
 export default {
   name: "Settings",
   created() {
     EventBus.$emit("title", this.$t("view.settings.title"));
     this.getStatus();
+    this.copyText = this.$t("button.clickToCopy");
   },
   data: () => {
     return {
+      status: {} as BPAStats,
       isLoading: true,
       selectedLocale: {
         locale: i18n.locale,
       },
       isEditingColor: false,
       isEditingColorIcons: false,
+      myDid: "",
+      copyText: "",
     };
   },
   computed: {
@@ -163,6 +181,10 @@ export default {
         {
           text: this.$t("view.settings.header.ledgerPrefix"),
           value: "ledgerPrefix",
+        },
+        {
+          text: this.$t("view.settings.header.writeLedgerId"),
+          value: "writeLedgerId",
         },
         {
           text: this.$t("view.settings.header.uptime"),
@@ -205,77 +227,54 @@ export default {
       });
     },
     expertMode: {
-      set(body) {
-        this.$store.commit({
-          type: "setExpertMode",
-          isExpert: body,
-        });
+      set(body: boolean) {
+        this.$store.dispatch("manuallySetExpertMode", body);
       },
       get() {
-        return this.$store.state.expertMode;
+        return this.$store.getters.getExpertMode;
       },
     },
     settings: {
       get() {
-        return this.settingsHeader.map((setting) => {
-          return {
-            text: setting.text,
-            value: this.$store.getters.getSettingByKey(setting.value),
-          };
-        });
+        return this.settingsHeader.map(
+          (setting: { text: string; value: string }) => {
+            return {
+              text: setting.text,
+              value: this.$store.getters.getSettingByKey(setting.value),
+            };
+          }
+        );
       },
     },
   },
   methods: {
-    changeLanguage(locale) {
+    changeLanguage(locale: string) {
       i18n.locale = locale;
       this.$vuetify.lang.current = locale;
       localStorage.setItem("locale", locale);
       EventBus.$emit("title", this.$t("view.settings.title"));
     },
-    onPickColor(c) {
+    onPickColor(c: VuetifyThemeItem) {
       this.$vuetify.theme.themes.light.primary = c;
-      localStorage.setItem("uiColor", c);
+      localStorage.setItem("uiColor", c.toString());
       this.isEditingColor = false;
     },
-    onPickColorIcons(c) {
+    onPickColorIcons(c: VuetifyThemeItem) {
       this.$vuetify.theme.themes.light.icons = c;
-      localStorage.setItem("uiColorIcons", c);
+      localStorage.setItem("uiColorIcons", c.toString());
       this.isEditingColorIcons = false;
     },
     getStatus() {
-      console.log("Getting status...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/status`)
-        .then((result) => {
-          console.log(result);
-          this.isWelcome = !result.data.profile;
-          this.status = result.data;
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        });
+      this.status = this.$store.getters.getStatus;
+      this.myDid = this.status.did;
+      this.isLoading = false;
     },
-    copyDid() {
-      let didElement = document.querySelector("#did");
-      const element = document.createElement("textarea");
-      element.value = didElement.innerHTML.trim();
-      document.body.append(element);
-      element.select();
-
-      let successful;
-      try {
-        successful = document.execCommand("copy");
-      } catch {
-        successful = false;
-      }
-      successful
-        ? EventBus.$emit("success", this.$t("view.settings.eventSuccessCopy"))
-        : EventBus.$emit("error", this.$t("view.settings.eventErrorCopy"));
-      element.remove();
-      window.getSelection().removeAllRanges();
+    async copyDid() {
+      await navigator.clipboard.writeText(this.myDid);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
     },
   },
   components: {

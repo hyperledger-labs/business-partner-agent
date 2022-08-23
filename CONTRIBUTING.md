@@ -142,3 +142,7 @@ contribution.
 
 [SubmittingPatches]:
 https://github.com/wking/signed-off-by/blob/7d71be37194df05c349157a2161c7534feaf86a4/Documentation/SubmittingPatches
+
+### Adding/Removing Roles
+
+https://github.com/hyperledger-labs/governance/issues/new/choose

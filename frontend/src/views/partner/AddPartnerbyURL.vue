@@ -121,7 +121,32 @@
                       >
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
-                      <span class="font-weight-light">{{ invitationURL }}</span>
+                      <v-text-field
+                        class="font-weight-light"
+                        v-model="invitationURL"
+                        readonly
+                        outlined
+                        dense
+                        :label="$t('view.addPartnerbyURL.invitationURL')"
+                        @blur="reset"
+                      >
+                        <template v-slot:append>
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                class="mr-0"
+                                icon
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="copyInvitationURL"
+                              >
+                                <v-icon> $vuetify.icons.copy </v-icon>
+                              </v-btn>
+                            </template>
+                            <span>{{ copyText }}</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
@@ -146,6 +171,7 @@ import { EventBus } from "@/main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { invitationsService, TagAPI } from "@/services";
 export default {
   name: "AddPartnerbyURL",
   components: {
@@ -157,11 +183,12 @@ export default {
       partnerLoading: false,
       partnerLoaded: false,
       invitationURL: "",
+      copyText: "",
       msg: "",
       did: "",
       alias: "",
       partner: {},
-      selectedTags: [],
+      selectedTags: new Array<string>(),
       // Disable trust ping for invitation to
       // mobile wallets by default.
       trustPing: false,
@@ -170,10 +197,13 @@ export default {
       usePublicDid: true,
     };
   },
+  created() {
+    this.copyText = this.$t("button.clickToCopy");
+  },
   computed: {
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag: TagAPI) => tag.name)
         : [];
     },
   },
@@ -181,15 +211,15 @@ export default {
     createInvitation() {
       let partnerToAdd = {
         alias: `${this.alias}`,
-        tag: this.$store.state.tags.filter((tag) => {
+        tag: this.$store.getters.getTags.filter((tag: TagAPI) => {
           return this.selectedTags.includes(tag.name);
         }),
         trustPing: this.trustPing,
         useOutOfBand: this.useOutOfBand,
         usePublicDid: this.useOutOfBand ? this.usePublicDid : undefined,
       };
-      this.$axios
-        .post(`${this.$apiBaseUrl}/invitations`, partnerToAdd)
+      invitationsService
+        .requestConnectionInvitation(partnerToAdd)
         .then((result) => {
           this.invitationURL = result.data.invitationUrl;
 
@@ -205,6 +235,13 @@ export default {
         .catch((error) => {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
+    },
+    async copyInvitationURL() {
+      await navigator.clipboard.writeText(this.invitationURL);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
     },
   },
 };

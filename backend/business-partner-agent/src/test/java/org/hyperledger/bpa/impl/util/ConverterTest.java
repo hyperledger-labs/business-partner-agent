@@ -116,13 +116,13 @@ class ConverterTest extends BaseTest {
         final Partner model = conv.toModelObject("did:web:test.foo", partner);
         assertTrue(model.getDid().startsWith("did"));
         assertNotNull(model.getVerifiablePresentation());
-        assertEquals(vp, conv.fromMap(model.getVerifiablePresentation(), Converter.VP_TYPEREF));
+        assertEquals(vp, model.getVerifiablePresentation());
     }
 
     @Test
     void testConvertCredentialToModelObject() throws Exception {
         MyDocumentAPI c = utils.createDummyCred(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, Boolean.TRUE);
-        c.setCreatedDate(123L); // should not be used but set by database layer
+        c.setCreatedAt(123L); // should not be used but set by database layer
         c.setId(UUID.randomUUID()); // should not be used but set by database layer
 
         MyDocument result = conv.toModelObject(c);

@@ -23,7 +23,7 @@ import lombok.*;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 public class BPAAttributeGroups {
     @Singular
     @Valid
-    @NotNull
-    List<BPAAttributeGroup> attributeGroups;
+    @NotEmpty
+    private List<BPAAttributeGroup> attributeGroups;
 
     public List<AttributeGroup> toRepresentation() {
         return attributeGroups.stream()

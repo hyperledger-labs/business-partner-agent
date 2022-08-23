@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Async;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -72,38 +74,41 @@ public class DidResolver {
      * @param pp {@link PartnerProof}
      */
     @Async
-    public void resolveDid(PartnerProof pp, @NonNull List<PresentationExchangeRecord.Identifier> identifiers) {
-        Optional<PresentationExchangeRecord.Identifier> cr = identifiers.stream()
-                .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
-                .filter(i -> "commercialregister".equals(AriesStringUtil.schemaGetName(i.getSchemaId())))
-                .findAny();
+    public void resolveDid(@NonNull PartnerProof pp,
+            @Nullable List<PresentationExchangeRecord.Identifier> identifiers) {
+        Optional<PresentationExchangeRecord.Identifier> cr = Optional.empty();
+        if (CollectionUtils.isNotEmpty(identifiers)) {
+            cr = identifiers.stream()
+                    .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
+                    .filter(i -> "commercialregister".equals(AriesStringUtil.schemaGetName(i.getSchemaId())))
+                    .findAny();
+        }
         try {
             if (cr.isPresent()) {
-                partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
-                    if (p.getVerifiablePresentation() == null
-                            && p.getIncoming() != null
-                            && p.getIncoming()) {
-                        Optional<DIDDocument> didDocument = Optional.empty();
-                        try {
-                            // check if not a public did
-                            didDocument = ur.getDidDocument(p.getDid());
-                        } catch (PartnerException e) {
-                            log.error("{}", e.getMessage());
-                        }
-                        if (didDocument.isEmpty() && pp.getProof() != null) {
-                            // TODO only works if the did is set in the revealed attributes
-                            Object pubDid = pp.getProof().get("did");
-                            if (pubDid != null) {
-                                log.debug("Resolved did: {}", pubDid);
-                                final PartnerAPI pAPI = partnerLookup.lookupPartner(pubDid.toString());
-                                p.setDid(pubDid.toString());
-                                p.setValid(pAPI.getValid());
-                                p.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
-                                partnerRepo.update(p);
-                            }
+                Partner p = pp.getPartner();
+                if (p.getVerifiablePresentation() == null
+                        && p.getIncoming() != null
+                        && p.getIncoming()) {
+                    Optional<DIDDocument> didDocument = Optional.empty();
+                    try {
+                        // check if not a public did
+                        didDocument = ur.getDidDocument(p.getDid());
+                    } catch (PartnerException e) {
+                        log.error("{}", e.getMessage());
+                    }
+                    if (didDocument.isEmpty() && pp.getProof() != null) {
+                        // TODO only works if the did is set in the revealed attributes
+                        Object pubDid = pp.getProof().getIndy().get("did");
+                        if (pubDid != null) {
+                            log.debug("Resolved did: {}", pubDid);
+                            final PartnerAPI pAPI = partnerLookup.lookupPartner(pubDid.toString());
+                            p.setDid(pubDid.toString());
+                            p.setValid(pAPI.getValid());
+                            p.setVerifiablePresentation(pAPI.getVerifiablePresentation());
+                            partnerRepo.update(p);
                         }
                     }
-                });
+                }
             }
         } catch (Exception e) {
             log.error("Could not lookup public did.", e);

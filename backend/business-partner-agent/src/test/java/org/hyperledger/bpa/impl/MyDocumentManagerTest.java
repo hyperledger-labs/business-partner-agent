@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import io.micronaut.context.env.Environment;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -114,9 +115,9 @@ class MyDocumentManagerTest extends RunWithAries {
         assertNotNull(myCred.getId());
         assertSame(CredentialType.INDY, myCred.getType());
         assertFalse(myCred.getIsPublic());
-        assertTrue(Instant.now().isAfter(Instant.ofEpochMilli(myCred.getCreatedDate())));
+        assertTrue(Instant.now().isAfter(Instant.ofEpochMilli(myCred.getCreatedAt())));
         assertTrue(Instant.now().minus(5L, ChronoUnit.MINUTES).isBefore(
-                Instant.ofEpochMilli(myCred.getCreatedDate())));
+                Instant.ofEpochMilli(myCred.getCreatedAt())));
     }
 
     @Test
@@ -174,8 +175,9 @@ class MyDocumentManagerTest extends RunWithAries {
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
         UUID ID = myCred.getId();
 
-        assertEquals(0, mgmt.getMyDocuments(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL).size());
-        assertEquals(1, mgmt.getMyDocuments(CredentialType.INDY).size());
+        assertEquals(0, mgmt.getMyDocuments(Pageable.unpaged(),
+                CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL).getTotalSize());
+        assertEquals(1, mgmt.getMyDocuments(Pageable.unpaged(), CredentialType.INDY).getTotalSize());
         Optional<MyDocumentAPI> result = mgmt.getMyDocumentById(ID);
         assertTrue(result.isPresent());
 
@@ -185,11 +187,11 @@ class MyDocumentManagerTest extends RunWithAries {
 
     @Test
     void testGetMyCredentials() throws Exception {
-        assertEquals(0, mgmt.getMyDocuments().size());
+        assertEquals(0, mgmt.getMyDocuments(Pageable.unpaged()).getTotalSize());
         createAndSaveDummyCredential();
-        assertEquals(1, mgmt.getMyDocuments().size());
+        assertEquals(1, mgmt.getMyDocuments(Pageable.unpaged()).getTotalSize());
         createAndSaveDummyCredential();
-        assertEquals(2, mgmt.getMyDocuments().size());
+        assertEquals(2, mgmt.getMyDocuments(Pageable.unpaged()).getTotalSize());
     }
 
     @Test
@@ -202,12 +204,12 @@ class MyDocumentManagerTest extends RunWithAries {
         MyDocumentAPI myCred2 = mgmt.saveNewDocument(credential2);
         UUID ID2 = myCred2.getId();
 
-        assertEquals(2, mgmt.getMyDocuments().size());
+        assertEquals(2, mgmt.getMyDocuments(Pageable.unpaged()).getTotalSize());
 
         mgmt.deleteMyDocumentById(ID);
 
-        assertEquals(1, mgmt.getMyDocuments().size());
-        assertEquals(ID2, mgmt.getMyDocuments().get(0).getId());
+        assertEquals(1, mgmt.getMyDocuments(Pageable.unpaged()).getTotalSize());
+        assertEquals(ID2, mgmt.getMyDocuments(Pageable.unpaged()).getContent().get(0).getId());
     }
 
     @Test
@@ -227,7 +229,7 @@ class MyDocumentManagerTest extends RunWithAries {
         assertFalse(vp.isPresent());
 
         final MyDocumentAPI vc = createAndSavePublicDummyCredential();
-        waitForVP(vpMgmt, false);
+        waitForVP(vpMgmt, true);
 
         vp = vpMgmt.getVerifiablePresentation();
         assertTrue(vp.isPresent());

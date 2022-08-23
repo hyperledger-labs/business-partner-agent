@@ -23,7 +23,6 @@ import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -99,11 +98,8 @@ public class PartnerManager {
     }
 
     public void removePartnerById(@NonNull UUID id) {
-        repo.findById(id).ifPresent(p -> {
-            if (p.getConnectionId() != null) {
-                cm.removeConnection(p.getConnectionId());
-            }
-        });
+        Partner p = repo.findById(id).orElseThrow(EntityNotFoundException::new);
+        cm.removeConnection(p);
         repo.deleteByPartnerId(id);
     }
 
@@ -143,9 +139,6 @@ public class PartnerManager {
             p.setTrustPing(req.getTrustPing());
             tagRepo.updateAllPartnerToTagMappings(id, req.getTag());
             repo.updateAlias(id, req.getAlias(), req.getTrustPing());
-            if (StringUtils.isNotBlank(req.getAlias())) {
-                holderCredExRepo.updateIssuerByPartnerId(dbP.get().getId(), req.getAlias());
-            }
             result = Optional.of(converter.toAPIObject(p));
         }
         return result;
@@ -179,7 +172,7 @@ public class PartnerManager {
             PartnerAPI pAPI = partnerLookup.lookupPartner(dbP.getDid());
             dbP.setValid(pAPI.getValid());
             dbP.setVerifiablePresentation(pAPI.getVerifiablePresentation() != null
-                    ? converter.toMap(pAPI.getVerifiablePresentation())
+                    ? pAPI.getVerifiablePresentation()
                     : null);
             dbP = repo.update(dbP);
             result = Optional.of(converter.toAPIObject(dbP));

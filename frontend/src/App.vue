@@ -13,42 +13,44 @@
       :disable-resize-watcher="hideSidebar"
     >
       <v-list dense>
-        <router-link tag="span" :to="{ name: 'Dashboard' }">
-          <v-list-item
-            v-if="ux.navigation.avatar.agent.enabled"
-            two-line
-            class="pl-3 mt-n2 logo"
-          >
-            <v-list-item-content>
-              <v-list-item-title v-if="ux.navigation.avatar.agent.default">
-                <v-img
-                  v-if="logo"
-                  contain
-                  max-height="100"
-                  max-width="228"
-                  :src="logo"
-                ></v-img>
-                <v-img
-                  v-else
-                  contain
-                  max-height="100"
-                  max-width="228"
-                  src="@/assets/logo_default.svg"
-                ></v-img>
-              </v-list-item-title>
-              <v-list-item-title v-else>
-                <v-img
-                  contain
-                  max-height="100"
-                  max-width="228"
-                  :src="ux.navigation.avatar.agent.src"
-                ></v-img
-              ></v-list-item-title>
-              <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{
-                getNavDisplayName
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+        <router-link :to="{ name: 'Dashboard' }" custom v-slot="{ navigate }">
+          <span @click="navigate" @keypress.enter="navigate" role="link">
+            <v-list-item
+              v-if="ux.navigation.avatar.agent.enabled"
+              two-line
+              class="pl-3 mt-n2 logo"
+            >
+              <v-list-item-content>
+                <v-list-item-title v-if="ux.navigation.avatar.agent.default">
+                  <v-img
+                    v-if="logo"
+                    contain
+                    max-height="100"
+                    max-width="228"
+                    :src="logo"
+                  ></v-img>
+                  <v-img
+                    v-else
+                    contain
+                    max-height="100"
+                    max-width="228"
+                    src="@/assets/logo_default.svg"
+                  ></v-img>
+                </v-list-item-title>
+                <v-list-item-title v-else>
+                  <v-img
+                    contain
+                    max-height="100"
+                    max-width="228"
+                    :src="ux.navigation.avatar.agent.src"
+                  ></v-img
+                ></v-list-item-title>
+                <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{
+                  getNavDisplayName
+                }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </span>
         </router-link>
         <v-list-item v-if="expertMode" link :to="{ name: 'Identity' }">
           <v-list-item-action>
@@ -194,7 +196,7 @@
           <v-list-item
             v-if="ux.navigation.logout.enabled"
             bottom
-            @click="logout()"
+            @click="logout"
           >
             <v-list-item-action>
               <v-icon>$vuetify.icons.signout</v-icon>
@@ -226,6 +228,14 @@
       />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid">
+            <v-icon>$vuetify.icons.identity</v-icon>
+          </v-btn>
+        </template>
+        <span>{{ myDid }}</span>
+      </v-tooltip>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
       </v-btn>
@@ -331,6 +341,8 @@ import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 import { getBooleanFromString } from "@/utils/textUtils";
+import { AxiosError } from "axios";
+import { BPAStats } from "@/services";
 
 export default {
   components: {
@@ -345,7 +357,9 @@ export default {
     drawer: !getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP),
     logo: process.env.VUE_APP_LOGO_URL,
 
-    // snackbar stuff
+    status: {} as BPAStats,
+    myDid: "",
+
     snackbar: false,
     color: "",
     snackbarMsg: "",
@@ -383,23 +397,22 @@ export default {
   }),
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     showFooter() {
-      return (this.$store.state.settings.imprint &&
-        typeof this.$store.state.settings.imprint === "string") ||
-        (this.$store.state.settings.dataPrivacyPolicy &&
-          typeof this.$store.state.settings.dataPrivacyPolicy === "string")
-        ? this.$store.state.settings.imprint.length +
-            this.$store.state.settings.dataPrivacyPolicy.length >
-            0
+      const settings = this.$store.getters.getSettingsConfig;
+
+      return (settings.imprint && typeof settings.imprint === "string") ||
+        (settings.dataPrivacyPolicy &&
+          typeof settings.dataPrivacyPolicy === "string")
+        ? settings.imprint.length + settings.dataPrivacyPolicy.length > 0
         : undefined;
     },
     imprintUrl() {
-      return this.$store.state.settings.imprint;
+      return this.$store.getters.getSettingsConfig.imprint;
     },
     privacyPolicyUrl() {
-      return this.$store.state.settings.dataPrivacyPolicy;
+      return this.$store.getters.getSettingsConfig.dataPrivacyPolicy;
     },
     messagesReceivedCount() {
       return this.$store.getters.messagesCount;
@@ -443,6 +456,7 @@ export default {
     },
   },
   created() {
+    this.getStatus();
     // Set the browser/tab title...
     document.title = this.$config.title;
     if (this.$config.ux) {
@@ -488,24 +502,23 @@ export default {
           .setAttribute("href", this.ux.favicon.href);
       }
     }
-
     this.$store.dispatch("validateTaa");
     this.$store.dispatch("loadDocuments");
 
     // Global Error handling
     // Todo: Put in extra component
 
-    EventBus.$on("title", (title) => {
+    EventBus.$on("title", (title: string) => {
       this.title = title;
     });
 
-    EventBus.$on("success", (message) => {
+    EventBus.$on("success", (message: string) => {
       (this.snackbarMsg = message),
         (this.color = "green"),
         (this.snackbar = true);
     });
 
-    EventBus.$on("error", (message) => {
+    EventBus.$on("error", (message: AxiosError) => {
       console.log(message.response);
 
       if (
@@ -543,6 +556,15 @@ export default {
       }
       // now, open or close it
       this.chatWindow = !this.chatWindow;
+    },
+    getStatus() {
+      const status = this.$store.getters.getStatus;
+
+      this.status = status;
+      this.myDid = this.status.did;
+    },
+    async copyDid() {
+      await navigator.clipboard.writeText(this.myDid);
     },
   },
 };

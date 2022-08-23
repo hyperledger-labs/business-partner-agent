@@ -20,6 +20,7 @@ package org.hyperledger.bpa.controller.api;
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.controller.api.partner.PartnerMessage;
 import org.hyperledger.bpa.persistence.model.ChatMessage;
 
 /**

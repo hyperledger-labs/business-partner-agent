@@ -41,7 +41,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
     ports:
       - ${ACAPY1_ADMIN_PORT}:${ACAPY1_ADMIN_PORT}
       - ${ACAPY1_HTTP_PORT}:${ACAPY1_HTTP_PORT}
@@ -56,7 +56,6 @@ services:
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY1_HTTP_PORT} \
         --webhook-url http://bpa1:${BPA1_PORT}/log \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY1_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
@@ -74,6 +73,7 @@ services:
       ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+      - "./genesis-transaction-list.yml:/home/indy/genesis-transaction-list.yml"
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-wallet-db1:
@@ -126,7 +126,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent2:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
@@ -141,7 +141,6 @@ services:
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
         --webhook-url http://bpa2:${BPA2_PORT}/log \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY2_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
@@ -159,6 +158,7 @@ services:
       ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+      - "./genesis-transaction-list.yml:/home/indy/genesis-transaction-list.yml"
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-wallet-db2:

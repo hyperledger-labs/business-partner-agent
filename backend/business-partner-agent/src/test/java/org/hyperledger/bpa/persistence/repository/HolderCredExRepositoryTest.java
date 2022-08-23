@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.data.model.Pageable;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.connection.ConnectionState;
@@ -29,6 +30,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -95,12 +97,8 @@ class HolderCredExRepositoryTest extends BaseTest {
         ex1 = holderCredExRepo.findById(ex1.getId()).orElseThrow();
         assertNull(ex1.getPartner());
 
-        updated = holderCredExRepo.updateIssuerByPartnerId(other.getId(), "My Bank");
-        assertEquals(1, updated.intValue());
-
         final List<BPACredentialExchange> cred = holderCredExRepo.findByPartnerId(other.getId());
         assertEquals(1, cred.size());
-        assertEquals("My Bank", cred.get(0).getIssuer());
     }
 
     @Test
@@ -136,13 +134,20 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_ISSUED));
         holderCredExRepo.save(createDummyCredEx(createRandomPartner()).setState(CredentialExchangeState.DONE));
 
-        assertEquals(2, holderCredExRepo.findByRoleEqualsAndStateIn(
+        assertEquals(2, holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
                 CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE)).size());
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
+                List.of(CredentialType.INDY), Pageable.unpaged()).getTotalSize());
 
-        assertEquals(1, holderCredExRepo.findByRoleEqualsAndStateIn(
+        assertEquals(1, holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
                 CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ISSUED)).size());
+                List.of(CredentialExchangeState.CREDENTIAL_ISSUED),
+                List.of(CredentialType.INDY), Pageable.unpaged()).getTotalSize());
+
+        assertEquals(0, holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
+                CredentialExchangeRole.HOLDER,
+                List.of(CredentialExchangeState.CREDENTIAL_ISSUED),
+                List.of(CredentialType.JSON_LD), Pageable.unpaged()).getTotalSize());
     }
 
     @Test
@@ -151,7 +156,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         BPACredentialExchange saved = holderCredExRepo.save(createDummyCredEx(p));
         saved.pushStates(CredentialExchangeState.OFFER_RECEIVED);
         holderCredExRepo.updateOnCredentialOfferEvent(saved.getId(), saved.getState(), saved.getStateToTimestamp(),
-                BPACredentialExchange.ExchangePayload
+                ExchangePayload
                         .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
                                 .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
                                 .build()));
@@ -159,6 +164,27 @@ class HolderCredExRepositoryTest extends BaseTest {
         assertNotNull(exchange.getCredentialOffer());
         assertTrue(exchange.getCredentialOffer().typeIsIndy());
         assertEquals("value1", exchange.getCredentialOffer().getIndy().getAttributes().get(0).getValue());
+    }
+
+    @Test
+    void testSetPartnerIdToNull() {
+        Partner p = createRandomPartner();
+        Partner p2 = createRandomPartner();
+        holderCredExRepo.save(createDummyCredEx(p));
+        BPACredentialExchange done = createDummyCredEx(p).setState(CredentialExchangeState.DONE);
+        holderCredExRepo.save(done);
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_RECEIVED));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.PROBLEM));
+
+        Assertions.assertEquals(4, holderCredExRepo.count());
+
+        holderCredExRepo.setPartnerIdToNull(p.getId());
+        partnerRepo.deleteByPartnerId(p.getId());
+
+        Assertions.assertEquals(2, holderCredExRepo.count());
+        Assertions.assertNull(holderCredExRepo.findById(done.getId()).orElseThrow().getPartner());
+
+        partnerRepo.deleteByPartnerId(p2.getId());
     }
 
     private static BPACredentialExchange createDummyCredEx(Partner partner) {
@@ -170,6 +196,7 @@ class HolderCredExRepositoryTest extends BaseTest {
                 .credentialExchangeId(UUID.randomUUID().toString())
                 .isPublic(Boolean.FALSE)
                 .role(CredentialExchangeRole.HOLDER)
+                .type(CredentialType.INDY)
                 .build();
     }
 
