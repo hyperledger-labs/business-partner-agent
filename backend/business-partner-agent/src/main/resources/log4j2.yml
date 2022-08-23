@@ -1,0 +1,35 @@
+Configuration:
+  status: warn
+
+  Appenders:
+    Console:
+      name: ConsolePatternAppender
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %c{1} - %replace{%msg}{[\r\n]+}{}%n"
+
+  Loggers:
+    logger:
+      - name: io.micronaut.context
+        level: info
+      - name: io.micronaut.security
+        level: info
+      - name: io.micronaut.data.query
+        level: info
+      - name: com.zaxxer.hikari
+        level: warn
+      - name: org.flywaydb.core
+        level: info
+      - name: org.hyperledger.bpa
+        level: debug
+      - name: org.hyperledger.bpa.impl.aries
+        level: trace
+      - name: org.hyperledger.aries
+        level: trace
+      - name: org.hyperledger.aries.BaseClient # set to trace to debug rest request payload
+        level: debug
+
+  Root:
+    level: warn
+    AppenderRef:
+      ref: LogToConsole
