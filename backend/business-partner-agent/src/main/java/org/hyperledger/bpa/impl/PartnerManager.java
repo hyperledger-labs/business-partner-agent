@@ -80,12 +80,11 @@ public class PartnerManager {
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    public Page<PartnerAPI> getPartners(@NonNull Pageable pageable) {
-        Page<PartnerAPI> partners = repo.findAll(pageable).map(converter::toAPIObject);
-        return partners;
+    public Page<PartnerAPI> getAll(@NonNull Pageable pageable) {
+        return repo.findAll(pageable).map(converter::toAPIObject);
     }
 
-    public Page<PartnerAPI> findByStateNotEqualsInvitation(
+    public Page<PartnerAPI> getAllWithoutInvites(
             @NonNull Pageable pageable) {
         return repo.findByStateNotEquals(ConnectionState.INVITATION, pageable).map(converter::toAPIObject);
     }

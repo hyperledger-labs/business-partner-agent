@@ -92,9 +92,7 @@ export default {
       this.rooms = [];
       this.currentRoomId = undefined;
       const _rooms = [];
-      const partners = await partnerService.getAllWithoutInvites(
-        false // TODO: look for a more elegant way than hardcode this
-      );
+      const partners = await partnerService.getAllWithoutInvites();
       if (Array.isArray(partners.data.content)) {
         for (const p of partners.data.content) {
           // assume they have a connection id, but check to make sure this partner is ARIES

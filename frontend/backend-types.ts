@@ -1141,7 +1141,6 @@ export interface components {
       host?: string;
       ledgerBrowser?: string;
       ledgerPrefix?: string;
-      writeLedgerId?: string;
       webOnly?: boolean;
       acapyEndpoint?: string;
       imprint?: string;
@@ -1154,6 +1153,7 @@ export interface components {
       fallbackLocale?: string;
       /** @description only set when running from .jar */
       buildVersion?: string;
+      writeLedgerId?: string;
     };
     "RuntimeConfig.UxConfig": {
       buttons?: { [key: string]: unknown };

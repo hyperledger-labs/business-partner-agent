@@ -185,12 +185,17 @@ export default {
     async fetch() {
       this.isBusy = true;
       this.items = [];
+
       const params = PageOptions.toUrlSearchParams(this.options);
       try {
-        const response = await partnerService.getAllWithoutInvites(
-          this.showInvitations,
-          params
-        );
+        const response = this.onlyIssuersForSchema
+          ? await partnerService.getAllForSchemaId(
+              this.onlyIssuersForSchema,
+              params
+            )
+          : await (this.showInvitations
+              ? partnerService.getAll(params)
+              : partnerService.getAllWithoutInvites(params));
         const { itemsPerPage } = this.options;
         this.items = response.data.content.map((partner: PartnerAPI) => {
           const tempPartner: PartnerAPI & { address: string } = {

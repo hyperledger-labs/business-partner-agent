@@ -30,12 +30,13 @@ export default {
   },
 
   // Query used only for partners that can issue credentials of specified schema
-  getAll(
-    schemaId?: string,
-    params: URLSearchParams = new URLSearchParams()
+  _getAll(
+    params: URLSearchParams,
+    invitation?: boolean,
+    schemaId?: string
   ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
-    const schemaIdPresent = schemaId && schemaId.length > 0;
-    if (schemaIdPresent) {
+    params.set("showInvitations", invitation.toString());
+    if (schemaId && schemaId.length > 0) {
       params.set("schemaId", schemaId);
     }
     return appAxios().get(`${ApiRoutes.PARTNERS}`, {
@@ -43,14 +44,19 @@ export default {
     });
   },
 
-  getAllWithoutInvites(
-    invitation: boolean,
+  getAll(params: URLSearchParams = new URLSearchParams()) {
+    return this._getAll(params, true, "");
+  },
+
+  getAllForSchemaId(
+    schemaId: string,
     params: URLSearchParams = new URLSearchParams()
-  ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
-    params.set("showInvitations", invitation.toString());
-    return appAxios().get(`${ApiRoutes.PARTNERS}`, {
-      params: params,
-    });
+  ) {
+    return this._getAll(params, false, schemaId);
+  },
+
+  getAllWithoutInvites(params: URLSearchParams = new URLSearchParams()) {
+    return this._getAll(params, false, "");
   },
 
   getPartnerById(id: string): Promise<AxiosResponse<PartnerAPI>> {

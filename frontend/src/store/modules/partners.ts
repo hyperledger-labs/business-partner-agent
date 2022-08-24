@@ -31,17 +31,12 @@ export default {
   },
   actions: {
     async loadPartners(context: any) {
-      partnerService
-        .getAll()
-        .then((result) => {
-          if (result.status === 200) {
-            context.commit("loadPartnersFinished", result.data);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          EventBus.$emit("error", error);
-        });
+      try {
+        const response = await partnerService.getAll();
+        context.commit("loadPartnersFinished", response.data.content);
+      } catch (error) {
+        EventBus.$emit("error", error);
+      }
     },
   },
   mutations: {

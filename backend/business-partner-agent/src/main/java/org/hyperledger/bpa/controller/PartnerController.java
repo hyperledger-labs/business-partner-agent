@@ -108,9 +108,9 @@ public class PartnerController {
             return HttpResponse
                     .ok(Page.of(issuersForSchemaId, Pageable.unpaged(), issuersForSchemaId.size()));
         } else if (!showInvitations) {
-            return HttpResponse.ok(pm.findByStateNotEqualsInvitation(pageable));
+            return HttpResponse.ok(pm.getAllWithoutInvites(pageable));
         }
-        return HttpResponse.ok(pm.getPartners(pageable));
+        return HttpResponse.ok(pm.getAll(pageable));
     }
 
     /**

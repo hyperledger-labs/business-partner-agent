@@ -24,19 +24,15 @@ export default {
   },
   actions: {
     async loadPartnerSelectList(context: any) {
-      partnerService
-        .getAllWithoutInvites(false)
-        .then((result) => {
-          if (result.status === 200) {
-            // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-            const partners = result.data.content;
-            context.commit("setPartnerSelectList", partners);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          EventBus.$emit("error", error);
-        });
+      try {
+        // filter out partners that are only at the invitation stage, we can't do anything until they accept.
+        const result = await partnerService.getAllWithoutInvites();
+        const partners = result.data.content;
+        context.commit("setPartnerSelectList", partners);
+      } catch (error) {
+        console.error(error);
+        EventBus.$emit("error", error);
+      }
     },
   },
   mutations: {
