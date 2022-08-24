@@ -64,7 +64,7 @@ public class ActivityManager {
             if (parameters.getType() != null) {
                 activities = activityRepository.findByType(parameters.getType(), pageable);
             } else {
-                activities = activityRepository.listOrderByUpdatedAt(pageable);
+                activities = activityRepository.list(pageable);
             }
         } else if (parameters.getTask()) {
             if (parameters.getType() != null) {

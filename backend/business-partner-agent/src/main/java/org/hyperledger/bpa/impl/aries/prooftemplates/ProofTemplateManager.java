@@ -106,9 +106,7 @@ public class ProofTemplateManager {
     }
 
     public Page<BPAProofTemplate> listProofTemplates(@Nullable String name, @NonNull Pageable pageable) {
-        Page<BPAProofTemplate> proofTemplates;
-        proofTemplates = repo.findByNameContains(name, pageable);
-        return proofTemplates;
+        return repo.findByNameContains(name, pageable);
     }
 
     public void removeProofTemplate(@NonNull UUID templateId) {

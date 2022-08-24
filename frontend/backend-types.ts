@@ -2206,7 +2206,7 @@ export interface operations {
         /** schema id */
         schemaId?: string | null;
         /** Filter Partners by connection state */
-        showInvitations?: boolean | null;
+        showInvitations: boolean;
       };
     };
     responses: {

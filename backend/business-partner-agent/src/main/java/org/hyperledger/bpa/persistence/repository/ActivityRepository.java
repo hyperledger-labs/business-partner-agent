@@ -40,7 +40,7 @@ public interface ActivityRepository extends PageableRepository<Activity, UUID> {
             @NonNull ActivityRole role);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    Page<Activity> listOrderByUpdatedAt(@NonNull Pageable pageable);
+    Page<Activity> list(@NonNull Pageable pageable);
 
     @NonNull
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
