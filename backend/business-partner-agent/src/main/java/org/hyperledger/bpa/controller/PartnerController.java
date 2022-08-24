@@ -93,16 +93,24 @@ public class PartnerController {
     /**
      * Get known partners
      *
-     * @param schemaId Filter Partners by schema id
+     * @param pc              {@link PaginationCommand}
+     * @param schemaId        Filter Partners by schema id
+     * @param showInvitations Filter Partners by connection state
      * @return list of partners
      */
-    @Get
-    public HttpResponse<List<PartnerAPI>> getPartners(
-            @Parameter(description = "schema id") @Nullable @QueryValue String schemaId) {
+    @Get("{?pc*}")
+    public HttpResponse<Page<PartnerAPI>> getPartners(@Valid @Nullable PaginationCommand pc,
+            @Parameter(description = "schema id") @Nullable @QueryValue String schemaId,
+            @QueryValue boolean showInvitations) {
+        Pageable pageable = pc != null ? pc.toPageable() : Pageable.unpaged();
         if (StringUtils.isNotBlank(schemaId)) {
-            return HttpResponse.ok(credLookup.getIssuersFor(schemaId));
+            List<PartnerAPI> issuersForSchemaId = credLookup.getIssuersFor(schemaId);
+            return HttpResponse
+                    .ok(Page.of(issuersForSchemaId, Pageable.unpaged(), issuersForSchemaId.size()));
+        } else if (!showInvitations) {
+            return HttpResponse.ok(pm.getAllWithoutInvites(pageable));
         }
-        return HttpResponse.ok(pm.getPartners());
+        return HttpResponse.ok(pm.getAll(pageable));
     }
 
     /**

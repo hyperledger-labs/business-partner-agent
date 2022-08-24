@@ -17,12 +17,14 @@
  */
 package org.hyperledger.bpa.impl.aries.prooftemplate;
 
+import io.micronaut.data.model.Pageable;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
@@ -126,16 +128,16 @@ class ProofTemplateManagerTest {
                                 .build())
                 .build();
 
-        Assertions.assertEquals(0, repo.count(), "There should be no templates initially.");
+        assertEquals(0, repo.count(), "There should be no templates initially.");
         BPAProofTemplate expected = sut.addProofTemplate(template);
-        Assertions.assertEquals(1, repo.count(), "There should be one template.");
+        assertEquals(1, repo.count(), "There should be one template.");
         Optional<BPAProofTemplate> actual = repo.findById(expected.getId());
         assertTrue(actual.isPresent());
         assertTrue(actual.map(BPAProofTemplate::getCreatedAt).isPresent());
         // equalize the time stamp, because Java's value is more detailed that the
         // database's.
         actual.ifPresent(t -> t.setCreatedAt(expected.getCreatedAt()));
-        Assertions.assertEquals(expected, actual.get(), "The passed proof template should be persisted with an id.");
+        assertEquals(expected, actual.get(), "The passed proof template should be persisted with an id.");
     }
 
     @Test
@@ -146,7 +148,7 @@ class ProofTemplateManagerTest {
                 ConstraintViolationException.class,
                 () -> sut.addProofTemplate(template),
                 "ProofTemplateManager#addProofTemplate should reject invalid templates with a ConstraintViolationException");
-        Assertions.assertEquals(0, repo.count(), "There should be no templates persisted.");
+        assertEquals(0, repo.count(), "There should be no templates persisted.");
     }
 
     @Test
@@ -171,7 +173,10 @@ class ProofTemplateManagerTest {
                 .name("mySecondTemplate")
                 .build());
 
-        List<String> allTemplates = sut.listProofTemplates().map(BPAProofTemplate::getName).toList();
+        List<String> allTemplates = sut.listProofTemplates("", Pageable.unpaged())
+                .map(BPAProofTemplate::toRepresentation)
+                .map(ProofTemplate::getName)
+                .getContent();
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
         assertTrue(allTemplates.contains("myFirstTemplate"), "Expected myFirstTemplate in the listed proof templates");
         assertTrue(allTemplates.contains("mySecondTemplate"),

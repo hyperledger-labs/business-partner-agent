@@ -146,12 +146,15 @@
         </v-tabs-items>
       </v-container>
       <v-card-actions>
-        <v-layout align-end justify-end v-show="tabIsSchemaAttribute">
-          <v-bpa-button v-show="!isEdit" color="secondary" @click="editSchema()"
+        <v-layout align-end justify-end>
+          <v-bpa-button
+            v-show="tabIsSchemaAttribute && !isEdit"
+            color="secondary"
+            @click="editSchema()"
             >{{ $t("button.edit") }}
           </v-bpa-button>
           <v-bpa-button
-            v-show="isEdit"
+            v-show="tabIsSchemaAttribute && isEdit"
             color="secondary"
             @click="updateSchema()"
             >{{ $t("button.save") }}</v-bpa-button

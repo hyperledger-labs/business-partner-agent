@@ -20,6 +20,8 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -40,9 +42,10 @@ import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.hyperledger.bpa.persistence.repository.TagRepository;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class PartnerManager {
@@ -77,10 +80,13 @@ public class PartnerManager {
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    public List<PartnerAPI> getPartners() {
-        return StreamSupport.stream(repo.findAll().spliterator(), false)
-                .map(converter::toAPIObject)
-                .collect(Collectors.toList());
+    public Page<PartnerAPI> getAll(@NonNull Pageable pageable) {
+        return repo.findAll(pageable).map(converter::toAPIObject);
+    }
+
+    public Page<PartnerAPI> getAllWithoutInvites(
+            @NonNull Pageable pageable) {
+        return repo.findByStateNotEquals(ConnectionState.INVITATION, pageable).map(converter::toAPIObject);
     }
 
     public Optional<PartnerAPI> getPartnerById(@NonNull UUID id) {

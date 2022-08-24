@@ -30,14 +30,33 @@ export default {
   },
 
   // Query used only for partners that can issue credentials of specified schema
-  getPartners(schemaId?: string): Promise<AxiosResponse<PartnerAPI[]>> {
-    let query = "";
-
+  _getAll(
+    params: URLSearchParams,
+    invitation?: boolean,
+    schemaId?: string
+  ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
+    params.set("showInvitations", invitation.toString());
     if (schemaId && schemaId.length > 0) {
-      query = `?schemaId=${schemaId}`;
+      params.set("schemaId", schemaId);
     }
+    return appAxios().get(`${ApiRoutes.PARTNERS}`, {
+      params: params,
+    });
+  },
 
-    return appAxios().get(`${ApiRoutes.PARTNERS}${query}`);
+  getAll(params: URLSearchParams = new URLSearchParams()) {
+    return this._getAll(params, true, "");
+  },
+
+  getAllForSchemaId(
+    schemaId: string,
+    params: URLSearchParams = new URLSearchParams()
+  ) {
+    return this._getAll(params, false, schemaId);
+  },
+
+  getAllWithoutInvites(params: URLSearchParams = new URLSearchParams()) {
+    return this._getAll(params, false, "");
   },
 
   getPartnerById(id: string): Promise<AxiosResponse<PartnerAPI>> {
@@ -87,7 +106,6 @@ export default {
     id: string,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<AriesProofExchange[]>>> {
-    params.set("partnerId", id);
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`, {
       params: params,
     });

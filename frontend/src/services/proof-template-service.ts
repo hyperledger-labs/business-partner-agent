@@ -11,13 +11,20 @@ import { ApiRoutes } from "@/constants";
 import { AxiosResponse } from "axios";
 import {
   CredentialType,
+  Page,
   PresentationRequestVersion,
   ProofTemplate,
 } from "@/services/types-services";
 
 export default {
-  getProofTemplates(): Promise<AxiosResponse<ProofTemplate[]>> {
-    return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}`);
+  getProofTemplates(
+    name: string,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<ProofTemplate[]>>> {
+    params.set("name", name);
+    return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}`, {
+      params: params,
+    });
   },
 
   getProofTemplate(id: string): Promise<AxiosResponse<ProofTemplate>> {

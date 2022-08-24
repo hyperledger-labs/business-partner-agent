@@ -290,13 +290,11 @@ export default {
           this.partnerId,
           params
         );
-        if (response.status === 200) {
-          const { itemsPerPage } = this.options;
-          this.presentationExchangeRecords = response.data.content;
-          this.totalNumberOfElements = response.data.totalSize;
-          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
-          this.$emit("presRawData", this.presentationExchangeRecords);
-        }
+        const { itemsPerPage } = this.options;
+        this.presentationExchangeRecords = response.data.content;
+        this.totalNumberOfElements = response.data.totalSize;
+        this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        this.$emit("presRawData", this.presentationExchangeRecords);
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
