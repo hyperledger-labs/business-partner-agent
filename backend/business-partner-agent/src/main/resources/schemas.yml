@@ -10,6 +10,14 @@ bpa:
       restrictions:
         - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
           label: "Demo Bank"
+    bank-account-idunion:
+      ledgerId: "IDUnionTest"
+      id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
+      label: "Bank Account"
+      defaultAttributeName: "iban"
+      restrictions:
+        - issuerDid: "${bpa.did.prefix}UmZ25DANwS6ngGWB4ye4tN"
+          label: "Demo Bank"
     commercial-register:
       ledgerId: "BoschTest"
       id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
@@ -17,6 +25,14 @@ bpa:
       defaultAttributeName: "companyName"
       restrictions:
         - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
+          label: "Commercial Register"
+    commercial-register-idunion:
+      ledgerId: "IDUnionTest"
+      id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
+      label: "Commercial Register"
+      defaultAttributeName: "companyName"
+      restrictions:
+        - issuerDid: "${bpa.did.prefix}R6WR6n7CQVDjvvmwofHK6S"
           label: "Commercial Register"
     permanent-resident:
       id: "https://w3id.org/citizenship/v1"
