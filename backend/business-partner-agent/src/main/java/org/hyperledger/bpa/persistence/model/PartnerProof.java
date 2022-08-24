@@ -31,6 +31,7 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.model.converter.ProofPayloadConverter;
 import org.hyperledger.bpa.persistence.model.converter.ProofRequestPayloadConverter;
@@ -53,7 +54,7 @@ import java.util.UUID;
 @Table(name = "partner_proof")
 @Accessors(chain = true)
 public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState>
-        implements PresExStateTranslator, ExchangeTypeTranslator {
+        implements PresExStateTranslator, ExchangeTypeTranslator, ExchangeVersionTranslator {
 
     @Id
     @AutoPopulated

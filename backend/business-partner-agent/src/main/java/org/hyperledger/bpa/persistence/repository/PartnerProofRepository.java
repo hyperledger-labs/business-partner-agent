@@ -73,4 +73,5 @@ public interface PartnerProofRepository extends PageableRepository<PartnerProof,
 
     Long countByStateEqualsAndCreatedAtAfter(PresentationExchangeState state, Instant createdAt);
 
+    Long deleteByPartnerId(UUID partnerId);
 }

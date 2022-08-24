@@ -40,8 +40,6 @@ import org.hyperledger.aries.api.issue_credential_v2.V2IssueCredentialRecordsFil
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
-import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
-import org.hyperledger.aries.api.present_proof_v2.V2PresentProofRecordsFilter;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -357,28 +355,13 @@ public class ConnectionManager {
                     log.warn("Could not delete aca-py connection.", e);
                 }
 
-                ac.presentProofRecords(PresentProofRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .build()).ifPresent(records -> records.forEach(record -> {
-                            try {
-                                ac.presentProofRecordsRemove(record.getPresentationExchangeId());
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete presentation exchange record: {}",
-                                        record.getPresentationExchangeId(), e);
-                            }
-                        }));
-                ac.presentProofV2Records(V2PresentProofRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .build()).ifPresent(records -> records.forEach(record -> {
-                            try {
-                                ac.presentProofV2RecordsRemove(record.getPresentationExchangeId());
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete v2 presentation exchange record: {}",
-                                        record.getPresentationExchangeId(), e);
-                            }
-                        }));
+                log.debug("Removing all aca-py v1 and v2 presentation exchanges");
+                Page<PartnerProof> partnerProofs = partnerProofRepo.findAll(Pageable.from(0, 10));
+                do {
+                    partnerProofs = deletePresentationExchanges(partnerProofs);
+                } while (partnerProofs.getNumberOfElements() > 0);
+
+                log.debug("Removing all aca-py v1 and v2 credential exchanges");
                 ac.issueCredentialRecords(IssueCredentialRecordsFilter
                         .builder()
                         .connectionId(connectionId)
@@ -402,16 +385,30 @@ public class ConnectionManager {
                             }
                         }));
             } catch (IOException e) {
-                log.error("Could not delete aca-py connection: {}", connectionId, e);
+                log.error("aca-py not available", e);
             }
         }
 
         holderCredExRepo.setPartnerIdToNull(partner.getId());
-        final Page<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId(), Pageable.unpaged());
-        if (CollectionUtils.isNotEmpty(proofs.getContent())) {
-            partnerProofRepo.deleteAll(proofs);
-        }
+        partnerProofRepo.deleteByPartnerId(partner.getId());
+
         eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner).build());
+    }
+
+    private Page<PartnerProof> deletePresentationExchanges(Page<PartnerProof> page) {
+        page.forEach(p -> {
+            try {
+                if (p.exchangeIsV1()) {
+                    ac.presentProofRecordsRemove(p.getPresentationExchangeId());
+                } else if (p.exchangeIsV2()) {
+                    ac.presentProofV2RecordsRemove(p.getPresentationExchangeId());
+                }
+            } catch (IOException | AriesException e) {
+                log.error("Could not delete presentation exchange record: {}",
+                        p.getPresentationExchangeId(), e);
+            }
+        });
+        return partnerProofRepo.findAll(page.nextPageable());
     }
 
     public boolean sendMessage(String connectionId, String content) {
