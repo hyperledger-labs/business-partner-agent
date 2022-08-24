@@ -60,10 +60,10 @@
         <micronaut.version>3.5.4</micronaut.version>
         <micronaut.data.version>3.4.3</micronaut.data.version>
         <micronaut.openapi.version>4.4.3</micronaut.openapi.version>
-        <micronaut.security.version>3.6.3</micronaut.security.version>
-        <mockito.version>4.6.1</mockito.version>
+        <micronaut.security.version>3.7.0</micronaut.security.version>
+        <mockito.version>4.7.0</mockito.version>
         <okhttp.version>4.10.0</okhttp.version>
-        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+        <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
         <pmd.version>6.48.0</pmd.version>
         <spotbugs.version>4.7.1</spotbugs.version>
         <testcontainers.version>1.17.3</testcontainers.version>
@@ -146,6 +146,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <!-- Logging -->

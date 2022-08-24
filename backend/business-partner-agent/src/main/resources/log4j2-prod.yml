@@ -1,0 +1,36 @@
+Configuration:
+  status: warn
+
+  Appenders:
+    Console:
+      name: ConsoleJSONAppender
+      target: SYSTEM_OUT
+      JsonLayout:
+        compact: true
+        properties: true
+        eventEol: true
+
+  Loggers:
+    Root:
+      level: warn
+      AppenderRef:
+        ref: ConsoleJSONAppender
+    Logger:
+      - name: io.micronaut.context
+        level: info
+      - name: io.micronaut.security
+        level: info
+      - name: io.micronaut.data.query
+        level: info
+      - name: com.zaxxer.hikari
+        level: warn
+      - name: org.flywaydb.core
+        level: info
+      - name: org.hyperledger.bpa
+        level: debug
+      - name: org.hyperledger.bpa.impl.aries
+        level: trace
+      - name: org.hyperledger.aries
+        level: debug
+      - name: org.hyperledger.aries.BaseClient # set to trace to debug rest request payload
+        level: debug
