@@ -21,7 +21,7 @@ auto-respond-presentation-proposal: true # needed as there is no ui
 auto-verify-presentation: false # always set to true in the controller
 auto-respond-presentation-request: false
 
-# credential and presentation exchanges
+# keep credential exchange records after exchange has completed
 preserve-exchange-records: false
 
 # auto discover features protocol
