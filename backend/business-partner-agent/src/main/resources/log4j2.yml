@@ -1,5 +1,3 @@
-# Default log configuration e.g. when developing to see all the details
-
 Configuration:
   status: warn
 

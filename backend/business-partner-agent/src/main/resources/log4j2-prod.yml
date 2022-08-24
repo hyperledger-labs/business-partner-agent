@@ -1,5 +1,3 @@
-# Production log config, json appender that logs lots of details.
-
 Configuration:
   status: warn
 
