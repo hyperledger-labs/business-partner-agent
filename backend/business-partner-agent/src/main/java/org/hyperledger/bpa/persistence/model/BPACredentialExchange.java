@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.model;
 
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.data.annotation.*;
@@ -32,6 +33,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.converter.CredExPayloadConverter;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
@@ -235,5 +237,13 @@ public class BPACredentialExchange
                     .build());
             return this;
         }
+    }
+
+    @Introspected
+    @Data
+    @NoArgsConstructor
+    public static class DeleteCredentialExchangeDTO implements ExchangeVersionTranslator {
+        private String credentialExchangeId;
+        private ExchangeVersion exchangeVersion;
     }
 }

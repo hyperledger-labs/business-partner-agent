@@ -17,13 +17,10 @@
  */
 package org.hyperledger.bpa.impl.aries.connection;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -35,13 +32,9 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.issue_credential_v1.IssueCredentialRecordsFilter;
-import org.hyperledger.aries.api.issue_credential_v2.V2IssueCredentialRecordsFilter;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
-import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
-import org.hyperledger.aries.api.present_proof_v2.V2PresentProofRecordsFilter;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -55,7 +48,6 @@ import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.Partner;
-import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.Tag;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
@@ -92,9 +84,6 @@ public class ConnectionManager {
     DidResolver didResolver;
 
     @Inject
-    ObjectMapper mapper;
-
-    @Inject
     BPAMessageSource.DefaultMessageSource messageSource;
 
     @Inject
@@ -105,6 +94,9 @@ public class ConnectionManager {
 
     @Inject
     PartnerCredDefLookup partnerCredDefLookup;
+
+    @Inject
+    AcyPyConnectionCleanup acaPyConnectionCleanup;
 
     /**
      * Creates a connection invitation to be used within a barcode
@@ -350,67 +342,22 @@ public class ConnectionManager {
         if (StringUtils.isNotEmpty(partner.getConnectionId())) {
             String connectionId = partner.getConnectionId();
             log.debug("Removing aca-py connection: {}", connectionId);
-            try {
-                try {
-                    ac.connectionsRemove(connectionId);
-                } catch (AriesException e) {
-                    log.warn("Could not delete aca-py connection.", e);
-                }
+            acaPyConnectionCleanup.deleteConnectionRecord(connectionId);
 
-                ac.presentProofRecords(PresentProofRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .build()).ifPresent(records -> records.forEach(record -> {
-                            try {
-                                ac.presentProofRecordsRemove(record.getPresentationExchangeId());
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete presentation exchange record: {}",
-                                        record.getPresentationExchangeId(), e);
-                            }
-                        }));
-                ac.presentProofV2Records(V2PresentProofRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .build()).ifPresent(records -> records.forEach(record -> {
-                            try {
-                                ac.presentProofV2RecordsRemove(record.getPresentationExchangeId());
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete v2 presentation exchange record: {}",
-                                        record.getPresentationExchangeId(), e);
-                            }
-                        }));
-                ac.issueCredentialRecords(IssueCredentialRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .build()).ifPresent(records -> records.forEach(record -> {
-                            try {
-                                ac.issueCredentialRecordsRemove(record.getCredentialExchangeId());
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete credential exchange record: {}",
-                                        record.getCredentialExchangeId(), e);
-                            }
-                        }));
-                ac.issueCredentialV2Records(V2IssueCredentialRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .build()).ifPresent(records -> records.forEach(record -> {
-                            try {
-                                ac.issueCredentialV2RecordsRemove(record.getCredExRecord().getCredExId());
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete credential exchange record: {}",
-                                        record.getCredExRecord().getCredExId(), e);
-                            }
-                        }));
-            } catch (IOException e) {
-                log.error("Could not delete aca-py connection: {}", connectionId, e);
-            }
+            log.debug("Removing all aca-py v1 and v2 presentation exchanges");
+            acaPyConnectionCleanup.deletePresentationExchangeRecords(partner.getId());
+
+            log.debug("Removing all aca-py v1 and v2 credential exchanges");
+            acaPyConnectionCleanup.deleteCredentialExchangeRecords(partner.getId());
+            acaPyConnectionCleanup.deleteRemainingCredentialExchangeRecords(connectionId);
         }
 
+        log.debug("Detaching wallet credentials from partner");
         holderCredExRepo.setPartnerIdToNull(partner.getId());
-        final Page<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId(), Pageable.unpaged());
-        if (CollectionUtils.isNotEmpty(proofs.getContent())) {
-            partnerProofRepo.deleteAll(proofs);
-        }
+
+        log.debug("Removing all BPA presentation exchanges");
+        partnerProofRepo.deleteByPartnerId(partner.getId());
+
         eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner).build());
     }
 
@@ -450,9 +397,9 @@ public class ConnectionManager {
                 .orElseThrow();
     }
 
-    private Partner createNewPartner(String alias, String invMsgId, List<Tag> tag,
+    private void createNewPartner(String alias, String invMsgId, List<Tag> tag,
             Boolean trustPing) {
-        return createNewPartner(alias, null, invMsgId, tag, trustPing, null);
+        createNewPartner(alias, null, invMsgId, tag, trustPing, null);
     }
 
     private Partner createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,

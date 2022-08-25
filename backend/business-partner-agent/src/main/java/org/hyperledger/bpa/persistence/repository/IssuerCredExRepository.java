@@ -48,6 +48,7 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    @Deprecated // only use paging for exchanges
     List<BPACredentialExchange> findAll();
 
     @Override
@@ -80,21 +81,21 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
     Number updateCredential(@Id UUID id,
             ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> ldCredential);
 
-    Number updateAfterEventWithRevocationInfo(@Id UUID id,
+    void updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
             @Nullable String revRegId,
             @Nullable String credRevId,
             @Nullable String errorMsg);
 
-    Number updateAfterEventNoRevocationInfo(@Id UUID id,
+    void updateAfterEventNoRevocationInfo(@Id UUID id,
             CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
             @Nullable String errorMsg);
 
-    Number updateRevocationInfo(@Id UUID id, String revRegId, @Nullable String credRevId);
+    void updateRevocationInfo(@Id UUID id, String revRegId, @Nullable String credRevId);
 
-    Number updateReferent(@Id UUID id, String referent);
+    void updateReferent(@Id UUID id, String referent);
 
-    Number updateByCredentialExchangeId(String credentialExchangeId, String referent);
+    void updateByCredentialExchangeId(String credentialExchangeId, String referent);
 }

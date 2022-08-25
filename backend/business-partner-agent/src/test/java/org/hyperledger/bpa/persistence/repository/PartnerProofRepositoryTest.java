@@ -135,6 +135,16 @@ class PartnerProofRepositoryTest {
                 .getPresentationExchangeId());
     }
 
+    @Test
+    void testDeleteByPartnerId() {
+        createRandomPartnerProof();
+        PartnerProof pp = createRandomPartnerProof();
+        repo.save(createDummyPresEx(pp, "pres-b"));
+        assertEquals(3, repo.count());
+        Long deleted = repo.deleteByPartnerId(pp.getPartner().getId());
+        assertEquals(2, deleted);
+    }
+
     private PartnerProof createDummyPresEx(@NonNull PartnerProof partnerProof, @NonNull String pesId) {
         return PartnerProof
                 .builder()

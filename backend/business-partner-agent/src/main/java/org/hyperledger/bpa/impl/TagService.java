@@ -32,6 +32,8 @@ import org.hyperledger.bpa.persistence.model.Tag;
 import org.hyperledger.bpa.persistence.repository.TagRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -75,9 +77,9 @@ public class TagService {
     }
 
     public List<TagAPI> listTags() {
-        List<TagAPI> result = new ArrayList<>();
-        tagRepo.findAll().forEach(dbT -> result.add(TagAPI.from(dbT)));
-        return result;
+        return StreamSupport.stream(tagRepo.findAll().spliterator(), false)
+                .map(TagAPI::from)
+                .collect(Collectors.toList());
     }
 
     public Optional<TagAPI> getTag(@NonNull UUID id) {

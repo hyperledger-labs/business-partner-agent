@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,8 +87,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p));
         holderCredExRepo.save(createDummyCredEx(other));
 
-        final List<BPACredentialExchange> byPartnerId = holderCredExRepo.findByPartnerId(p.getId());
-        assertEquals(2, byPartnerId.size());
+        assertEquals(2, holderCredExRepo.countByPartnerId(p.getId()));
 
         Number updated = holderCredExRepo.setPartnerIdToNull(p.getId());
         assertEquals(2, updated.intValue());
@@ -97,8 +97,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         ex1 = holderCredExRepo.findById(ex1.getId()).orElseThrow();
         assertNull(ex1.getPartner());
 
-        final List<BPACredentialExchange> cred = holderCredExRepo.findByPartnerId(other.getId());
-        assertEquals(1, cred.size());
+        assertEquals(1, holderCredExRepo.countByPartnerId(other.getId()));
     }
 
     @Test
@@ -121,10 +120,11 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setRevoked(Boolean.FALSE));
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setRevoked(Boolean.TRUE));
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("1"));
-        holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("2")
+        holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("2").setRevRegId("2:2"));
+        holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("3").setRevRegId("3:3")
                 .setRevoked(Boolean.FALSE));
 
-        Assertions.assertEquals(2, holderCredExRepo.findNotRevoked().size());
+        Assertions.assertEquals(2, holderCredExRepo.findNotRevoked(Pageable.UNPAGED).getNumberOfElements());
     }
 
     @Test
@@ -185,6 +185,25 @@ class HolderCredExRepositoryTest extends BaseTest {
         Assertions.assertNull(holderCredExRepo.findById(done.getId()).orElseThrow().getPartner());
 
         partnerRepo.deleteByPartnerId(p2.getId());
+    }
+
+    @Test
+    void testFindByPartnerIdAndStateIn() {
+        Partner p = createRandomPartner();
+        holderCredExRepo.save(createDummyCredEx(p));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_ACKED));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.DONE));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.OFFER_SENT));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.REQUEST_RECEIVED));
+        holderCredExRepo
+                .save(createDummyCredEx(createRandomPartner()).setState(CredentialExchangeState.REQUEST_RECEIVED));
+
+        Assertions.assertEquals(2, holderCredExRepo
+                .findByPartnerIdAndStateNotIn(
+                        p.getId(),
+                        Set.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
+                        Pageable.UNPAGED)
+                .getNumberOfElements());
     }
 
     private static BPACredentialExchange createDummyCredEx(Partner partner) {
