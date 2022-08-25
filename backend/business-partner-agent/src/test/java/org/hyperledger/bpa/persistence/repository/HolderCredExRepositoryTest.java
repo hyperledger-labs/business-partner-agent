@@ -86,8 +86,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p));
         holderCredExRepo.save(createDummyCredEx(other));
 
-        final List<BPACredentialExchange> byPartnerId = holderCredExRepo.findByPartnerId(p.getId());
-        assertEquals(2, byPartnerId.size());
+        assertEquals(2, holderCredExRepo.countByPartnerId(p.getId()));
 
         Number updated = holderCredExRepo.setPartnerIdToNull(p.getId());
         assertEquals(2, updated.intValue());
@@ -97,8 +96,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         ex1 = holderCredExRepo.findById(ex1.getId()).orElseThrow();
         assertNull(ex1.getPartner());
 
-        final List<BPACredentialExchange> cred = holderCredExRepo.findByPartnerId(other.getId());
-        assertEquals(1, cred.size());
+        assertEquals(1, holderCredExRepo.countByPartnerId(other.getId()));
     }
 
     @Test
@@ -124,7 +122,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("2")
                 .setRevoked(Boolean.FALSE));
 
-        Assertions.assertEquals(2, holderCredExRepo.findNotRevoked().size());
+        Assertions.assertEquals(2, holderCredExRepo.findNotRevoked(Pageable.UNPAGED).getNumberOfElements());
     }
 
     @Test

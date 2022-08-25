@@ -80,8 +80,6 @@ public interface PartnerRepository extends PageableRepository<Partner, UUID> {
 
     Long countByStateNotEquals(ConnectionState state);
 
-    Long countByCreatedAtAfter(Instant createdAt);
-
     Long countByStateNotEqualsAndCreatedAtAfter(ConnectionState state, Instant createdAt);
 
     // update
@@ -96,16 +94,16 @@ public interface PartnerRepository extends PageableRepository<Partner, UUID> {
 
     int updateDid(@Id UUID id, String did);
 
-    Number updateByDid(String did, Map<String, Object> supportedCredentials);
+    void updateByDid(String did, Map<String, Object> supportedCredentials);
 
-    Number updateVerifiablePresentation(@Id UUID id,
+    void updateVerifiablePresentation(@Id UUID id,
             Map<String, Object> verifiablePresentation, @Nullable Boolean valid,
             String label, String did);
 
-    Number updateVerifiablePresentation(@Id UUID id,
+    void updateVerifiablePresentation(@Id UUID id,
             Map<String, Object> verifiablePresentation, @Nullable Boolean valid);
 
-    Number updateInvitationRecord(@Id UUID is, @Nullable InvitationRecord invitationRecord);
+    void updateInvitationRecord(@Id UUID is, @Nullable InvitationRecord invitationRecord);
 
     // The queries below are native queries to prevent changes to the last updated
     // timestamp. As this timestamp indicates user interaction, whereas the queries

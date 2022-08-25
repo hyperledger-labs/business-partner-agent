@@ -62,8 +62,6 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
 
     Optional<BPACredentialExchange> findByReferent(String referent);
 
-    List<BPACredentialExchange> findByPartnerId(UUID partnerId);
-
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findByCredentialExchangeId(String credentialExchangeId);
@@ -77,10 +75,15 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
             + "AND role = 'HOLDER'")
     List<BPACredentialExchange> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
-    @Query("SELECT * FROM bpa_credential_exchange WHERE type = 'INDY' "
-            + "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) "
-            + "AND role = 'HOLDER'")
-    List<BPACredentialExchange> findNotRevoked();
+    @Query(value =
+            "SELECT * FROM bpa_credential_exchange WHERE type = 'INDY' " +
+                "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
+                "AND role = 'HOLDER'",
+            countQuery =
+            "SELECT COUNT(*) FROM bpa_credential_exchange WHERE type = 'INDY' " +
+                "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
+                "AND role = 'HOLDER'")
+    Page<BPACredentialExchange> findNotRevoked(@NonNull Pageable pageable);
 
     // update
 
@@ -95,11 +98,11 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
 
     void updateLabel(@Id UUID id, String label);
 
-    Number updateRevoked(@Id UUID id, Boolean revoked,
+    void updateRevoked(@Id UUID id, Boolean revoked,
             CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp);
 
-    Number updateReferent(@Id UUID id, @Nullable String referent);
+    void updateReferent(@Id UUID id, @Nullable String referent);
 
     @Query("UPDATE bpa_credential_exchange SET partner_id = null " +
             "WHERE partner_id = :partnerId " +
@@ -114,4 +117,5 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
     Long countByRoleEqualsAndStateEqualsAndCreatedAtAfter(
             CredentialExchangeRole role, CredentialExchangeState state, Instant issuedAt);
 
+    Long countByPartnerId(UUID partnerId);
 }

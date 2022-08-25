@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.aries.credential;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -115,7 +117,14 @@ public class HolderIndyManager {
     @Scheduled(fixedDelay = "5m", initialDelay = "1m")
     void checkRevocationStatus() {
         log.trace("Running revocation checks");
-        holderCredExRepo.findNotRevoked().parallelStream().forEach(cred -> {
+        Page<BPACredentialExchange> notRevoked = holderCredExRepo.findNotRevoked(Pageable.from(0, 25));
+        do {
+            notRevoked = pageRevocationStatusCheck(notRevoked);
+        } while (notRevoked.getNumberOfElements() > 0);
+    }
+
+    private Page<BPACredentialExchange> pageRevocationStatusCheck(@NonNull Page<BPACredentialExchange> page) {
+        page.forEach(cred -> {
             try {
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
@@ -135,6 +144,7 @@ public class HolderIndyManager {
                 log.error("Revocation check failed", e);
             }
         });
+        return holderCredExRepo.findNotRevoked(page.nextPageable());
     }
 
     // credential event handling

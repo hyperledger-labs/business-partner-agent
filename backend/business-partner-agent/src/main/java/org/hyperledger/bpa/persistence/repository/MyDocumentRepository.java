@@ -18,8 +18,6 @@
 package org.hyperledger.bpa.persistence.repository;
 
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.Page;
@@ -42,9 +40,9 @@ public interface MyDocumentRepository extends PageableRepository<MyDocument, UUI
     Optional<MyDocument> findById(@NonNull UUID id);
 
     /**
-     * Find all my public credentials
+     * Find all my public documents
      *
-     * @return list of public credentials
+     * @return list of public documents
      */
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     List<MyDocument> findByIsPublicTrue();
@@ -52,7 +50,4 @@ public interface MyDocumentRepository extends PageableRepository<MyDocument, UUI
     Page<MyDocument> findByTypeIn(List<CredentialType> type, Pageable pageable);
 
     boolean existsByTypeEqualsAndIsPublicTrue(CredentialType type);
-
-    // this one is for migration of old agent versions only
-    void updateSchemaId(@Id UUID id, @Nullable String schemaId);
 }

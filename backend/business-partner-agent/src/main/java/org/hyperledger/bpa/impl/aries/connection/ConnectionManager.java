@@ -358,13 +358,12 @@ public class ConnectionManager {
 
                 log.debug("Removing all aca-py v1 and v2 presentation exchanges");
                 Page<PartnerProof.DeletePartnerProofDTO> partnerProofs = partnerProofRepo.getByPartnerId(
-                        partner.getId(), Pageable.from(0, 10));
+                        partner.getId(), Pageable.from(0, 50));
                 do {
                     partnerProofs = deletePresentationExchanges(partner.getId(), partnerProofs);
                 } while (partnerProofs.getNumberOfElements() > 0);
 
                 log.debug("Removing all aca-py v1 and v2 credential exchanges");
-                // TODO if preserve presentation exchange records is true - then do it as above
                 ac.issueCredentialRecords(IssueCredentialRecordsFilter
                         .builder()
                         .connectionId(connectionId)
