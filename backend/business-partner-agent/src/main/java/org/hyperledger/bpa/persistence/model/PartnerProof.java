@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.model;
 
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
@@ -132,5 +133,13 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
             return ExchangeVersion.V1;
         }
         return exchangeVersion;
+    }
+
+    @Introspected
+    @Data
+    @NoArgsConstructor
+    public static class DeletePartnerProofDTO implements ExchangeVersionTranslator {
+        private String presentationExchangeId;
+        private ExchangeVersion exchangeVersion;
     }
 }

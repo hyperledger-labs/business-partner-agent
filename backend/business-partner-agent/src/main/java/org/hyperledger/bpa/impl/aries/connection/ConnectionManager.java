@@ -64,6 +64,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Singleton
@@ -356,10 +357,10 @@ public class ConnectionManager {
                 }
 
                 log.debug("Removing all aca-py v1 and v2 presentation exchanges");
-                // TODO could be a projection
-                Page<PartnerProof> partnerProofs = partnerProofRepo.findAll(Pageable.from(0, 10));
+                Page<PartnerProof.DeletePartnerProofDTO> partnerProofs = partnerProofRepo.getByPartnerId(
+                        partner.getId(), Pageable.from(0, 10));
                 do {
-                    partnerProofs = deletePresentationExchanges(partnerProofs);
+                    partnerProofs = deletePresentationExchanges(partner.getId(), partnerProofs);
                 } while (partnerProofs.getNumberOfElements() > 0);
 
                 log.debug("Removing all aca-py v1 and v2 credential exchanges");
@@ -397,7 +398,8 @@ public class ConnectionManager {
         eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner).build());
     }
 
-    private Page<PartnerProof> deletePresentationExchanges(Page<PartnerProof> page) {
+    private Page<PartnerProof.DeletePartnerProofDTO> deletePresentationExchanges(@NonNull UUID partnerId,
+        @NonNull Page<PartnerProof.DeletePartnerProofDTO> page) {
         page.forEach(p -> {
             try {
                 if (p.exchangeIsV1()) {
@@ -410,7 +412,7 @@ public class ConnectionManager {
                         p.getPresentationExchangeId(), e);
             }
         });
-        return partnerProofRepo.findAll(page.nextPageable());
+        return partnerProofRepo.getByPartnerId(partnerId, page.nextPageable());
     }
 
     public boolean sendMessage(String connectionId, String content) {

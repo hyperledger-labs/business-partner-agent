@@ -64,6 +64,9 @@ public interface PartnerProofRepository extends PageableRepository<PartnerProof,
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
     Page<PartnerProof> findByPartnerId(@NonNull UUID partnerId, @NonNull Pageable pageable);
 
+    @NonNull
+    Page<PartnerProof.DeletePartnerProofDTO> getByPartnerId(@NonNull UUID partnerId, @NonNull Pageable pageable);
+
     void updateProblemReport(@Id UUID id, String problemReport);
 
     long updateReceivedProof(@Id UUID id, Boolean valid, PresentationExchangeState state,
