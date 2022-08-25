@@ -75,14 +75,12 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
             + "AND role = 'HOLDER'")
     List<BPACredentialExchange> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
-    @Query(value =
-            "SELECT * FROM bpa_credential_exchange WHERE type = 'INDY' " +
-                "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
-                "AND role = 'HOLDER'",
-            countQuery =
-            "SELECT COUNT(*) FROM bpa_credential_exchange WHERE type = 'INDY' " +
-                "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
-                "AND role = 'HOLDER'")
+    @Query(value = "SELECT * FROM bpa_credential_exchange WHERE type = 'INDY' " +
+            "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
+            "AND role = 'HOLDER' AND rev_reg_id IS NOT NULL",
+            countQuery = "SELECT COUNT(*) FROM bpa_credential_exchange WHERE type = 'INDY' " +
+                    "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
+                    "AND role = 'HOLDER' AND rev_reg_id IS NOT NULL")
     Page<BPACredentialExchange> findNotRevoked(@NonNull Pageable pageable);
 
     // update

@@ -119,7 +119,8 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setRevoked(Boolean.FALSE));
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setRevoked(Boolean.TRUE));
         holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("1"));
-        holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("2")
+        holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("2").setRevRegId("2:2"));
+        holderCredExRepo.save(createDummyCredEx(p).setType(CredentialType.INDY).setReferent("3").setRevRegId("3:3")
                 .setRevoked(Boolean.FALSE));
 
         Assertions.assertEquals(2, holderCredExRepo.findNotRevoked(Pageable.UNPAGED).getNumberOfElements());

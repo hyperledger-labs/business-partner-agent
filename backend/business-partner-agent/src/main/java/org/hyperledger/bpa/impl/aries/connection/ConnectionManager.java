@@ -398,7 +398,7 @@ public class ConnectionManager {
     }
 
     private Page<PartnerProof.DeletePartnerProofDTO> deletePresentationExchanges(@NonNull UUID partnerId,
-        @NonNull Page<PartnerProof.DeletePartnerProofDTO> page) {
+            @NonNull Page<PartnerProof.DeletePartnerProofDTO> page) {
         page.forEach(p -> {
             try {
                 if (p.exchangeIsV1()) {
