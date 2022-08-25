@@ -6,7 +6,7 @@ micronaut:
 
 datasources:
   '*':
-    url: jdbc:tc:postgresql:12://${bpa.docker.host}/${bpa.pg.username}?TC_TMPFS=/testtmpfs:rw
+    url: jdbc:tc:postgresql:14://${bpa.docker.host}/${bpa.pg.username}?TC_TMPFS=/testtmpfs:rw
     driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
     username: test
     password: test
