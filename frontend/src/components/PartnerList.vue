@@ -9,14 +9,16 @@
 <template>
   <v-container>
     <v-data-table
-      :hide-default-footer="data.length < 10"
+      :hide-default-footer="hideFooter"
       v-model="selected"
       :loading="isBusy"
       :headers="headers"
-      :items="filteredData"
+      :items="items"
       :show-select="selectable"
-      :sort-by="['updatedAt']"
-      :sort-desc="[true]"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
+      sort-by="updatedAt"
+      sort-desc
       single-select
       @click:row="open"
     >
@@ -60,8 +62,8 @@ import { EventBus } from "@/main";
 import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
-import { CredentialTypes, PartnerStates } from "@/constants";
-import { PartnerAPI, partnerService } from "@/services";
+import { CredentialTypes } from "@/constants";
+import { PartnerAPI, partnerService, PageOptions } from "@/services";
 
 export default {
   name: "PartnerList",
@@ -99,15 +101,15 @@ export default {
       default: false,
     },
   },
-  created() {
-    this.fetch();
-  },
   data: () => {
     return {
       selected: new Array<any>(),
-      data: new Array<PartnerAPI & { address: string }>(),
+      items: new Array<PartnerAPI & { address: string }>(),
       isBusy: true,
       getPartnerState: getPartnerState,
+      hideFooter: true,
+      options: {},
+      totalNumberOfElements: 0,
     };
   },
   computed: {
@@ -116,11 +118,13 @@ export default {
         {
           text: this.$t("component.partnerList.headers.name"),
           value: "name",
+          sortable: false,
         },
         this.showAllHeaders
           ? {
               text: this.$t("component.partnerList.headers.address"),
               value: "address",
+              sortable: false,
             }
           : {},
         this.showAllHeaders
@@ -140,18 +144,22 @@ export default {
     expertMode() {
       return this.$store.getters.getExpertMode;
     },
-    filteredData() {
-      return !this.showInvitations
-        ? this.data.filter((partner: PartnerAPI & { address: string }) => {
-            return partner.state !== PartnerStates.INVITATION.value;
-          })
-        : this.data;
-    },
     partnerNotifications() {
       return this.$store.getters.partnerNotifications;
     },
   },
   watch: {
+    options: {
+      handler() {
+        this.fetch();
+      },
+    },
+    showInvitations: {
+      handler() {
+        this.fetch();
+        this.$set(this.options, "page", 1);
+      },
+    },
     refresh: function (newValue: boolean) {
       if (newValue) {
         this.fetch();
@@ -174,36 +182,34 @@ export default {
         },
       });
     },
+    async fetch() {
+      this.isBusy = true;
+      this.items = [];
 
-    fetch() {
-      this.$store.dispatch("loadPartnerSelectList");
-
-      partnerService
-        .getPartners(this.onlyIssuersForSchema)
-        .then((result) => {
-          console.log("Partner List", result);
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            this.isBusy = false;
-
-            if (this.onlyAries) {
-              result.data = result.data.filter((item) => {
-                return item.ariesSupport === true;
-              });
-            }
-
-            this.data = result.data.map((partner: PartnerAPI) => {
-              const tempPartner: PartnerAPI & { address: string } = {
-                address: this.getProfileAddress(partner),
-                ...partner,
-              };
-              return tempPartner;
-            });
-          }
-        })
-        .catch((error) => {
-          this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+      const params = PageOptions.toUrlSearchParams(this.options);
+      try {
+        const response = this.onlyIssuersForSchema
+          ? await partnerService.getAllForSchemaId(
+              this.onlyIssuersForSchema,
+              params
+            )
+          : await (this.showInvitations
+              ? partnerService.getAll(params)
+              : partnerService.getAllWithoutInvites(params));
+        const { itemsPerPage } = this.options;
+        this.items = response.data.content.map((partner: PartnerAPI) => {
+          const tempPartner: PartnerAPI & { address: string } = {
+            address: this.getProfileAddress(partner),
+            ...partner,
+          };
+          return tempPartner;
         });
+        this.totalNumberOfElements = response.data.totalSize;
+        this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isBusy = false;
     },
     getProfileAddress(partner: PartnerAPI) {
       if (partner.credential && partner.credential.length > 0) {

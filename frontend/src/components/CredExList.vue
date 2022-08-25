@@ -463,13 +463,11 @@ export default {
           this.partnerId,
           params
         );
-        if (response.status === 200) {
-          const { itemsPerPage } = this.options;
-          this.exchanges = response.data.content;
-          this.totalNumberOfElements = response.data.totalSize;
-          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
-          this.$emit("credRawData", this.exchanges);
-        }
+        const { itemsPerPage } = this.options;
+        this.exchanges = response.data.content;
+        this.totalNumberOfElements = response.data.totalSize;
+        this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        this.$emit("credRawData", this.exchanges);
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }

@@ -35,7 +35,7 @@ import ChatWindow, { Message, MessageAction, Room } from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
 import partnerService from "@/services/partner-service";
 import { mapMutations } from "vuex";
-import { CHAT_CURRENT_USERID, PartnerStates } from "@/constants";
+import { CHAT_CURRENT_USERID } from "@/constants";
 import { formatDateLong } from "@/filters";
 import { ChatMessage } from "@/services";
 
@@ -92,11 +92,11 @@ export default {
       this.rooms = [];
       this.currentRoomId = undefined;
       const _rooms = [];
-      const partners = await partnerService.getPartners();
-      if (Array.isArray(partners.data)) {
-        for (const p of partners.data) {
+      const partners = await partnerService.getAllWithoutInvites();
+      if (Array.isArray(partners.data.content)) {
+        for (const p of partners.data.content) {
           // assume they have a connection id, but check to make sure this partner is ARIES
-          if (p.ariesSupport && p.state !== PartnerStates.INVITATION.value) {
+          if (p.ariesSupport) {
             const name = p.name;
             // each room is for a single partner/connection
             // so set the room id to the partner id.

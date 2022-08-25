@@ -80,5 +80,10 @@ export default {
       showInvitations: false,
     };
   },
+  methods: {
+    refreshPartners() {
+      this.$refs.partnerList.fetch();
+    },
+  },
 };
 </script>

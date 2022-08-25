@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.aries.prooftemplates;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.exceptions.DataAccessException;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
@@ -45,8 +47,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @AllArgsConstructor
 @Singleton
@@ -105,8 +105,8 @@ public class ProofTemplateManager {
         return repo.save(template);
     }
 
-    public Stream<BPAProofTemplate> listProofTemplates() {
-        return StreamSupport.stream(repo.findAll().spliterator(), false);
+    public Page<BPAProofTemplate> listProofTemplates(@Nullable String name, @NonNull Pageable pageable) {
+        return repo.findByNameContains(name, pageable);
     }
 
     public void removeProofTemplate(@NonNull UUID templateId) {

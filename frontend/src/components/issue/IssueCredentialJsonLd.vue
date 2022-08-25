@@ -208,10 +208,7 @@ export default {
       };
       try {
         const resp = await issuerService.issueCredentialSendJsonLd(data);
-
-        if (resp.status === 200) {
-          return resp.data;
-        }
+        return resp.data;
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }

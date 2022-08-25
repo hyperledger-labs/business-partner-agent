@@ -9,7 +9,7 @@
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
 import { AxiosResponse } from "axios";
-import { ActivityItem } from "@/services/types-services";
+import { ActivityItem, Page } from "@/services/types-services";
 
 export default {
   //
@@ -19,12 +19,15 @@ export default {
   listActivities(
     tasks: string,
     activities: string,
-    filter: { name: string; value: string }
-  ): Promise<AxiosResponse<ActivityItem[]>> {
+    filter: { name: string; value: string },
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<ActivityItem[]>>> {
     let qs = `task=${tasks}&activity=${activities}`;
     if (filter && filter.name && filter.value) {
       qs = `${qs}&${filter.name}=${filter.value}`;
     }
-    return appAxios().get(`${ApiRoutes.ACTIVITIES}?${qs}`);
+    return appAxios().get(`${ApiRoutes.ACTIVITIES}?${qs}`, {
+      params: params,
+    });
   },
 };

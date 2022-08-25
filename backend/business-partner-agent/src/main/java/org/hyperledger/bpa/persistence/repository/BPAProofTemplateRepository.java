@@ -17,13 +17,29 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
+import lombok.NonNull;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPAProofTemplateRepository extends CrudRepository<BPAProofTemplate, UUID> {
+public interface BPAProofTemplateRepository extends PageableRepository<BPAProofTemplate, UUID> {
+
+    @Query(
+            value = "SELECT * " +
+                    "FROM \"bpa_proof_template\" bpaproof_template_ " +
+                    "WHERE bpaproof_template_.name " +
+                    "ILIKE CONCAT('%',:name,'%')",
+            countQuery = "SELECT COUNT(*) " +
+                    "FROM \"bpa_proof_template\" bpaproof_template_ " +
+                    "WHERE bpaproof_template_.name " +
+                    "ILIKE CONCAT('%',:name,'%')")
+    Page<BPAProofTemplate> findByNameContains(@Nullable String name, @NonNull Pageable pageable);
 }

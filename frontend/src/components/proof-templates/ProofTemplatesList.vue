@@ -15,17 +15,22 @@ create new ones
       v-model="search"
       append-icon="$vuetify.icons.search"
       :label="$t('app.search')"
+      v-on:input="loadProofTemplates"
       single-line
       hide-details
+      clearable
     ></v-text-field>
     <v-data-table
+      :hide-default-footer="hideFooter"
+      :server-items-length="totalNumberOfElements"
+      :options.sync="options"
       v-model="inputValue"
-      :loading="isLoading"
+      :loading="isBusy"
       :show-select="showCheckboxes"
-      :hide-default-footer="proofTemplates.length < 10"
       :headers="headers"
       :items="proofTemplates"
-      :search="search"
+      sort-by="createdAt"
+      sort-desc
       single-select
       @click:row="viewProofTemplate"
     >
@@ -36,13 +41,11 @@ create new ones
   </v-container>
 </template>
 <script lang="ts">
-import store from "@/store";
 import { EventBus } from "@/main";
-import { ProofTemplate, proofTemplateService } from "@/services";
+import { PageOptions, ProofTemplate, proofTemplateService } from "@/services";
 
 export default {
   props: {
-    isLoading: Boolean,
     showCheckboxes: {
       type: Boolean,
       default: false,
@@ -55,10 +58,19 @@ export default {
       dialog: false,
       proofTemplate: {},
       dirty: false,
+      isBusy: true,
+      proofTemplates: new Array<ProofTemplate>(),
+      hideFooter: true,
+      totalNumberOfElements: 0,
+      options: {},
     };
   },
-  created() {
-    this.$store.dispatch("loadProofTemplates");
+  watch: {
+    options: {
+      handler() {
+        this.loadProofTemplates();
+      },
+    },
   },
   computed: {
     headers() {
@@ -73,11 +85,6 @@ export default {
         },
       ];
     },
-    proofTemplates: {
-      get() {
-        return this.$store.getters.getProofTemplates;
-      },
-    },
     inputValue: {
       get() {
         return this.value;
@@ -88,6 +95,32 @@ export default {
     },
   },
   methods: {
+    async loadProofTemplates() {
+      this.isBusy = true;
+      this.proofTemplates = [];
+      if (!this.search) {
+        this.search = "";
+      }
+      const params = PageOptions.toUrlSearchParams(this.options);
+      try {
+        const response = await proofTemplateService.getProofTemplates(
+          this.search,
+          params
+        );
+        const { itemsPerPage } = this.options;
+        this.proofTemplates = response.data.content;
+        this.totalNumberOfElements = response.data.totalSize;
+        this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      // FIXME: this part triggers another query due to altering the paging options (watch: options handler)
+      //  but is needed to reset to page 1 after filtering.
+      if (this.hideFooter && this.options.page > 1) {
+        this.$set(this.options, "page", 1);
+      }
+      this.isBusy = false;
+    },
     openItem(proofTemplate: ProofTemplate) {
       this.dialog = true;
       this.dirty = false;
@@ -96,7 +129,7 @@ export default {
     onClosed() {
       this.dialog = false;
       if (this.dirty) {
-        store.dispatch("loadProofTemplates");
+        this.loadProofTemplates();
         this.$emit("changed");
       }
       this.dirty = false;
@@ -124,9 +157,8 @@ export default {
           if (result.status === 200) {
             this.$emit("removedItem", proofTemplate.id);
           }
-
           // reload proof templates
-          this.$store.dispatch("loadProofTemplates");
+          this.loadProofTemplates();
         })
         .catch((error) => {
           EventBus.$emit("error", this.$axiosErrorMessage(error));

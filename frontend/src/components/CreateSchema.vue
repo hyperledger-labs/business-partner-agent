@@ -250,9 +250,7 @@ export default {
       try {
         const schemaForm: CreateSchemaRequest = this.getSchemaFormData();
         const resp = await issuerService.createSchema(schemaForm);
-        if (resp.status === 200) {
-          return resp.data;
-        }
+        return resp.data;
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }

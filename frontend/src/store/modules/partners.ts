@@ -9,7 +9,7 @@ import { PartnerAPI } from "@/services";
 import { IStatePartners } from "@/store/state-type";
 import partnerService from "@/services/partner-service";
 import { EventBus } from "@/main";
-
+// TODO: sever side paging makes this script useless: remove in future story if possible
 const state: IStatePartners = {
   partnerList: new Array<PartnerAPI>(),
 };
@@ -31,17 +31,12 @@ export default {
   },
   actions: {
     async loadPartners(context: any) {
-      partnerService
-        .getPartners()
-        .then((result) => {
-          if (result.status === 200) {
-            context.commit("loadPartnersFinished", result.data);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          EventBus.$emit("error", error);
-        });
+      try {
+        const response = await partnerService.getAll();
+        context.commit("loadPartnersFinished", response.data.content);
+      } catch (error) {
+        EventBus.$emit("error", error);
+      }
     },
   },
   mutations: {
