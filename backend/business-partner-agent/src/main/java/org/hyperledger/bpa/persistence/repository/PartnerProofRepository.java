@@ -46,6 +46,7 @@ public interface PartnerProofRepository extends PageableRepository<PartnerProof,
     Optional<PartnerProof> findById(@NonNull UUID id);
 
     @Override
+    @Deprecated // only use paging for exchanges
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
     Iterable<PartnerProof> findAll();

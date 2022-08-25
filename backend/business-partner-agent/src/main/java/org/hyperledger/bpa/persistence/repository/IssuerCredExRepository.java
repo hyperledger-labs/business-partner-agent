@@ -48,6 +48,7 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    @Deprecated // only use paging for exchanges
     List<BPACredentialExchange> findAll();
 
     @Override
