@@ -44,18 +44,24 @@ public class AcyPyConnectionCleanup {
 
     private static final int PAGE_SIZE = 50;
 
-    private static final Set<CredentialExchangeState> FILTERED_STATES = Set.of(
-            CredentialExchangeState.CREDENTIAL_ACKED,
-            CredentialExchangeState.DONE);
+    private final Set<CredentialExchangeState> FILTERED_STATES = Set.of(
+            CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE);
+
+    private final AriesClient ac;
+
+    private final PartnerProofRepository partnerProofRepo;
+
+    private final HolderCredExRepository holderCredExRepository;
 
     @Inject
-    AriesClient ac;
-
-    @Inject
-    PartnerProofRepository partnerProofRepo;
-
-    @Inject
-    HolderCredExRepository holderCredExRepository;
+    public AcyPyConnectionCleanup(
+            AriesClient ac,
+            PartnerProofRepository partnerProofRepo,
+            HolderCredExRepository holderCredExRepository) {
+        this.ac = ac;
+        this.partnerProofRepo = partnerProofRepo;
+        this.holderCredExRepository = holderCredExRepository;
+    }
 
     void deleteConnectionRecord(
             @NonNull String connectionId) {
@@ -77,8 +83,9 @@ public class AcyPyConnectionCleanup {
 
     void deleteCredentialExchangeRecords(
             @NonNull UUID partnerId) {
-        // If the flag preserver-exchange-records is set to false, only exchanges that are not acked or done
-        // are stored within aca-py, so to prevent lots of 404 we filter out those states.
+        // If the flag preserver-exchange-records is set to false, only exchanges that
+        // are not acked or done are stored within aca-py, so to prevent lots of 404
+        // we filter out those states.
         Page<BPACredentialExchange.DeleteCredentialExchangeDTO> credExchanges = holderCredExRepository
                 .findByPartnerIdAndStateNotIn(
                         partnerId,

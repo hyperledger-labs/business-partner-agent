@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -184,6 +185,25 @@ class HolderCredExRepositoryTest extends BaseTest {
         Assertions.assertNull(holderCredExRepo.findById(done.getId()).orElseThrow().getPartner());
 
         partnerRepo.deleteByPartnerId(p2.getId());
+    }
+
+    @Test
+    void testFindByPartnerIdAndStateIn() {
+        Partner p = createRandomPartner();
+        holderCredExRepo.save(createDummyCredEx(p));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_ACKED));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.DONE));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.OFFER_SENT));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.REQUEST_RECEIVED));
+        holderCredExRepo
+                .save(createDummyCredEx(createRandomPartner()).setState(CredentialExchangeState.REQUEST_RECEIVED));
+
+        Assertions.assertEquals(2, holderCredExRepo
+                .findByPartnerIdAndStateNotIn(
+                        p.getId(),
+                        Set.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
+                        Pageable.UNPAGED)
+                .getNumberOfElements());
     }
 
     private static BPACredentialExchange createDummyCredEx(Partner partner) {
