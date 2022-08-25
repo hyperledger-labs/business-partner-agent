@@ -39,6 +39,7 @@ import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -82,6 +83,9 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
                     "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) " +
                     "AND role = 'HOLDER' AND rev_reg_id IS NOT NULL")
     Page<BPACredentialExchange> findNotRevoked(@NonNull Pageable pageable);
+
+    Page<BPACredentialExchange.DeleteCredentialExchangeDTO> findByPartnerIdAndStateNotIn(
+            UUID partnerId, Set<CredentialExchangeState> state, Pageable pageable);
 
     // update
 

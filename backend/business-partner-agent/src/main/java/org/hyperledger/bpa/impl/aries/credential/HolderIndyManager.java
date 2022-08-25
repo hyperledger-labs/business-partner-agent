@@ -114,7 +114,7 @@ public class HolderIndyManager {
      * Scheduled task that checks the revocation status of all credentials issued to
      * this BPA.
      */
-    @Scheduled(fixedDelay = "5m", initialDelay = "1m")
+    @Scheduled(cron = "0 15 01 * * ?") // At 01:15:00am every day
     void checkRevocationStatus() {
         log.trace("Running revocation checks");
         Page<BPACredentialExchange> notRevoked = holderCredExRepo.findNotRevoked(Pageable.from(0, 25));
