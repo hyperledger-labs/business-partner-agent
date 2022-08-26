@@ -36,6 +36,8 @@ import org.reactivestreams.Publisher;
 @Requires(missingProperty = "bpa.webhook.key")
 public class AcaPyAuthFetcherAllowAll implements AuthenticationFetcher {
 
+    // TODO Delete
+
     @Override
     public Publisher<Authentication> fetchAuthentication(io.micronaut.http.HttpRequest<?> request) {
         return Maybe.<Authentication>create(emitter -> {

@@ -29,6 +29,7 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.IssueCredentialRecordsFilter;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueCredentialRecordsFilter;
+import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
@@ -44,8 +45,7 @@ public class AcyPyConnectionCleanup {
 
     private static final int PAGE_SIZE = 50;
 
-    private final Set<CredentialExchangeState> FILTERED_STATES = Set.of(
-            CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE);
+    private final Set<CredentialExchangeState> FILTERED_STATES;
 
     private final AriesClient ac;
 
@@ -57,10 +57,18 @@ public class AcyPyConnectionCleanup {
     public AcyPyConnectionCleanup(
             AriesClient ac,
             PartnerProofRepository partnerProofRepo,
-            HolderCredExRepository holderCredExRepository) {
+            HolderCredExRepository holderCredExRepository,
+            AcaPyConfig acaPyConfig) {
         this.ac = ac;
         this.partnerProofRepo = partnerProofRepo;
         this.holderCredExRepository = holderCredExRepository;
+
+        if (acaPyConfig.getPreserveExchangeRecords()) {
+            FILTERED_STATES = Set.of(CredentialExchangeState.DECLINED); // hack as this is no aca-py state
+        } else {
+            FILTERED_STATES = Set.of(
+                    CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE);
+        }
     }
 
     void deleteConnectionRecord(

@@ -46,6 +46,8 @@ import java.util.List;
 @Requires(property = "bpa.webhook.key")
 public class AcaPyAuthFetcher implements AuthenticationFetcher {
 
+    // TODO DELETE
+
     private static final String X_API_KEY = "x-api-key";
 
     public static final String ROLE_ACA_PY = "ROLE_ACA_PY";

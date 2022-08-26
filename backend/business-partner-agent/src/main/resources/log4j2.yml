@@ -32,3 +32,5 @@ Configuration:
         level: trace
       - name: org.hyperledger.aries.BaseClient # set to trace to debug rest request payload
         level: debug
+      - name: io.netty
+        level: debug
