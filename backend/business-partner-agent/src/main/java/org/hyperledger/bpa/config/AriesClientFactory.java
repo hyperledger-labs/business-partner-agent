@@ -61,6 +61,7 @@ public class AriesClientFactory {
     }
 
     @Singleton
+    @Requires(notEnv = Environment.TEST)
     public record EagerWebsocketClient(@Inject @Getter AriesWebSocketClient ac) {
         @EventListener
         public void onServiceStartedEvent(StartupEvent startEvent) {
