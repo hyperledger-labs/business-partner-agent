@@ -84,7 +84,7 @@ micronaut:
   executors:
     io:
       type: fixed
-      nThreads: 25
+      nThreads: 25 # rest api threads
 
 endpoints:
   all:

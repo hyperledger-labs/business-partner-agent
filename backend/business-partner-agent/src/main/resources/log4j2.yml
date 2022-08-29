@@ -32,5 +32,7 @@ Configuration:
         level: trace
       - name: org.hyperledger.aries.BaseClient # set to trace to debug rest request payload
         level: debug
-      - name: io.netty
+      - name: org.hyperledger.aries.webhook.AriesWebSocketListener
         level: debug
+      - name: io.netty
+        level: warn
