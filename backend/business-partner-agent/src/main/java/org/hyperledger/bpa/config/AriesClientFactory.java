@@ -57,6 +57,7 @@ public class AriesClientFactory {
                 .url(UriUtil.httpToWs(url))
                 .apiKey(apiKey)
                 .handler(handlers)
+                .reactiveBufferSize(20)
                 .build();
     }
 
@@ -65,7 +66,7 @@ public class AriesClientFactory {
     public record EagerWebsocketClient(@Inject @Getter AriesWebSocketClient ac) {
         @EventListener
         public void onServiceStartedEvent(StartupEvent startEvent) {
-            ac.basicMessage();
+            ac.basicMessage(); // only needed to reference the bean so that it is initiated
         }
     }
 }
