@@ -101,7 +101,7 @@ public class PartnerController {
     @Get("{?pc*}")
     public HttpResponse<Page<PartnerAPI>> getPartners(@Valid @Nullable PaginationCommand pc,
             @Parameter(description = "schema id") @Nullable @QueryValue String schemaId,
-            @QueryValue boolean showInvitations) {
+            @QueryValue(defaultValue = "false") @Nullable Boolean showInvitations) {
         Pageable pageable = pc != null ? pc.toPageable() : Pageable.unpaged();
         if (StringUtils.isNotBlank(schemaId)) {
             List<PartnerAPI> issuersForSchemaId = credLookup.getIssuersFor(schemaId);

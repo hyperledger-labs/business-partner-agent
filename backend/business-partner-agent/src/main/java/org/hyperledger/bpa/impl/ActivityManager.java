@@ -60,13 +60,13 @@ public class ActivityManager {
             @NonNull Pageable pageable) {
         Page<Activity> activities;
 
-        if (parameters.getActivity() && parameters.getTask()) {
+        if (parameters.hasActivity() && parameters.hasTask()) {
             if (parameters.getType() != null) {
                 activities = activityRepository.findByType(parameters.getType(), pageable);
             } else {
                 activities = activityRepository.list(pageable);
             }
-        } else if (parameters.getTask()) {
+        } else if (parameters.hasTask()) {
             if (parameters.getType() != null) {
                 activities = activityRepository
                         .findByTypeAndCompletedFalse(parameters.getType(), pageable);
