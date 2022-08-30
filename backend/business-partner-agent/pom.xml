@@ -149,7 +149,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.29-SNAPSHOT</version>
+            <version>0.7.29</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -187,12 +187,6 @@
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
             <version>20220608.1</version>
-        </dependency>
-        <!-- netty compression -->
-        <dependency>
-            <groupId>com.aayushatharva.brotli4j</groupId>
-            <artifactId>brotli4j</artifactId>
-            <version>1.8.0</version>
         </dependency>
 
         <!-- Database -->
