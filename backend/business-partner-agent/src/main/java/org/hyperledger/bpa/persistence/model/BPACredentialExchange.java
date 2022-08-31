@@ -20,6 +20,7 @@ package org.hyperledger.bpa.persistence.model;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.data.annotation.*;
 import io.micronaut.data.model.DataType;
 import lombok.*;
@@ -153,7 +154,15 @@ public class BPACredentialExchange
     private String referent;
 
     public boolean checkIfPublic() {
-        return isPublic != null && isPublic;
+        return Boolean.TRUE.equals(isPublic);
+    }
+
+    public boolean checkIfRevocable() {
+        return StringUtils.isNotEmpty(revRegId);
+    }
+
+    public boolean checkIfNotRevoked() {
+        return revoked == null || !revoked;
     }
 
     public Instant calculateIssuedAt() {

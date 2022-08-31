@@ -9,6 +9,9 @@ micronaut:
       enabled: true # permissive cors, for strict cors configuration add strict-security.yml
     idle-timeout: 30m
     netty:
+      event-loops:
+        default:
+          prefer-native-transport: true
       responses:
         file:
           cache-seconds: 60
@@ -81,7 +84,7 @@ micronaut:
   executors:
     io:
       type: fixed
-      nThreads: 25
+      nThreads: 25 # rest api threads
 
 endpoints:
   all:

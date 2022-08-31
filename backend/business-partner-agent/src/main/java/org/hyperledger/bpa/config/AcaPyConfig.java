@@ -49,6 +49,7 @@ public class AcaPyConfig implements ApplicationEventListener<StartupTasks.AcaPyR
     private Boolean autoAcceptInvites = false;
     private Boolean autoAcceptRequests = false;
     private Boolean autoRespondMessages = false;
+    private Boolean preserveExchangeRecords = false;
 
     @Override
     public void onApplicationEvent(StartupTasks.AcaPyReady event) {
@@ -64,6 +65,7 @@ public class AcaPyConfig implements ApplicationEventListener<StartupTasks.AcaPyR
                 autoRespondPresentationRequest = c.isAutoRespondPresentationRequest();
                 autoStoreCredential = c.isAutoStoreCredential();
                 autoVerifyPresentation = c.isAutoVerifyPresentation();
+                preserveExchangeRecords = c.isPreserveExchangeRecords();
             });
         } catch (IOException e) {
             log.warn("aca-py not reachable");

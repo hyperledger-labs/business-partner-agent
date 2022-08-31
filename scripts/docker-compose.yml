@@ -49,7 +49,6 @@ services:
         aca-py start \
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url ${BPA_WEBHOOK_URL}#${BPA_WEBHOOK_KEY} \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
@@ -131,7 +130,6 @@ services:
         aca-py start \
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
-        --webhook-url ${BPA2_WEBHOOK_URL}#${BPA_WEBHOOK_KEY} \
         --endpoint ${ACAPY2_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \

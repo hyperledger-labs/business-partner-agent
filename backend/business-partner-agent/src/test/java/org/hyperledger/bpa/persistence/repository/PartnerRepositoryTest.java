@@ -45,9 +45,6 @@ class PartnerRepositoryTest {
     PartnerRepository partnerRepo;
 
     @Inject
-    TagRepository tagRepo;
-
-    @Inject
     Converter conv;
 
     @Test

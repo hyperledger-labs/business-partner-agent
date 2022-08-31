@@ -204,6 +204,13 @@ class HolderCredExRepositoryTest extends BaseTest {
                         Set.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
                         Pageable.UNPAGED)
                 .getNumberOfElements());
+
+        Assertions.assertEquals(5, holderCredExRepo
+                .findByPartnerIdAndStateNotIn(
+                        p.getId(),
+                        Set.of(CredentialExchangeState.DECLINED),
+                        Pageable.UNPAGED)
+                .getNumberOfElements());
     }
 
     private static BPACredentialExchange createDummyCredEx(Partner partner) {

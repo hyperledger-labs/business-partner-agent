@@ -17,12 +17,22 @@
  */
 package org.hyperledger.bpa.config;
 
+import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
+import io.micronaut.context.event.StartupEvent;
+import io.micronaut.runtime.event.annotation.EventListener;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Getter;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.AriesWebSocketClient;
+import org.hyperledger.aries.config.UriUtil;
+import org.hyperledger.aries.webhook.EventHandler;
+
+import java.util.List;
 
 @Factory
 @Requires(notEnv = Environment.TEST)
@@ -39,5 +49,24 @@ public class AriesClientFactory {
                 .url(url)
                 .apiKey(apiKey)
                 .build();
+    }
+
+    @Bean(preDestroy = "shutdown")
+    public AriesWebSocketClient ariesWebSocketClient(List<EventHandler> handlers) {
+        return AriesWebSocketClient.builder()
+                .url(UriUtil.httpToWs(url))
+                .apiKey(apiKey)
+                .handler(handlers)
+                .reactiveBufferSize(20)
+                .build();
+    }
+
+    @Singleton
+    @Requires(notEnv = Environment.TEST)
+    public record EagerWebsocketClient(@Inject @Getter AriesWebSocketClient ac) {
+        @EventListener
+        public void onServiceStartedEvent(StartupEvent startEvent) {
+            ac.basicMessage(); // only needed to reference the bean so that it is initiated
+        }
     }
 }

@@ -36,4 +36,12 @@ public class ActivitySearchParameters {
     @Nullable
     @QueryValue
     private ActivityType type;
+
+    public boolean hasActivity() {
+        return Boolean.TRUE.equals(activity);
+    }
+
+    public boolean hasTask() {
+        return Boolean.TRUE.equals(task);
+    }
 }

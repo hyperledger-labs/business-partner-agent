@@ -56,7 +56,7 @@
         <jackson.version>2.13.3</jackson.version>
         <log4j2.version>2.18.0</log4j2.version>
         <lombok.version>1.18.24</lombok.version>
-        <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
+        <lombok.maven.plugin.version>1.18.20.1</lombok.maven.plugin.version>
         <micronaut.version>3.5.4</micronaut.version>
         <micronaut.data.version>3.4.3</micronaut.data.version>
         <micronaut.openapi.version>4.4.3</micronaut.openapi.version>
@@ -72,8 +72,8 @@
         <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
         <maven.dependency.plugin.version>3.3.0</maven.dependency.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M7</maven.failsafe.plugin.version>
-        <maven.pmd.plugin.version>3.17.0</maven.pmd.plugin.version>
-        <maven.spotbugs.plugin.version>4.7.1.0</maven.spotbugs.plugin.version>
+        <maven.pmd.plugin.version>3.18.0</maven.pmd.plugin.version>
+        <maven.spotbugs.plugin.version>4.7.1.1</maven.spotbugs.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M7</maven.surefire.plugin.version>
     </properties>
 
@@ -124,7 +124,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>9.0.4</version>
+                <version>9.2.0</version>
             </dependency>
 
             <!-- Overwrites for vulnerable dependencies -->
@@ -264,7 +264,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.1.1</version>
+                <version>7.1.2</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
                     <skip>true</skip>
@@ -357,7 +357,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.12.0</version>
+                    <version>3.12.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -472,7 +472,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.4.1</version>
                     <configuration>
                         <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                         <sourcepath>${project.build.directory}/generated-sources/delombok</sourcepath>
@@ -537,7 +537,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
