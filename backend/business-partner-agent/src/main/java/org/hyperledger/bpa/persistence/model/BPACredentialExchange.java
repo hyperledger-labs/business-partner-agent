@@ -157,11 +157,11 @@ public class BPACredentialExchange
         return Boolean.TRUE.equals(isPublic);
     }
 
-    public boolean isRevocable() {
+    public boolean checkIfRevocable() {
         return StringUtils.isNotEmpty(revRegId);
     }
 
-    public boolean isNotRevoked() {
+    public boolean checkIfNotRevoked() {
         return revoked == null || !revoked;
     }
 
