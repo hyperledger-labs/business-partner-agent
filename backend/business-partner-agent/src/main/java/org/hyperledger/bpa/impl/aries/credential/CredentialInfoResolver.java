@@ -68,14 +68,14 @@ public class CredentialInfoResolver {
             holderCredExRepo.findByReferent(ci.getReferent()).ifPresent(cred -> {
                 builder.credentialId(cred.getId());
                 builder.credentialLabel(cred.getLabel());
+                if (cred.isRevocable() && cred.isNotRevoked()) {
+                    try {
+                        ac.credentialRevoked(ci.getReferent()).ifPresent(rev -> builder.revoked(rev.getRevoked()));
+                    } catch (IOException | AriesException e) {
+                        log.error("Could not check credential revocation status", e);
+                    }
+                }
             });
-        }
-        if (StringUtils.isNotEmpty(ci.getReferent())) {
-            try {
-                ac.credentialRevoked(ci.getReferent()).ifPresent(rev -> builder.revoked(rev.getRevoked()));
-            } catch (IOException | AriesException e) {
-                log.error("Could not check credential revocation status", e);
-            }
         }
         return builder.build();
     }

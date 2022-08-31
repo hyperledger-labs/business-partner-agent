@@ -51,7 +51,7 @@ public class AriesClientFactory {
                 .build();
     }
 
-    @Bean(preDestroy = "close")
+    @Bean(preDestroy = "shutdown")
     public AriesWebSocketClient ariesWebSocketClient(List<EventHandler> handlers) {
         return AriesWebSocketClient.builder()
                 .url(UriUtil.httpToWs(url))
