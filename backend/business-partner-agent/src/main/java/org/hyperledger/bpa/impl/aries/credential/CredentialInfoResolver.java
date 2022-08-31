@@ -74,6 +74,8 @@ public class CredentialInfoResolver {
                     } catch (IOException | AriesException e) {
                         log.error("Could not check credential revocation status", e);
                     }
+                } else {
+                    builder.revoked(cred.getRevoked());
                 }
             });
         }
