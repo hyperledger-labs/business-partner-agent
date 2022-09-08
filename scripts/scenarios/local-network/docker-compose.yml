@@ -4,7 +4,7 @@ services:
 # Business 1
 #######
   bpa1:
-    image: ghcr.io/hyperledger-labs/business-partner-agent:local
+    image: bpa:local
     build:
       context: ../../..
       dockerfile: Dockerfile
@@ -89,6 +89,7 @@ services:
 # Business 2
 #######
   bpa2:
+    image: bpa:local
     build:
       context: ../../..
       dockerfile: Dockerfile
