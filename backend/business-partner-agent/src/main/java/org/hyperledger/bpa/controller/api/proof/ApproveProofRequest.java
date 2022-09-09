@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller.api.proof;
 
+import io.micronaut.core.annotation.Introspected;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.present_proof.SendPresentationRequestHelper2;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
+@Introspected
 public class ApproveProofRequest {
 
     @NotEmpty
@@ -43,16 +45,14 @@ public class ApproveProofRequest {
     }
 
     public Map<String, SendPresentationRequestHelper2.SelectedMatch.ReferentInfo> toClientAPI() {
-        return selectedReferents != null
-                ? selectedReferents.entrySet().stream()
-                        .map(e -> Map.entry(e.getKey(),
-                                SendPresentationRequestHelper2.SelectedMatch.ReferentInfo.builder()
-                                        .referent(e.getValue().getReferent())
-                                        .revealed(e.getValue().getRevealed())
-                                        .selfAttestedValue(e.getValue().getSelfAttestedValue())
-                                        .build()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                : Map.of();
+        return selectedReferents.entrySet().stream()
+                .map(e -> Map.entry(e.getKey(),
+                        SendPresentationRequestHelper2.SelectedMatch.ReferentInfo.builder()
+                                .referent(e.getValue().getReferent())
+                                .revealed(e.getValue().getRevealed())
+                                .selfAttestedValue(e.getValue().getSelfAttestedValue())
+                                .build()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public List<String> collectReferents() {

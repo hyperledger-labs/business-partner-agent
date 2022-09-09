@@ -96,7 +96,7 @@ public class ProofExchangeController {
      * @return HTTP status
      */
     @Post("/{id}/prove")
-    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body ApproveProofRequest req) {
+    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body @Valid ApproveProofRequest req) {
         proofM.presentProof(id, req);
         return HttpResponse.ok();
     }
