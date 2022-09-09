@@ -43,6 +43,9 @@ export type DeclineExchangeRequest =
 
 export type ApproveProofRequest = components["schemas"]["ApproveProofRequest"];
 
+export type SelectedReferent =
+  components["schemas"]["ApproveProofRequest.SelectedReferent"];
+
 export type ProofRequestedAttributes =
   components["schemas"]["PresentProofRequest.ProofRequest.ProofRequestedAttributes"];
 

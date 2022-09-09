@@ -149,9 +149,10 @@
 import {
   AriesProofExchange,
   PageOptions,
-  PresentationRequestCredentials,
   partnerService,
+  PresentationRequestCredentials,
   proofExService,
+  SelectedReferent,
 } from "@/services";
 import { EventBus } from "@/main";
 import {
@@ -163,6 +164,7 @@ import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import PresentationRecord from "@/components/PresentationRecord.vue";
 import PresentationRecordV2 from "@/components/PresentationRecordV2.vue";
 import VBpaButton from "@/components/BpaButton";
+
 export default {
   props: {
     openItemById: String,
@@ -407,14 +409,15 @@ export default {
         });
       }
     },
-    prepareReferents(): string[] {
-      const referents: string[] = [];
+    prepareReferents(): { [key: string]: SelectedReferent } {
+      const referents: { [key: string]: SelectedReferent } = {};
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]: [string, any]) => {
-            console.log(groupName);
-            referents.push(group.selectedCredential?.credentialInfo?.referent);
+            referents[groupName] = {
+              referent: group.selectedCredential?.credentialInfo?.referent,
+            };
           }
         );
       });

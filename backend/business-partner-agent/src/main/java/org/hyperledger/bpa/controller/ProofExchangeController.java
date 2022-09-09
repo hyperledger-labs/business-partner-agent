@@ -35,7 +35,7 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
-import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
+import org.hyperledger.bpa.controller.api.proof.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
@@ -96,7 +96,7 @@ public class ProofExchangeController {
      * @return HTTP status
      */
     @Post("/{id}/prove")
-    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body @Nullable ApproveProofRequest req) {
+    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body ApproveProofRequest req) {
         proofM.presentProof(id, req);
         return HttpResponse.ok();
     }

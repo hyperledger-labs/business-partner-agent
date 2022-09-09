@@ -404,7 +404,17 @@ export interface components {
       issuerDid?: string;
     };
     ApproveProofRequest: {
-      referents?: string[];
+      selectedReferents: {
+        [
+          key: string
+        ]: components["schemas"]["ApproveProofRequest.SelectedReferent"];
+      };
+    };
+    "ApproveProofRequest.SelectedReferent": {
+      /** Format: uuid */
+      referent?: string;
+      revealed?: boolean;
+      selfAttestedValue?: string;
     };
     AriesCredential: {
       /** Format: uuid */
@@ -2206,7 +2216,7 @@ export interface operations {
         /** schema id */
         schemaId?: string | null;
         /** Filter Partners by connection state */
-        showInvitations: boolean;
+        showInvitations?: boolean | null;
       };
     };
     responses: {
