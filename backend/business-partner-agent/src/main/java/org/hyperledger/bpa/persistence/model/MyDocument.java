@@ -79,6 +79,7 @@ public class MyDocument implements ExchangeTypeTranslator {
 
     @Nullable
     @TypeDef(type = DataType.JSON)
+    // TODO: Find proper type including CredentialAttributes
     private Map<String, Object> document;
 
 }

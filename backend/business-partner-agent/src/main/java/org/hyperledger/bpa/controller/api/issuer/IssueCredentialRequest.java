@@ -17,19 +17,19 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Introspected
@@ -58,10 +58,8 @@ public abstract class IssueCredentialRequest {
     /** credential exchange type */
     private CredentialType type;
 
-    /** credential body key value pairs */
-    @JsonRawValue
-    @Schema(example = "{}")
-    private JsonNode document;
+    /** Attribute array with name, value, mime-type */
+    private ArrayList<CredentialAttributes> document;
 
     @Introspected
     @Data

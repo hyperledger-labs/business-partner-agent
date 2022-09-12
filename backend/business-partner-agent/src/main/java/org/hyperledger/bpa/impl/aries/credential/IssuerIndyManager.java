@@ -30,7 +30,6 @@ import org.hyperledger.acy_py.generated.model.V10CredentialBoundOfferRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
-import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
@@ -104,6 +103,7 @@ public class IssuerIndyManager {
                 .orElseThrow(() -> new IssuerException(
                         msg.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
 
+        // TODO: Use object array with name, value and mime-type instead of Map
         Map<String, String> document = conv.toStringMap(request.getDocument());
 
         checkCredentialAttributes(document, dbCredDef);
@@ -119,7 +119,7 @@ public class IssuerIndyManager {
                 .builder()
                 .connectionId(Objects.requireNonNull(connectionId))
                 .schemaId(schemaId)
-                .credentialProposal(new CredentialPreview(CredentialAttributes.fromMap(document)))
+                .credentialProposal(new CredentialPreview(request.getDocument()))
                 .credentialDefinitionId(credentialDefinitionId)
                 .build();
 

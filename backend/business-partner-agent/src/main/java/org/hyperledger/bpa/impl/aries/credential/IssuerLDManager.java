@@ -49,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -78,7 +79,7 @@ public class IssuerLDManager {
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
-    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
+    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId, ArrayList<CredentialAttributes> document) {
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
         try {
