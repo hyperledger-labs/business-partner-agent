@@ -199,7 +199,7 @@ public class BPACredentialExchange
         if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
             return Map.of();
         }
-        return indyCredential.getAttrs();
+        return CredentialAttributes.toMap(indyCredential.getAttrs());
     }
 
     private Map<String, String> ldAttributesToMap(V20CredExRecordByFormat.LdProof ldProof) {

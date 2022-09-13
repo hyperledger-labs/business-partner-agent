@@ -28,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -114,13 +115,11 @@ public class VPManager {
     }
 
     protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
-        final ObjectNode on = converter.fromMap(Objects.requireNonNull(doc.getDocument()), ObjectNode.class);
-        on.remove("id");
-        on.put("id", myDid);
+        var document = Objects.requireNonNull(doc.getDocument());
 
         // this is needed because the java client serializes with GSON
         // and cannot handle Jackson ObjectNode
-        JsonObject subj = GsonConfig.defaultConfig().fromJson(on.toString(), JsonObject.class);
+        JsonObject subj = GsonConfig.defaultConfig().fromJson(document.toString(), JsonObject.class);
 
         List<String> types = new ArrayList<>(doc.getType().getType());
         if (doc.typeIsJsonLd() && doc.getSchema() != null && doc.getSchema().getLdType() != null) {

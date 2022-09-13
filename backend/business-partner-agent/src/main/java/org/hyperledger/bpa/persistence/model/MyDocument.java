@@ -23,12 +23,14 @@ import io.micronaut.data.model.DataType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
 import javax.persistence.Id;
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -78,8 +80,6 @@ public class MyDocument implements ExchangeTypeTranslator {
     private String label;
 
     @Nullable
-    @TypeDef(type = DataType.JSON)
     // TODO: Find proper type including CredentialAttributes
-    private Map<String, Object> document;
-
+    private ArrayList<CredentialAttributes> document;
 }

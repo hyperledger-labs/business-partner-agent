@@ -50,6 +50,7 @@ import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -77,7 +78,7 @@ public class HolderIndyManager {
     public void sendCredentialProposal(
             @NonNull String connectionId,
             @NonNull String schemaId,
-            @NonNull Map<String, Object> document,
+            @NonNull ArrayList<CredentialAttributes> document,
             @NonNull BPACredentialExchange.BPACredentialExchangeBuilder dbCredEx,
             @Nullable ExchangeVersion version)
             throws IOException {

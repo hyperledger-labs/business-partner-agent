@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
@@ -136,7 +137,7 @@ public class HolderManager extends CredentialManagerBase {
                     .pushStateChange(CredentialExchangeState.PROPOSAL_SENT, Instant.now())
                     .role(CredentialExchangeRole.HOLDER);
             String connectionId = Objects.requireNonNull(dbPartner.getConnectionId());
-            Map<String, Object> document = Objects.requireNonNull(dbDoc.getDocument());
+            ArrayList<CredentialAttributes> document = Objects.requireNonNull(dbDoc.getDocument());
             if (dbDoc.typeIsIndy()) {
                 indy.sendCredentialProposal(connectionId, s.getSchemaId(), document, dbCredEx, version);
             } else {
