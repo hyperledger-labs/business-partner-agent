@@ -117,7 +117,7 @@ public class IssuerLDManager {
         throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.not.supported"));
     }
 
-    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
+    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull ArrayList<CredentialAttributes> attributes,
             @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String schemaId = credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null;
         if (StringUtils.isNotEmpty(schemaId) && !StringUtils.equals(schemaId, ids.schemaId())) {

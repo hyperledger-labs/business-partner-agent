@@ -23,8 +23,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Data
@@ -41,7 +43,7 @@ public class MyDocumentAPI {
     private Boolean isPublic;
     private String label;
     @Schema(example = "{}")
-    private JsonNode documentData; // TODO rename to document
+    private ArrayList<CredentialAttributes> documentData; // TODO rename to document
 
     public static MyDocumentAPI fromRequest(WalletDocumentRequest req) {
         return DocumentMapper.INSTANCE.requestToDocumentApi(req);

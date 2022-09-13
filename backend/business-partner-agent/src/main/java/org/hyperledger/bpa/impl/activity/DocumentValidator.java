@@ -23,6 +23,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -34,10 +35,7 @@ import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * Does some validation on incoming {@link MyDocumentAPI} objects. Like this we
@@ -77,16 +75,16 @@ public class DocumentValidator {
         validateInternal(newDocument);
     }
 
-    public void validateAttributesAgainstIndySchema(@NonNull JsonNode attributes, @NonNull String schemaId) {
+    public void validateAttributesAgainstIndySchema(@NonNull ArrayList<CredentialAttributes> attributes, @NonNull String schemaId) {
         // validate document data against schema
         BPASchema schema = findSchema(schemaId);
         Set<String> attributeNames = schema.getSchemaAttributeNames();
         // assuming flat structure
-        attributes.fieldNames().forEachRemaining(fn -> {
-            if (!attributeNames.contains(fn)) {
+        attributes.forEach(attr -> {
+            if (!attributeNames.contains(attr.getName())) {
                 throw new WrongApiUsageException(
                         ms.getMessage("api.document.validation.attribute.not.in.schema",
-                                Map.of("attr", fn)));
+                                Map.of("attr", attr)));
             }
         });
     }

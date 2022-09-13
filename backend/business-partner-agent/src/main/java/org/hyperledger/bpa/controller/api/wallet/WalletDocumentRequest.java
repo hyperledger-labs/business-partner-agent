@@ -21,7 +21,10 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
+
+import java.util.ArrayList;
 
 @Data
 public class WalletDocumentRequest {
@@ -31,5 +34,5 @@ public class WalletDocumentRequest {
     private String label;
     @JsonRawValue
     @Schema(example = "{}")
-    private JsonNode document;
+    private ArrayList<CredentialAttributes> document;
 }

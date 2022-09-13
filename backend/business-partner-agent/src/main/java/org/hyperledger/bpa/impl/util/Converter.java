@@ -185,11 +185,10 @@ public class Converter {
      * @return myCredential model object, updated
      */
     public MyDocument updateMyCredential(@NonNull MyDocumentAPI apiDoc, @NonNull MyDocument myDoc) {
-        Map<String, Object> data = toMap(apiDoc.getDocumentData());
         schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresentOrElse(myDoc::setSchema,
                 EntityNotFoundException::new);
         myDoc
-                .setDocument(data)
+                .setDocument(apiDoc.getDocumentData())
                 .setIsPublic(apiDoc.getIsPublic())
                 .setType(apiDoc.getType())
                 .setSchemaId(apiDoc.getSchemaId())
@@ -202,7 +201,7 @@ public class Converter {
                 .id(myDoc.getId())
                 .createdAt(myDoc.getCreatedAt().toEpochMilli())
                 .updatedAt(myDoc.getUpdatedAt().toEpochMilli())
-                .documentData(myDoc.getDocument() != null ? fromMap(myDoc.getDocument(), JsonNode.class) : null)
+                .documentData(myDoc.getDocument() != null ? myDoc.getDocument() : null)
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
                 .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId(), null))

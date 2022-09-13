@@ -42,6 +42,7 @@ import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 import javax.persistence.Id;
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -177,7 +178,7 @@ public class BPACredentialExchange
                 : null;
     }
 
-    public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull ArrayList<CredentialAttributes> proposalAttributesToMap() {
         if (typeIsJsonLd()) {
             return ldAttributesToMap(credentialProposal != null ? credentialProposal.getJsonLD() : null);
         }

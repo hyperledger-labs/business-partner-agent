@@ -24,10 +24,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.Tag;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +50,7 @@ public class IssueOOBCredentialRequest implements ExchangeVersionTranslator {
     /** credential body key value pairs */
     @JsonRawValue
     @Schema(example = "{}")
-    private JsonNode document;
+    private ArrayList<CredentialAttributes> document;
 
     private ExchangeVersion exchangeVersion;
 }
