@@ -25,7 +25,7 @@
     "csv-string": "4.0.1",
     "deepmerge": "4.2.2",
     "font-awesome": "4.7.0",
-    "jsonld-context-parser": "2.1.5",
+    "jsonld-context-parser": "2.2.1",
     "material-design-icons-iconfont": "6.1.1",
     "moment": "2.29.4",
     "qrcode.vue": "1.7.0",
