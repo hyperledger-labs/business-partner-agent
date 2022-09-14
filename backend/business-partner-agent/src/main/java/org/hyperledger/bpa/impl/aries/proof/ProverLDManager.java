@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.present_proof_v2.*;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -55,7 +56,7 @@ public class ProverLDManager extends BaseLDManager {
     public V20PresProposalRequest prepareProposal(@NonNull String connectionId,
             @NonNull BPACredentialExchange credEx) {
 
-        Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
+        Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToCredentialAttributesList());
 
         String descriptorId = credEx.getSchema() != null ? credEx.getSchema().resolveSchemaLabelEscaped()
                 : UUID.randomUUID().toString();
@@ -101,12 +102,13 @@ public class ProverLDManager extends BaseLDManager {
         return result;
     }
 
-    private Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
-        return ldAttributes.entrySet()
+    private Map<UUID, DIFField> buildDifFields(@NonNull ArrayList<CredentialAttributes> ldAttributes) {
+        return ldAttributes
                 .stream()
                 .filter(e -> StringUtils.isNotEmpty(e.getValue()))
-                .filter(e -> !StringUtils.equalsIgnoreCase("type", e.getKey()))
-                .map(e -> pair(e.getKey(), DIFField.Filter.builder()
+                .filter(e -> !StringUtils.equalsIgnoreCase("type", e.getName()))
+                // TODO: Pass mime-type
+                .map(e -> pair(e.getName(), DIFField.Filter.builder()
                         ._const(e.getValue())
                         .build()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));

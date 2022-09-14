@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -132,7 +131,7 @@ public class IssuerLDManager {
                 V20CredBoundOfferRequest.builder()
                         .filter(v20CredFilter)
                         .counterPreview(V2CredentialExchangeFree.V2CredentialPreview.builder()
-                                .attributes(CredentialAttributes.fromMap(attributes))
+                                .attributes(attributes)
                                 .build())
                         .build())
                 .orElseThrow();

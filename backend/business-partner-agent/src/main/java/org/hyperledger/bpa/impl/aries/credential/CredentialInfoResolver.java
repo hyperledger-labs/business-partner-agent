@@ -98,7 +98,7 @@ public class CredentialInfoResolver {
             holderCredExRepo.findByReferent(matchingVC.getRecordId()).ifPresent(cred -> {
                 builder.credentialId(cred.getId());
                 builder.credentialLabel(cred.getLabel());
-                builder.attrs(cred.credentialAttributesToMap());
+                builder.attrs(cred.credentialAttributesToCredentialAttributesList());
                 builder.referent(matchingVC.getRecordId());
             });
         }

@@ -21,12 +21,13 @@ import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Data
@@ -50,7 +51,7 @@ public class AriesCredential {
 
     private String label;
     private String typeLabel;
-    private Map<String, String> credentialData;
+    private ArrayList<CredentialAttributes> credentialData;
 
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
             @Nullable String typeLabel) {

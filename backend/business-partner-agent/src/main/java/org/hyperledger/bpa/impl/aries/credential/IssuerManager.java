@@ -171,7 +171,7 @@ public class IssuerManager extends CredentialManagerBase {
         }
         ArrayList<CredentialAttributes> attributes;
         if (counterOffer.acceptAll()) {
-            attributes = credEx.proposalAttributesToMap();
+            attributes = credEx.proposalAttributesToCredentialAttributesList();
         } else {
             attributes = counterOffer.getAttributes();
         }
