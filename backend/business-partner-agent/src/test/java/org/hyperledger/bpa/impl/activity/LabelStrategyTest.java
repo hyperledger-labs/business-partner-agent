@@ -17,10 +17,10 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.bpa.api.MyDocumentAPI;
@@ -34,8 +34,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +57,10 @@ public class LabelStrategyTest {
     @InjectMocks
     LabelStrategy labelStrategy;
 
-    private static final String BA = "{\"bic\": \"123\", \"iban\": \"test123\"}";
+    private static final ArrayList<CredentialAttributes> BA = new ArrayList<>(Arrays.asList(
+            new CredentialAttributes("bic", "123", null),
+            new CredentialAttributes("iban", "test123", null)
+    ));
 
     @Test
     void testHappyLabel() throws Exception {
@@ -67,7 +71,7 @@ public class LabelStrategyTest {
 
         MyDocumentAPI doc = MyDocumentAPI
                 .builder()
-                .documentData(mapper.readValue(BA, JsonNode.class))
+                .documentData(BA)
                 .schemaId(SCHEMA_ID)
                 .build();
         labelStrategy.apply(doc);
@@ -89,7 +93,7 @@ public class LabelStrategyTest {
         MyDocumentAPI doc = MyDocumentAPI
                 .builder()
                 .schemaId(SCHEMA_ID)
-                .documentData(mapper.readValue(BA, JsonNode.class))
+                .documentData(BA)
                 .build();
         labelStrategy.apply(doc);
         assertNull(doc.getLabel());
@@ -104,7 +108,11 @@ public class LabelStrategyTest {
                 .build()));
 
         Credential credential = new Credential();
-        credential.setAttrs(Map.of("iban", "test123", "bic", "1234"));
+        credential.setAttrs(
+        new ArrayList<>(Arrays.asList(
+                        new CredentialAttributes("iban", "test123", null),
+                        new CredentialAttributes("bic", "1234", null)
+                )));
         credential.setSchemaId(SCHEMA_ID);
         String label = labelStrategy.apply(credential);
         assertEquals("test123", label);
@@ -125,7 +133,11 @@ public class LabelStrategyTest {
                 .build()));
         AriesCredential credential = new AriesCredential();
         credential.setSchemaId(SCHEMA_ID);
-        credential.setCredentialData(Map.of("iban", "test123", "bic", "1234"));
+        credential.setCredentialData(
+        new ArrayList<>(Arrays.asList(
+                        new CredentialAttributes("iban", "test123", null),
+                        new CredentialAttributes("bic", "1234", null)
+        )));
         String label = labelStrategy.apply("", credential);
         assertEquals("test123", label);
     }

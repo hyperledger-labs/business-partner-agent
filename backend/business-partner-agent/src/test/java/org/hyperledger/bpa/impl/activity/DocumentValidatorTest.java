@@ -18,8 +18,8 @@
 package org.hyperledger.bpa.impl.activity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -36,10 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -86,20 +83,24 @@ public class DocumentValidatorTest {
     void testIndyCredentialWithSchema() throws JsonProcessingException {
         when(schemaService.getSchemaFor(anyString())).thenReturn(buildSchema(Set.of("iban", "bic")));
 
-        String json = "{\"iban\": \"iban\", \"bic\": \"bic\"}";
-        JsonNode jsonNode = m.readTree(json);
+        ArrayList<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
+                new CredentialAttributes("iban", "iban", null),
+                new CredentialAttributes("bic", "bic", null)
+        ));
 
-        validator.validateNew(buildMyDocument(jsonNode));
+        validator.validateNew(buildMyDocument(document));
     }
 
     @Test
     void testIndyCredentialWithNoMatchingSchema() throws JsonProcessingException {
         when(schemaService.getSchemaFor(anyString())).thenReturn(buildSchema(Set.of("iban", "bic")));
 
-        String json = "{\"foo\": \"iban\", \"bar\": \"bic\"}";
-        JsonNode jsonNode = m.readTree(json);
+        ArrayList<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
+                new CredentialAttributes("foo", "iban", null),
+                new CredentialAttributes("bar", "bic", null)
+        ));
 
-        assertThrows(WrongApiUsageException.class, () -> validator.validateNew(buildMyDocument(jsonNode)));
+        assertThrows(WrongApiUsageException.class, () -> validator.validateNew(buildMyDocument(document)));
     }
 
     @Test
@@ -125,12 +126,12 @@ public class DocumentValidatorTest {
                 .build());
     }
 
-    private MyDocumentAPI buildMyDocument(JsonNode jsonNode) {
+    private MyDocumentAPI buildMyDocument(ArrayList<CredentialAttributes> attributes) {
         return MyDocumentAPI
                 .builder()
                 .type(CredentialType.INDY)
                 .schemaId("123")
-                .documentData(jsonNode)
+                .documentData(attributes)
                 .build();
     }
 }
