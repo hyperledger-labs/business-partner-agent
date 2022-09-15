@@ -239,8 +239,10 @@ public class IssuerIndyManager {
      * @param document  the credential
      * @param dbCredDef {@link BPACredentialDefinition}
      */
-    private void checkCredentialAttributes(ArrayList<CredentialAttributes> document, BPACredentialDefinition dbCredDef) {
-        Set<String> documentAttributeNames = document.stream().map(CredentialAttributes::getName).collect(Collectors.toSet());
+    private void checkCredentialAttributes(ArrayList<CredentialAttributes> document,
+            BPACredentialDefinition dbCredDef) {
+        Set<String> documentAttributeNames = document.stream().map(CredentialAttributes::getName)
+                .collect(Collectors.toSet());
         Set<String> schemaAttributeNames = dbCredDef.getSchema().getSchemaAttributeNames();
         if (!documentAttributeNames.equals(schemaAttributeNames)) {
             throw new IssuerException(msg.getMessage("api.issuer.credential.document.mismatch",

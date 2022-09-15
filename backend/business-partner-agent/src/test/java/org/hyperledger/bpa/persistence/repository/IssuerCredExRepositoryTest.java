@@ -65,7 +65,8 @@ public class IssuerCredExRepositoryTest {
 
         exchange = issuerCredExRepo.findById(exchange.getId()).orElseThrow();
         Assertions.assertNotNull(exchange.getIndyCredential());
-        Assertions.assertEquals("val1", exchange.getIndyCredential().getAttrs().stream().filter(attr -> attr.getName().equals("attr1")).findFirst().get().getValue());
+        Assertions.assertEquals("val1", exchange.getIndyCredential().getAttrs().stream()
+                .filter(attr -> attr.getName().equals("attr1")).findFirst().get().getValue());
     }
 
     @Test

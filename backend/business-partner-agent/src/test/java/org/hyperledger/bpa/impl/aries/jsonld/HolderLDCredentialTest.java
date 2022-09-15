@@ -109,7 +109,8 @@ public class HolderLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
         Assertions.assertEquals(2, ex.offerAttributesToCredentialAttributesList().size());
-        Assertions.assertEquals("karl", ex.credentialAttributesToCredentialAttributesList().stream().filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals("karl", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
 
         holder.sendCredentialRequest(ex.getId());
 
@@ -129,7 +130,8 @@ public class HolderLDCredentialTest extends BaseTest {
         ex = loadCredEx(id);
         Assertions.assertTrue(ex.stateIsDone());
         Assertions.assertEquals(2, ex.credentialAttributesToCredentialAttributesList().size());
-        Assertions.assertEquals("karl", ex.credentialAttributesToCredentialAttributesList().stream().filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals("karl", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
     }
 
     @Test
@@ -177,8 +179,7 @@ public class HolderLDCredentialTest extends BaseTest {
                 .isPublic(Boolean.FALSE)
                 .documentData(new ArrayList<>(Arrays.asList(
                         new CredentialAttributes("name", "My Name", null),
-                        new CredentialAttributes("identifier", "something", null)
-                )))
+                        new CredentialAttributes("identifier", "something", null))))
                 .build());
 
         holder.sendCredentialProposal(p.getId(), document.getId(), null);
@@ -189,7 +190,8 @@ public class HolderLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
         Assertions.assertEquals(2, ex.proposalAttributesToCredentialAttributesList().size());
-        Assertions.assertEquals("My Name", ex.credentialAttributesToCredentialAttributesList().stream().filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals("My Name", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
 
         aeh.handleCredentialV2(offer);
         ex = loadCredEx(id);
@@ -223,8 +225,7 @@ public class HolderLDCredentialTest extends BaseTest {
                 .isPublic(Boolean.FALSE)
                 .documentData(new ArrayList<>(Arrays.asList(
                         new CredentialAttributes("name", "My Name", null),
-                        new CredentialAttributes("identifier", "something", null)
-                )))
+                        new CredentialAttributes("identifier", "something", null))))
                 .build());
 
         holder.sendCredentialProposal(p.getId(), document.getId(), null);

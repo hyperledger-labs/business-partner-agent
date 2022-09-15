@@ -75,7 +75,8 @@ public class DocumentValidator {
         validateInternal(newDocument);
     }
 
-    public void validateAttributesAgainstIndySchema(@NonNull ArrayList<CredentialAttributes> attributes, @NonNull String schemaId) {
+    public void validateAttributesAgainstIndySchema(@NonNull ArrayList<CredentialAttributes> attributes,
+            @NonNull String schemaId) {
         // validate document data against schema
         BPASchema schema = findSchema(schemaId);
         Set<String> attributeNames = schema.getSchemaAttributeNames();

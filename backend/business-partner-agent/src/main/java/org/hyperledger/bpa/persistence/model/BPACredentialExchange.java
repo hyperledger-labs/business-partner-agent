@@ -180,9 +180,11 @@ public class BPACredentialExchange
 
     public @io.micronaut.core.annotation.NonNull ArrayList<CredentialAttributes> proposalAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
-            return ldAttributesToCredentialAttributesList(credentialProposal != null ? credentialProposal.getJsonLD() : null);
+            return ldAttributesToCredentialAttributesList(
+                    credentialProposal != null ? credentialProposal.getJsonLD() : null);
         }
-        return indyAttributesToCredentialAttributesList(credentialProposal != null ? credentialProposal.getIndy() : null);
+        return indyAttributesToCredentialAttributesList(
+                credentialProposal != null ? credentialProposal.getIndy() : null);
     }
 
     public @io.micronaut.core.annotation.NonNull ArrayList<CredentialAttributes> offerAttributesToCredentialAttributesList() {
@@ -203,7 +205,8 @@ public class BPACredentialExchange
         return (ArrayList<CredentialAttributes>) indyCredential.getAttrs();
     }
 
-    private ArrayList<CredentialAttributes> ldAttributesToCredentialAttributesList(V20CredExRecordByFormat.LdProof ldProof) {
+    private ArrayList<CredentialAttributes> ldAttributesToCredentialAttributesList(
+            V20CredExRecordByFormat.LdProof ldProof) {
         Map<String, String> result = ldProof == null ? Map.of() : ldProof.toFlatMap();
         // TODO: Pass mime-type
         return (ArrayList<CredentialAttributes>) result.entrySet()
@@ -212,7 +215,8 @@ public class BPACredentialExchange
                 .collect(Collectors.toList());
     }
 
-    private ArrayList<CredentialAttributes> indyAttributesToCredentialAttributesList(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
+    private ArrayList<CredentialAttributes> indyAttributesToCredentialAttributesList(
+            V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
         if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
             return new ArrayList<>();
         }

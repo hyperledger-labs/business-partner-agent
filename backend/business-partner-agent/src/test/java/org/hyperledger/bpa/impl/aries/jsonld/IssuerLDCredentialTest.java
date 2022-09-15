@@ -104,8 +104,7 @@ public class IssuerLDCredentialTest extends BaseTest {
                 .partnerId(p.getId())
                 .document(new ArrayList<>(Arrays.asList(
                         new CredentialAttributes("name", "555", null),
-                        new CredentialAttributes("identifier", "1234", null)
-                )))
+                        new CredentialAttributes("identifier", "1234", null))))
                 .type(CredentialType.JSON_LD)
                 .build());
 
@@ -115,7 +114,8 @@ public class IssuerLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
         Assertions.assertEquals(2, ex.credentialAttributesToCredentialAttributesList().size());
-        Assertions.assertEquals("555", ex.credentialAttributesToCredentialAttributesList().stream().filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals("555", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
 
         aeh.handleCredentialV2(received);
         ex = credExRepo.findById(ex.getId()).orElseThrow();
@@ -151,8 +151,7 @@ public class IssuerLDCredentialTest extends BaseTest {
                 .partnerId(p.getId())
                 .document(new ArrayList<>(Arrays.asList(
                         new CredentialAttributes("name", "555", null),
-                        new CredentialAttributes("identifier", "1234", null)
-                )))
+                        new CredentialAttributes("identifier", "1234", null))))
                 .type(CredentialType.JSON_LD)
                 .build());
 
@@ -194,7 +193,8 @@ public class IssuerLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
         Assertions.assertEquals(2, ex.proposalAttributesToCredentialAttributesList().size());
-        Assertions.assertEquals("Name", ex.credentialAttributesToCredentialAttributesList().stream().filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals("Name", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
         Assertions.assertEquals(0, ex.offerAttributesToCredentialAttributesList().size());
 
         CredentialOfferRequest req = new CredentialOfferRequest();
@@ -212,7 +212,8 @@ public class IssuerLDCredentialTest extends BaseTest {
         ex = loadCredEx(id);
         Assertions.assertTrue(ex.stateIsCredentialIssued());
         Assertions.assertEquals(2, ex.credentialAttributesToCredentialAttributesList().size());
-        Assertions.assertEquals("Other Name", ex.credentialAttributesToCredentialAttributesList().stream().filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals("Other Name", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
     }
 
     @Test

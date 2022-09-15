@@ -78,7 +78,8 @@ public class IssuerLDManager {
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
-    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId, ArrayList<CredentialAttributes> document) {
+    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId,
+            ArrayList<CredentialAttributes> document) {
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
         try {

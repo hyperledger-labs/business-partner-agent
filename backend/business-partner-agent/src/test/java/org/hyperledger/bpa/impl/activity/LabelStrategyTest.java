@@ -59,8 +59,7 @@ public class LabelStrategyTest {
 
     private static final ArrayList<CredentialAttributes> BA = new ArrayList<>(Arrays.asList(
             new CredentialAttributes("bic", "123", null),
-            new CredentialAttributes("iban", "test123", null)
-    ));
+            new CredentialAttributes("iban", "test123", null)));
 
     @Test
     void testHappyLabel() throws Exception {
@@ -109,10 +108,9 @@ public class LabelStrategyTest {
 
         Credential credential = new Credential();
         credential.setAttrs(
-        new ArrayList<>(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         new CredentialAttributes("iban", "test123", null),
-                        new CredentialAttributes("bic", "1234", null)
-                )));
+                        new CredentialAttributes("bic", "1234", null))));
         credential.setSchemaId(SCHEMA_ID);
         String label = labelStrategy.apply(credential);
         assertEquals("test123", label);
@@ -134,10 +132,9 @@ public class LabelStrategyTest {
         AriesCredential credential = new AriesCredential();
         credential.setSchemaId(SCHEMA_ID);
         credential.setCredentialData(
-        new ArrayList<>(Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         new CredentialAttributes("iban", "test123", null),
-                        new CredentialAttributes("bic", "1234", null)
-        )));
+                        new CredentialAttributes("bic", "1234", null))));
         String label = labelStrategy.apply("", credential);
         assertEquals("test123", label);
     }

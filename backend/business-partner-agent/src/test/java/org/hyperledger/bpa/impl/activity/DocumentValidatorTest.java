@@ -85,8 +85,7 @@ public class DocumentValidatorTest {
 
         ArrayList<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("iban", "iban", null),
-                new CredentialAttributes("bic", "bic", null)
-        ));
+                new CredentialAttributes("bic", "bic", null)));
 
         validator.validateNew(buildMyDocument(document));
     }
@@ -97,8 +96,7 @@ public class DocumentValidatorTest {
 
         ArrayList<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("foo", "iban", null),
-                new CredentialAttributes("bar", "bic", null)
-        ));
+                new CredentialAttributes("bar", "bic", null)));
 
         assertThrows(WrongApiUsageException.class, () -> validator.validateNew(buildMyDocument(document)));
     }

@@ -78,8 +78,7 @@ class VPManagerTest {
     void testBuildFromDocumentOrg() throws Exception {
         ArrayList<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("id", "did:sov:sadfafs", null),
-                new CredentialAttributes("type", "LegalEntity", null)
-        ));
+                new CredentialAttributes("type", "LegalEntity", null)));
 
         MyDocument doc = buildDefault()
                 .setType(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)
@@ -96,8 +95,7 @@ class VPManagerTest {
     void testBuildFromDocumentIndyNoSchema() throws Exception {
         ArrayList<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("iban", "1234", null),
-                new CredentialAttributes("bic", "4321", null)
-        ));
+                new CredentialAttributes("bic", "4321", null)));
 
         MyDocument doc = buildDefault()
                 .setType(CredentialType.INDY)
@@ -116,8 +114,7 @@ class VPManagerTest {
     void testBuildFromDocumentIndyWithSchema() throws Exception {
         ArrayList<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("key1", "1234", null),
-                new CredentialAttributes("key2", "4321", null)
-        ));
+                new CredentialAttributes("key2", "4321", null)));
 
         Set<String> attributeNames = new LinkedHashSet<>();
         attributeNames.add("key1");
