@@ -31,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -81,5 +82,5 @@ public class MyDocument implements ExchangeTypeTranslator {
 
     @Nullable
     // TODO: Find proper type including CredentialAttributes
-    private ArrayList<CredentialAttributes> document;
+    private List<CredentialAttributes> document;
 }

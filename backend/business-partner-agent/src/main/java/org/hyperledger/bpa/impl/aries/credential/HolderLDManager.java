@@ -78,7 +78,7 @@ public class HolderLDManager {
     public void sendCredentialProposal(
             @NonNull String connectionId,
             @NonNull BPASchema s,
-            @NonNull ArrayList<CredentialAttributes> document,
+            @NonNull List<CredentialAttributes> document,
             @NonNull BPACredentialExchange.BPACredentialExchangeBuilder dbCredEx)
             throws IOException {
         V2CredentialExchangeFree v2Request = V2CredentialExchangeFree.builder()

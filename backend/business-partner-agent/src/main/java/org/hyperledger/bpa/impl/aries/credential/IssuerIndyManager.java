@@ -55,10 +55,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,7 +103,7 @@ public class IssuerIndyManager {
                         msg.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
 
         // TODO: Use object array with name, value and mime-type instead of Map
-        ArrayList<CredentialAttributes> document = request.getDocument();
+        List<CredentialAttributes> document = request.getDocument();
 
         checkCredentialAttributes(document, dbCredDef);
 
@@ -189,7 +186,7 @@ public class IssuerIndyManager {
         }
     }
 
-    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull ArrayList<CredentialAttributes> attributes,
+    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull List<CredentialAttributes> attributes,
             @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String credDefId = credEx.getCredDef() != null ? credEx.getCredDef().getCredentialDefinitionId() : null;
         if (StringUtils.isNotEmpty(ids.credDefId()) && !StringUtils.equals(credDefId, ids.credDefId())) {
@@ -239,7 +236,7 @@ public class IssuerIndyManager {
      * @param document  the credential
      * @param dbCredDef {@link BPACredentialDefinition}
      */
-    private void checkCredentialAttributes(ArrayList<CredentialAttributes> document,
+    private void checkCredentialAttributes(List<CredentialAttributes> document,
             BPACredentialDefinition dbCredDef) {
         Set<String> documentAttributeNames = document.stream().map(CredentialAttributes::getName)
                 .collect(Collectors.toSet());

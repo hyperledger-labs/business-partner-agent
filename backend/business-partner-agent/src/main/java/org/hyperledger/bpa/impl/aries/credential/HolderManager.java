@@ -137,7 +137,7 @@ public class HolderManager extends CredentialManagerBase {
                     .pushStateChange(CredentialExchangeState.PROPOSAL_SENT, Instant.now())
                     .role(CredentialExchangeRole.HOLDER);
             String connectionId = Objects.requireNonNull(dbPartner.getConnectionId());
-            ArrayList<CredentialAttributes> document = Objects.requireNonNull(dbDoc.getDocument());
+            List<CredentialAttributes> document = Objects.requireNonNull(dbDoc.getDocument());
             if (dbDoc.typeIsIndy()) {
                 indy.sendCredentialProposal(connectionId, s.getSchemaId(), document, dbCredEx, version);
             } else {

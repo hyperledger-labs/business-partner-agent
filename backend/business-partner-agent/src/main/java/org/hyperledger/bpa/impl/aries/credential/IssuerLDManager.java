@@ -48,10 +48,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Handles all credential holder logic that is specific to json-ld
@@ -79,7 +76,7 @@ public class IssuerLDManager {
     BPAMessageSource.DefaultMessageSource msg;
 
     public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId,
-            ArrayList<CredentialAttributes> document) {
+            List<CredentialAttributes> document) {
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
         try {
@@ -117,7 +114,7 @@ public class IssuerLDManager {
         throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.not.supported"));
     }
 
-    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull ArrayList<CredentialAttributes> attributes,
+    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull List<CredentialAttributes> attributes,
             @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String schemaId = credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null;
         if (StringUtils.isNotEmpty(schemaId) && !StringUtils.equals(schemaId, ids.schemaId())) {

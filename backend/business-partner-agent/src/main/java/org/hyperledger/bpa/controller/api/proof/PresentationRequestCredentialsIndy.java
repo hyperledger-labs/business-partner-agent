@@ -54,7 +54,7 @@ public class PresentationRequestCredentialsIndy {
         private String referent;
         private Boolean revoked;
 
-        private ArrayList<CredentialAttributes> attrs;
+        private List<CredentialAttributes> attrs;
 
         private String schemaId;
         private String schemaLabel;

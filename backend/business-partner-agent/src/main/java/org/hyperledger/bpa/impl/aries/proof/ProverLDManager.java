@@ -102,7 +102,7 @@ public class ProverLDManager extends BaseLDManager {
         return result;
     }
 
-    private Map<UUID, DIFField> buildDifFields(@NonNull ArrayList<CredentialAttributes> ldAttributes) {
+    private Map<UUID, DIFField> buildDifFields(@NonNull List<CredentialAttributes> ldAttributes) {
         return ldAttributes
                 .stream()
                 .filter(e -> StringUtils.isNotEmpty(e.getValue()))

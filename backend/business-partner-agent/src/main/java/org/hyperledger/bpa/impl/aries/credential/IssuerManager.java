@@ -59,10 +59,7 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Wraps all credential issuer specific logic that is common for both indy and
@@ -169,7 +166,7 @@ public class IssuerManager extends CredentialManagerBase {
             throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.state",
                     Map.of("state", credEx.getState())));
         }
-        ArrayList<CredentialAttributes> attributes;
+        List<CredentialAttributes> attributes;
         if (counterOffer.acceptAll()) {
             attributes = credEx.proposalAttributesToCredentialAttributesList();
         } else {

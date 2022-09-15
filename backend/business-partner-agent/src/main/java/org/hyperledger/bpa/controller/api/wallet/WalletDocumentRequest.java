@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class WalletDocumentRequest {
@@ -34,5 +35,5 @@ public class WalletDocumentRequest {
     private String label;
     @JsonRawValue
     @Schema(example = "{}")
-    private ArrayList<CredentialAttributes> document;
+    private List<CredentialAttributes> document;
 }

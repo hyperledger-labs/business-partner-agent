@@ -76,7 +76,7 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentOrg() throws Exception {
-        ArrayList<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
+        List<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("id", "did:sov:sadfafs", null),
                 new CredentialAttributes("type", "LegalEntity", null)));
 
@@ -93,7 +93,7 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentIndyNoSchema() throws Exception {
-        ArrayList<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
+        List<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("iban", "1234", null),
                 new CredentialAttributes("bic", "4321", null)));
 
@@ -112,7 +112,7 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentIndyWithSchema() throws Exception {
-        ArrayList<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
+        List<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("key1", "1234", null),
                 new CredentialAttributes("key2", "4321", null)));
 

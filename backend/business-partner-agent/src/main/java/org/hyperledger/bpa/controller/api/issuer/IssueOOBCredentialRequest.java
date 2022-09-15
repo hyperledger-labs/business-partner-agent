@@ -50,7 +50,7 @@ public class IssueOOBCredentialRequest implements ExchangeVersionTranslator {
     /** credential body key value pairs */
     @JsonRawValue
     @Schema(example = "{}")
-    private ArrayList<CredentialAttributes> document;
+    private List<CredentialAttributes> document;
 
     private ExchangeVersion exchangeVersion;
 }

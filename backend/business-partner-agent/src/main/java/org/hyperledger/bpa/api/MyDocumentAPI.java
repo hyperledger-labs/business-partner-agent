@@ -27,6 +27,7 @@ import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -43,7 +44,7 @@ public class MyDocumentAPI {
     private Boolean isPublic;
     private String label;
     @Schema(example = "{}")
-    private ArrayList<CredentialAttributes> documentData; // TODO rename to document
+    private List<CredentialAttributes> documentData; // TODO rename to document
 
     public static MyDocumentAPI fromRequest(WalletDocumentRequest req) {
         return DocumentMapper.INSTANCE.requestToDocumentApi(req);

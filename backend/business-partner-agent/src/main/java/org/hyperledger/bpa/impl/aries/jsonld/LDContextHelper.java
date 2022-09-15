@@ -80,7 +80,7 @@ public class LDContextHelper {
     }
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
-            @NonNull BPASchema bpaSchema, @NonNull ArrayList<CredentialAttributes> document, @NonNull Boolean issuer) {
+            @NonNull BPASchema bpaSchema, @NonNull List<CredentialAttributes> document, @NonNull Boolean issuer) {
         return buildVC(bpaSchema, conv.toStringMap(document), issuer);
     }
 

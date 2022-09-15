@@ -57,7 +57,7 @@ public class LabelStrategyTest {
     @InjectMocks
     LabelStrategy labelStrategy;
 
-    private static final ArrayList<CredentialAttributes> BA = new ArrayList<>(Arrays.asList(
+    private static final List<CredentialAttributes> BA = new ArrayList<>(Arrays.asList(
             new CredentialAttributes("bic", "123", null),
             new CredentialAttributes("iban", "test123", null)));
 

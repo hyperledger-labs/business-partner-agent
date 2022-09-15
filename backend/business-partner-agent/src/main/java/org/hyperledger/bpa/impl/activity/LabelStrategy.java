@@ -39,6 +39,7 @@ import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,7 +62,7 @@ public class LabelStrategy {
     public void apply(@NonNull MyDocumentAPI document) {
         if (StringUtils.isBlank(document.getLabel())) {
             findDefaultAttribute(document.getSchemaId()).ifPresent(attr -> {
-                ArrayList<CredentialAttributes> documentData = document.getDocumentData();
+                List<CredentialAttributes> documentData = document.getDocumentData();
                 String value = documentData.stream().filter(a -> a.getName().equals(attr)).findFirst().get().getValue();
                 if (value != null) {
                     document.setLabel(value);
@@ -74,7 +75,7 @@ public class LabelStrategy {
         if (ariesCredential != null) {
             Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
             if (attr.isPresent() && ariesCredential.getAttrs() != null) {
-                ArrayList<CredentialAttributes> attrs = (ArrayList<CredentialAttributes>) ariesCredential.getAttrs();
+                List<CredentialAttributes> attrs = (List<CredentialAttributes>) ariesCredential.getAttrs();
                 return attrs.stream().filter(a -> a.getName().equals(attr.get())).findFirst().get().getValue();
             }
         }
@@ -88,7 +89,7 @@ public class LabelStrategy {
         } else {
             Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
             if (attr.isPresent() && ariesCredential.getCredentialData() != null) {
-                ArrayList<CredentialAttributes> attrs = ariesCredential.getCredentialData();
+                List<CredentialAttributes> attrs = ariesCredential.getCredentialData();
                 mergedLabel = attrs.stream().filter(a -> a.getName().equals(attr.get())).findFirst().get().getValue();
             }
         }

@@ -30,6 +30,7 @@ import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Introspected
@@ -59,7 +60,7 @@ public abstract class IssueCredentialRequest {
     private CredentialType type;
 
     /** Attribute array with name, value, mime-type */
-    private ArrayList<CredentialAttributes> document;
+    private List<CredentialAttributes> document;
 
     @Introspected
     @Data

@@ -26,6 +26,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CredentialTestUtils {
 
@@ -41,7 +42,7 @@ public class CredentialTestUtils {
         // JsonNode jsonNode = mapper.readTree(json);
         CredentialAttributes dummyAttribute = new CredentialAttributes("iban", "Hello", null);
 
-        ArrayList<CredentialAttributes> attributesArrayList = new ArrayList<>();
+        List<CredentialAttributes> attributesArrayList = new ArrayList<>();
         attributesArrayList.add(dummyAttribute);
 
         return MyDocumentAPI.builder()

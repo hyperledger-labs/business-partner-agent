@@ -28,6 +28,7 @@ import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -51,7 +52,7 @@ public class AriesCredential {
 
     private String label;
     private String typeLabel;
-    private ArrayList<CredentialAttributes> credentialData;
+    private List<CredentialAttributes> credentialData;
 
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
             @Nullable String typeLabel) {

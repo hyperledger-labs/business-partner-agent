@@ -43,6 +43,7 @@ import javax.persistence.Id;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -178,7 +179,7 @@ public class BPACredentialExchange
                 : null;
     }
 
-    public @io.micronaut.core.annotation.NonNull ArrayList<CredentialAttributes> proposalAttributesToCredentialAttributesList() {
+    public @io.micronaut.core.annotation.NonNull List<CredentialAttributes> proposalAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
             return ldAttributesToCredentialAttributesList(
                     credentialProposal != null ? credentialProposal.getJsonLD() : null);
@@ -187,14 +188,14 @@ public class BPACredentialExchange
                 credentialProposal != null ? credentialProposal.getIndy() : null);
     }
 
-    public @io.micronaut.core.annotation.NonNull ArrayList<CredentialAttributes> offerAttributesToCredentialAttributesList() {
+    public @io.micronaut.core.annotation.NonNull List<CredentialAttributes> offerAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
             return ldAttributesToCredentialAttributesList(credentialOffer != null ? credentialOffer.getJsonLD() : null);
         }
         return indyAttributesToCredentialAttributesList(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
 
-    public @io.micronaut.core.annotation.NonNull ArrayList<CredentialAttributes> credentialAttributesToCredentialAttributesList() {
+    public @io.micronaut.core.annotation.NonNull List<CredentialAttributes> credentialAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
             return ldAttributesToCredentialAttributesList(ldCredential != null ? ldCredential.getJsonLD() : null);
         }
@@ -202,28 +203,28 @@ public class BPACredentialExchange
         if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
             return new ArrayList<>();
         }
-        return (ArrayList<CredentialAttributes>) indyCredential.getAttrs();
+        return (List<CredentialAttributes>) indyCredential.getAttrs();
     }
 
-    private ArrayList<CredentialAttributes> ldAttributesToCredentialAttributesList(
+    private List<CredentialAttributes> ldAttributesToCredentialAttributesList(
             V20CredExRecordByFormat.LdProof ldProof) {
         Map<String, String> result = ldProof == null ? Map.of() : ldProof.toFlatMap();
         // TODO: Pass mime-type
-        return (ArrayList<CredentialAttributes>) result.entrySet()
+        return (List<CredentialAttributes>) result.entrySet()
                 .stream()
                 .map(e -> new CredentialAttributes(e.getKey(), e.getValue(), null))
                 .collect(Collectors.toList());
     }
 
-    private ArrayList<CredentialAttributes> indyAttributesToCredentialAttributesList(
+    private List<CredentialAttributes> indyAttributesToCredentialAttributesList(
             V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
         if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
             return new ArrayList<>();
         }
-        return (ArrayList<CredentialAttributes>) p.getAttributes();
+        return (List<CredentialAttributes>) p.getAttributes();
     }
 
-    public ArrayList<CredentialAttributes> attributesByState() {
+    public List<CredentialAttributes> attributesByState() {
         if (stateIsProposalReceived()) {
             return proposalAttributesToCredentialAttributesList();
         } else if (stateIsOfferReceived()) {

@@ -83,7 +83,7 @@ public class DocumentValidatorTest {
     void testIndyCredentialWithSchema() throws JsonProcessingException {
         when(schemaService.getSchemaFor(anyString())).thenReturn(buildSchema(Set.of("iban", "bic")));
 
-        ArrayList<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
+        List<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("iban", "iban", null),
                 new CredentialAttributes("bic", "bic", null)));
 
@@ -94,7 +94,7 @@ public class DocumentValidatorTest {
     void testIndyCredentialWithNoMatchingSchema() throws JsonProcessingException {
         when(schemaService.getSchemaFor(anyString())).thenReturn(buildSchema(Set.of("iban", "bic")));
 
-        ArrayList<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
+        List<CredentialAttributes> document = new ArrayList<>(Arrays.asList(
                 new CredentialAttributes("foo", "iban", null),
                 new CredentialAttributes("bar", "bic", null)));
 
@@ -124,7 +124,7 @@ public class DocumentValidatorTest {
                 .build());
     }
 
-    private MyDocumentAPI buildMyDocument(ArrayList<CredentialAttributes> attributes) {
+    private MyDocumentAPI buildMyDocument(List<CredentialAttributes> attributes) {
         return MyDocumentAPI
                 .builder()
                 .type(CredentialType.INDY)

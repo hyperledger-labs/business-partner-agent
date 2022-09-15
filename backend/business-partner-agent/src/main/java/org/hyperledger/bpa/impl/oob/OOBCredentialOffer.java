@@ -43,6 +43,7 @@ import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -106,7 +107,7 @@ public class OOBCredentialOffer extends OOBBase {
 
     private void persistCredentialExchange(
             @NonNull CredentialFreeOfferHelper.CredentialFreeOffer r,
-            @NonNull ArrayList<CredentialAttributes> document,
+            @NonNull List<CredentialAttributes> document,
             @NonNull BPACredentialDefinition dbCredDef,
             @NonNull Partner p) {
         BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange

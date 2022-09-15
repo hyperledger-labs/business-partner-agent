@@ -31,6 +31,7 @@ import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class CredEx implements ExchangeVersionTranslator {
     private PartnerAPI partner;
     private String schemaId; // TODO UI should use this id instead the one from the credential
     private String credentialDefinitionId; // TODO UI should use this id instead the one from the credential
-    private ArrayList<CredentialAttributes> proposal;
+    private List<CredentialAttributes> proposal;
     private Credential credential; // TODO should also be Map<String, String>
     private CredentialExchangeRole role;
     private CredentialExchangeState state;
@@ -83,7 +84,7 @@ public class CredEx implements ExchangeVersionTranslator {
         } else if (StringUtils.isNotEmpty(db.getErrorMsg())) {
             displayText = db.getErrorMsg();
         }
-        ArrayList<CredentialAttributes> credentialAttrs;
+        List<CredentialAttributes> credentialAttrs;
         if (db.stateIsProposalReceived()
                 || db.stateIsProposalSent()
                 || db.roleIsHolder() && db.stateIsProblem()
