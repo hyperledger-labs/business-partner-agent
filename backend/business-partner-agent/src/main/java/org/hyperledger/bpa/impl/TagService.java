@@ -31,7 +31,10 @@ import org.hyperledger.bpa.config.TagConfig;
 import org.hyperledger.bpa.persistence.model.Tag;
 import org.hyperledger.bpa.persistence.repository.TagRepository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 

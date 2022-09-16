@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;

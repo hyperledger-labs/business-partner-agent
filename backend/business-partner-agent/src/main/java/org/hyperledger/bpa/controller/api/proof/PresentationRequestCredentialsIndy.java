@@ -22,9 +22,7 @@ import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Data

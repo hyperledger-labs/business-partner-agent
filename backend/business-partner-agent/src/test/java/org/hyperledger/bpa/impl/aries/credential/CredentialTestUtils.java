@@ -17,8 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
@@ -36,10 +34,7 @@ public class CredentialTestUtils {
         mapper = m;
     }
 
-    public MyDocumentAPI createDummyCred(@NonNull CredentialType credType, @NonNull Boolean isPublic)
-            throws JsonProcessingException {
-        String json = "{ \"iban\":\"Hello\" }";
-        // JsonNode jsonNode = mapper.readTree(json);
+    public MyDocumentAPI createDummyCred(@NonNull CredentialType credType, @NonNull Boolean isPublic) {
         CredentialAttributes dummyAttribute = new CredentialAttributes("iban", "Hello", null);
 
         List<CredentialAttributes> attributesArrayList = new ArrayList<>();

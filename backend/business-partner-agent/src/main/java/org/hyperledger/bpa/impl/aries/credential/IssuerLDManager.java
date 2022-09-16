@@ -48,7 +48,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Handles all credential holder logic that is specific to json-ld

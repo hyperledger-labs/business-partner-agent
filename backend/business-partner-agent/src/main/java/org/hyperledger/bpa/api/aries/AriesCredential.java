@@ -27,7 +27,6 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

@@ -17,12 +17,11 @@
  */
 package org.hyperledger.bpa.core;
 
-import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 
 @Data
 @Builder

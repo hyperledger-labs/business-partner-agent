@@ -29,7 +29,6 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

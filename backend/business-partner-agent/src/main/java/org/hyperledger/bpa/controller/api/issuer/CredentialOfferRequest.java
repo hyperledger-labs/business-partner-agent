@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

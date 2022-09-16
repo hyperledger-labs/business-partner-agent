@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.jsonld;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.micronaut.core.annotation.Nullable;
@@ -28,7 +27,6 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.aries.api.credentials.Credential;
-import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;

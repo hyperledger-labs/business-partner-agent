@@ -59,7 +59,10 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Wraps all credential issuer specific logic that is common for both indy and

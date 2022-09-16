@@ -42,7 +42,6 @@ import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

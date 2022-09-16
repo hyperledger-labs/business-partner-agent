@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
@@ -38,9 +37,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**

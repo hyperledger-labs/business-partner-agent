@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +25,6 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

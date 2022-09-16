@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.jsonld;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
