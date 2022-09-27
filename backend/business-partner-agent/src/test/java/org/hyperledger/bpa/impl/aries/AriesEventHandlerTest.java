@@ -32,6 +32,7 @@ import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -54,9 +55,9 @@ class AriesEventHandlerTest extends BaseTest {
 
     @Test
     void testHandleProofRequestAsVerifierSelf() {
-        String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
-        String presRec = loader.load("files/self-request-proof/02-verifier-presentation-received.json");
-        String verified = loader.load("files/self-request-proof/03-verifier-verified.json");
+        String reqSent = FileLoader.load("files/self-request-proof/01-verifier-request-sent.json");
+        String presRec = FileLoader.load("files/self-request-proof/02-verifier-presentation-received.json");
+        String verified = FileLoader.load("files/self-request-proof/03-verifier-verified.json");
         PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
         PresentationExchangeRecord exPresRec = ep.parsePresentProof(presRec).orElseThrow();
         PresentationExchangeRecord exVerified = ep.parsePresentProof(verified).orElseThrow();
@@ -87,10 +88,10 @@ class AriesEventHandlerTest extends BaseTest {
 
     @Test
     void testHandleProofProposalAsProverSelf() {
-        String propSent = loader.load("files/self-send-proof/01-prover-proposal-sent.json");
-        String reqRec = loader.load("files/self-send-proof/02-prover-request-received.json");
-        String presSent = loader.load("files/self-send-proof/03-prover-presentation-sent.json");
-        String presAcked = loader.load("files/self-send-proof/04-prover-presentation-acked.json");
+        String propSent = FileLoader.load("files/self-send-proof/01-prover-proposal-sent.json");
+        String reqRec = FileLoader.load("files/self-send-proof/02-prover-request-received.json");
+        String presSent = FileLoader.load("files/self-send-proof/03-prover-presentation-sent.json");
+        String presAcked = FileLoader.load("files/self-send-proof/04-prover-presentation-acked.json");
         PresentationExchangeRecord exPropSent = ep.parsePresentProof(propSent).orElseThrow();
         PresentationExchangeRecord exReqRec = ep.parsePresentProof(reqRec).orElseThrow();
         PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).orElseThrow();
@@ -128,9 +129,9 @@ class AriesEventHandlerTest extends BaseTest {
 
     @Test
     void testHandleProofRequestAsProver() {
-        String reqReceived = loader.load("files/external-request-proof/01-prover-request-received.json");
-        String presSent = loader.load("files/external-request-proof/02-prover-presentation-sent.json");
-        String acked = loader.load("files/external-request-proof/03-prover-presentation-acked.json");
+        String reqReceived = FileLoader.load("files/external-request-proof/01-prover-request-received.json");
+        String presSent = FileLoader.load("files/external-request-proof/02-prover-presentation-sent.json");
+        String acked = FileLoader.load("files/external-request-proof/03-prover-presentation-acked.json");
         PresentationExchangeRecord exReqReceived = ep.parsePresentProof(reqReceived).orElseThrow();
         PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).orElseThrow();
         PresentationExchangeRecord exPresAcked = ep.parsePresentProof(acked).orElseThrow();
@@ -161,8 +162,8 @@ class AriesEventHandlerTest extends BaseTest {
 
     @Test
     void testHandleProblemReport() {
-        String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
-        String probReport = loader.load("files/self-request-proof/04-problem-report.json");
+        String reqSent = FileLoader.load("files/self-request-proof/01-verifier-request-sent.json");
+        String probReport = FileLoader.load("files/self-request-proof/04-problem-report.json");
         PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
         PresentationExchangeRecord exProblem = GsonConfig.defaultConfig().fromJson(probReport,
                 PresentationExchangeRecord.class);

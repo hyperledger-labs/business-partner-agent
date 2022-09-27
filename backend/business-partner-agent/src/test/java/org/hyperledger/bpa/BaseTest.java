@@ -38,20 +38,18 @@ public abstract class BaseTest {
 
     protected ObjectMapper mapper = new ObjectMapper();
 
-    protected FileLoader loader = FileLoader.newLoader();
-
     @BeforeEach
     void setup() {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public <T> T loadAndConvertTo(String file, Class<T> type) throws JsonProcessingException {
-        String didDocument = loader.load(file);
+        String didDocument = FileLoader.load(file);
         return mapper.readValue(didDocument, type);
     }
 
     public <T> T loadAndConvertTo(String file, TypeReference<T> type) throws JsonProcessingException {
-        String didDocument = loader.load(file);
+        String didDocument = FileLoader.load(file);
         return mapper.readValue(didDocument, type);
     }
 

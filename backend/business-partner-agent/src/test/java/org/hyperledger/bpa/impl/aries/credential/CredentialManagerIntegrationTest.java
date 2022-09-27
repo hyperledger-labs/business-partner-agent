@@ -40,6 +40,7 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.DidDocWebRepository;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -264,12 +265,12 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     }
 
     private V1CredentialExchange loadV1FileByStateName(@NonNull String state) {
-        final String ex = loader.load("files/v1-credex-holder/" + state + ".json");
+        final String ex = FileLoader.load("files/v1-credex-holder/" + state + ".json");
         return GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
     }
 
     private V20CredExRecord loadV2FileByStateName(@NonNull String state) {
-        final String ex = loader.load("files/v2-credex-holder/" + state + ".json");
+        final String ex = FileLoader.load("files/v2-credex-holder/" + state + ".json");
         return GsonConfig.defaultConfig().fromJson(ex, V20CredExRecord.class);
     }
 
