@@ -5,9 +5,40 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { ContextParser } from "jsonld-context-parser";
+import {
+  ContextParser,
+  IDocumentLoader,
+  IJsonLdContext,
+} from "jsonld-context-parser";
 
-const jsonLdContextParser = new ContextParser();
+// Accept json-ld files without checking for application/ld+json media type
+class NoMediaTypeFetchDocumentLoader implements IDocumentLoader {
+  private readonly fetcher?: (
+    url: string,
+    init: RequestInit
+  ) => Promise<Response>;
+
+  constructor(fetcher?: (url: string, init: RequestInit) => Promise<Response>) {
+    this.fetcher = fetcher;
+  }
+
+  public async load(url: string): Promise<IJsonLdContext> {
+    const response: Response = await (this.fetcher || fetch)(url, {
+      headers: new Headers({
+        accept: "*/*",
+      }),
+    });
+    if (response.ok) {
+      return await response.json();
+    } else {
+      throw new Error(response.statusText || `Status code: ${response.status}`);
+    }
+  }
+}
+
+const jsonLdContextParser = new ContextParser({
+  documentLoader: new NoMediaTypeFetchDocumentLoader(),
+});
 
 export default {
   contextParser() {
