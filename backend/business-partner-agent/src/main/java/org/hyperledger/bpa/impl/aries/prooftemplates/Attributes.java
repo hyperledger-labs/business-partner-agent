@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries.prooftemplates;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Singular;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPASchemaRestrictions;
@@ -27,15 +28,16 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+@Data
 @Builder
-class Attributes {
-    String schemaId;
-    NonRevocationApplicator revocationApplicator;
-    List<BPASchemaRestrictions> schemaRestrictions;
+public class Attributes {
+    private String schemaId;
+    private NonRevocationApplicator revocationApplicator;
+    private List<BPASchemaRestrictions> schemaRestrictions;
     @Singular
-    List<String> names;
+    private List<String> names;
     @Singular
-    Map<String, String> equals;
+    private Map<String, String> equals;
 
     public void addToBuilder(
             BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> builderSink) {

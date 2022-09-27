@@ -54,7 +54,6 @@ micronaut:
     # note also check the AppController
     static-resources:
       swagger:
-        enabled: true
         paths: classpath:META-INF/swagger
         mapping: /swagger/**
       swagger-ui:

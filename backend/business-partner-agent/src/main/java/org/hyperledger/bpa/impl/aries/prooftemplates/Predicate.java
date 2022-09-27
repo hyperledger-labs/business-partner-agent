@@ -28,14 +28,15 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Builder
-class Predicate {
-    String schemaId;
-    AtomicInteger sameSchemaCounter;
-    NonRevocationApplicator revocationApplicator;
-    List<BPASchemaRestrictions> schemaRestrictions;
-    String name;
-    IndyProofReqPredSpec.PTypeEnum operator;
-    Integer value;
+public class Predicate {
+
+    private String schemaId;
+    private AtomicInteger sameSchemaCounter;
+    private NonRevocationApplicator revocationApplicator;
+    private List<BPASchemaRestrictions> schemaRestrictions;
+    private String name;
+    private IndyProofReqPredSpec.PTypeEnum operator;
+    private Integer value;
 
     public void addToBuilder(
             BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedPredicates> builderSink) {
@@ -51,6 +52,5 @@ class Predicate {
                         .collect(Collectors.toList()));
         String predicateName = schemaId + sameSchemaCounter.incrementAndGet();
         builderSink.accept(predicateName, revocationApplicator.applyOn(builder).build());
-
     }
 }
