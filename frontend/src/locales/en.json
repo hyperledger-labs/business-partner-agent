@@ -418,7 +418,8 @@
         "selectHeader": "Select data for presentation",
         "label": "Matching Credentials",
         "credentialRevoked": " - credential is revoked",
-        "noInfoFound": "No info found"
+        "noInfoFound": "No info found",
+        "revealed": "Reveal"
       }
     },
     "issueCredentials": {

@@ -166,6 +166,12 @@
                   @change="selectCredential(group, $event)"
                   dense
                 ></v-select>
+                <v-checkbox
+                  :label="
+                    $t('view.presentationRecord.matchingCredentials.revealed')
+                  "
+                  v-model="group.revealed"
+                ></v-checkbox>
               </div>
             </v-expansion-panel-content>
           </v-expansion-panel>

@@ -417,6 +417,7 @@ export default {
           ([groupName, group]: [string, any]) => {
             referents[groupName] = {
               referent: group.selectedCredential?.credentialInfo?.referent,
+              revealed: !!group.revealed,
             };
           }
         );
