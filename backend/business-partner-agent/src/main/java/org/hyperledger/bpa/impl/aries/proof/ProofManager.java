@@ -386,7 +386,7 @@ public class ProofManager {
 
     private void acceptSelectedIndyCredentials(@NonNull ApproveProofRequest req, @NonNull ExchangeVersion version,
             @NonNull PresentationExchangeRecord presentationExchangeRecord) {
-        SendPresentationRequest pr = SendPresentationRequestHelper2
+        SendPresentationRequest pr = SendPresentationRequestHelper
                 .buildRequest(presentationExchangeRecord, req.toClientAPI());
         try {
             if (version.isV1()) {

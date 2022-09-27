@@ -20,7 +20,7 @@ package org.hyperledger.bpa.controller.api.proof;
 import io.micronaut.core.annotation.Introspected;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.present_proof.SendPresentationRequestHelper2;
+import org.hyperledger.aries.api.present_proof.SendPresentationRequestHelper;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -44,10 +44,10 @@ public class ApproveProofRequest {
         private String selfAttestedValue;
     }
 
-    public Map<String, SendPresentationRequestHelper2.SelectedMatch.ReferentInfo> toClientAPI() {
+    public Map<String, SendPresentationRequestHelper.SelectedMatch.ReferentInfo> toClientAPI() {
         return selectedReferents.entrySet().stream()
                 .map(e -> Map.entry(e.getKey(),
-                        SendPresentationRequestHelper2.SelectedMatch.ReferentInfo.builder()
+                        SendPresentationRequestHelper.SelectedMatch.ReferentInfo.builder()
                                 .referent(e.getValue().getReferent())
                                 .revealed(e.getValue().getRevealed())
                                 .selfAttestedValue(e.getValue().getSelfAttestedValue())
