@@ -25,7 +25,6 @@ import org.hyperledger.aries.api.present_proof.SendPresentationRequestHelper;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -39,7 +38,7 @@ public class ApproveProofRequest {
     @Data
     @NoArgsConstructor
     public static class SelectedReferent {
-        private UUID referent;
+        private String referent;
         private Boolean revealed;
         private String selfAttestedValue;
     }
@@ -58,7 +57,6 @@ public class ApproveProofRequest {
     public List<String> collectReferents() {
         return selectedReferents.values().stream()
                 .map(SelectedReferent::getReferent)
-                .map(UUID::toString)
                 .collect(Collectors.toList());
     }
 }
