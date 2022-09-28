@@ -154,24 +154,29 @@
                     )
                   }}
                 </h4>
-                <v-select
-                  :label="
-                    $t('view.presentationRecord.matchingCredentials.label')
-                  "
-                  return-object
-                  :items="group.matchingCredentials"
-                  :item-text="toCredentialLabel"
-                  v-model="group.selectedCredential"
-                  outlined
-                  @change="selectCredential(group, $event)"
-                  dense
-                ></v-select>
-                <v-checkbox
-                  :label="
-                    $t('view.presentationRecord.matchingCredentials.revealed')
-                  "
-                  v-model="group.revealed"
-                ></v-checkbox>
+                <span class="d-flex align-end">
+                  <v-select
+                    :label="
+                      $t('view.presentationRecord.matchingCredentials.label')
+                    "
+                    return-object
+                    :items="group.matchingCredentials"
+                    :item-text="toCredentialLabel"
+                    v-model="group.selectedCredential"
+                    outlined
+                    @change="selectCredential(group, $event)"
+                    dense
+                    class="pa-0"
+                  ></v-select>
+                  <v-checkbox
+                    :label="
+                      $t('view.presentationRecord.matchingCredentials.revealed')
+                    "
+                    v-model="group.revealed"
+                    v-if="group.hasOwnProperty('revealed')"
+                    class="pa-2"
+                  ></v-checkbox>
+                </span>
               </div>
             </v-expansion-panel-content>
           </v-expansion-panel>

@@ -12,6 +12,7 @@
       height="40"
       class="light-blue darken-3 card-title text-subtitle-1 white--text"
       style="text-transform: capitalize"
+      v-if="hasProofData"
       >{{ this.document.proofData.identifier.schemaLabel }}</v-card-title
     >
     <v-card-text>
@@ -37,7 +38,7 @@
             </template>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list dense>
+            <v-list dense v-if="hasProofData">
               <v-list-item
                 v-for="[key, value] in Object.entries(
                   this.document.proofData.identifier
@@ -48,7 +49,7 @@
                   <v-list-item-title class="font-weight-medium">
                     {{ key }}
                   </v-list-item-title>
-                  <v-list-item-subtitle align="">
+                  <v-list-item-subtitle>
                     {{ value }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -75,6 +76,14 @@ export default {
       },
       origIntDoc: Object,
     };
+  },
+  computed: {
+    hasProofData() {
+      return (
+        this.document.proofData &&
+        Object.keys(this.document.proofData).length > 0
+      );
+    },
   },
 };
 </script>

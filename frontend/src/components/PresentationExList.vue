@@ -464,6 +464,8 @@ export default {
             for (const c of cred.presentationReferents) {
               const attribute = this.record.proofRequest.requestedAttributes[c];
               this.pushIfMatch(attribute, cred);
+              // only on anoncred attribute groups
+              if (attribute) attribute.revealed = true;
               const pred = this.record.proofRequest.requestedPredicates[c];
               this.pushIfMatch(pred, cred);
             }
