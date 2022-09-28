@@ -8,6 +8,18 @@
 
 <template>
   <v-container>
+    <!-- Valid/Invalid info for role verifier -->
+
+    <v-container v-if="isStateVerified">
+      <v-alert v-if="record.valid" dense border="left" type="success">
+        {{ $t("view.presentationRecord.presentationValid") }}
+      </v-alert>
+
+      <v-alert v-else dense border="left" type="error">
+        {{ $t("view.presentationRecord.presentationNotValid") }}
+      </v-alert>
+    </v-container>
+
     <!-- Exchange States -->
     <v-list-item>
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
@@ -184,18 +196,6 @@
       </v-expansion-panels>
     </template>
 
-    <!-- Valid/Invalid info for role verifier -->
-
-    <v-container v-if="isStateVerified">
-      <v-alert v-if="record.valid" dense border="left" type="success">
-        {{ $t("view.presentationRecord.presentationValid") }}
-      </v-alert>
-
-      <v-alert v-else dense border="left" type="error">
-        {{ $t("view.presentationRecord.presentationNotValid") }}
-      </v-alert>
-    </v-container>
-
     <!-- ExpertMode: Raw data -->
 
     <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>
@@ -238,7 +238,10 @@ export default {
       return this.$store.getters.getExpertMode;
     },
     isStateVerified() {
-      return this.record.state === PresentationExchangeStates.VERIFIED;
+      return (
+        this.record.state === PresentationExchangeStates.VERIFIED ||
+        this.record.state === PresentationExchangeStates.DONE
+      );
     },
     isStateProposalSent() {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;

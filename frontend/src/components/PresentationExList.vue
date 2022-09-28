@@ -370,7 +370,9 @@ export default {
     },
     isStateVerified(item: AriesProofExchange) {
       return (
-        item && item.state === PresentationExchangeStates.VERIFIED.toLowerCase()
+        item &&
+        (item.state === PresentationExchangeStates.VERIFIED.toLowerCase() ||
+          item.state === PresentationExchangeStates.DONE.toLowerCase())
       );
     },
     async deleteItem() {
