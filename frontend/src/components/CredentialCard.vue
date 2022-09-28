@@ -15,7 +15,7 @@
       v-if="hasProofData"
       >{{ this.document.proofData.identifier.schemaLabel }}</v-card-title
     >
-    <v-card-text>
+    <v-card-text v-if="hasProofData">
       <v-container
         v-for="[key, value] in Object.entries(
           this.document.proofData.revealedAttributes
@@ -38,7 +38,7 @@
             </template>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list dense v-if="hasProofData">
+            <v-list dense>
               <v-list-item
                 v-for="[key, value] in Object.entries(
                   this.document.proofData.identifier
