@@ -372,7 +372,7 @@ export default {
     isStateVerified(item: AriesProofExchange) {
       return (
         item &&
-        this.record.role === PresentationExchangeRoles.VERIFIER &&
+        item.role === PresentationExchangeRoles.VERIFIER.toLowerCase() &&
         (item.state === PresentationExchangeStates.VERIFIED.toLowerCase() ||
           item.state === PresentationExchangeStates.DONE.toLowerCase())
       );
