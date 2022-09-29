@@ -44,6 +44,11 @@ export enum CredentialExchangeRoles {
   HOLDER = "holder",
 }
 
+export enum PresentationExchangeRoles {
+  PROVER = "prover",
+  VERIFIER = "verifier",
+}
+
 export enum CredentialExchangeStates {
   PROPOSAL_SENT = "proposal_sent",
   PROPOSAL_RECEIVED = "proposal_received",

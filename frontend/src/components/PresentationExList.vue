@@ -157,6 +157,7 @@ import {
 import { EventBus } from "@/main";
 import {
   CredentialTypes,
+  PresentationExchangeRoles,
   PresentationExchangeStates,
   RequestTypes,
 } from "@/constants";
@@ -371,6 +372,7 @@ export default {
     isStateVerified(item: AriesProofExchange) {
       return (
         item &&
+        this.record.role === PresentationExchangeRoles.VERIFIER &&
         (item.state === PresentationExchangeStates.VERIFIED.toLowerCase() ||
           item.state === PresentationExchangeStates.DONE.toLowerCase())
       );

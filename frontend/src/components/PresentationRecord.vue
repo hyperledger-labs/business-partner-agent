@@ -218,6 +218,7 @@ import {
   Predicates,
   RequestTypes,
   Restrictions,
+  PresentationExchangeRoles,
 } from "@/constants";
 import Timeline from "@/components/Timeline.vue";
 import {
@@ -239,8 +240,9 @@ export default {
     },
     isStateVerified() {
       return (
-        this.record.state === PresentationExchangeStates.VERIFIED ||
-        this.record.state === PresentationExchangeStates.DONE
+        this.record.role === PresentationExchangeRoles.VERIFIER &&
+        (this.record.state === PresentationExchangeStates.VERIFIED ||
+          this.record.state === PresentationExchangeStates.DONE)
       );
     },
     isStateProposalSent() {
