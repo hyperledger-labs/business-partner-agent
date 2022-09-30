@@ -411,8 +411,6 @@ public class ProofManager {
                 .setValid(proof.isVerified())
                 .pushStates(proof.getState(), proof.getUpdatedAt());
         if (proof instanceof PresentationExchangeRecord indy) {
-            Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttributeGroups = indy
-                    .findRevealedAttributeGroups();
             pp
                     .setProofRequest(ExchangePayload.indy(indy.getPresentationRequest()))
                     .setProof(ExchangePayload.indy(indy.collectAll()));
