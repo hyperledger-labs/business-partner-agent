@@ -415,11 +415,7 @@ public class ProofManager {
                     .findRevealedAttributeGroups();
             pp
                     .setProofRequest(ExchangePayload.indy(indy.getPresentationRequest()))
-                    .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
-                            ? ExchangePayload.indy(indy.findRevealedAttributeGroups())
-                            : ExchangePayload.indy(
-                                    conv.revealedAttrsToGroup(indy.findRevealedAttributedFull(),
-                                            indy.getIdentifiers())));
+                    .setProof(ExchangePayload.indy(indy.collectAll()));
             didRes.resolveDid(pp, indy.getIdentifiers());
         } else if (proof instanceof V20PresExRecord dif) {
             VerifiablePresentation<VerifiableCredential> ldProof = dif.resolveDifPresentation();
