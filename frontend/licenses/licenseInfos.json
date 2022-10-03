@@ -2,7 +2,7 @@
   "@fontsource/roboto": {
     "ignore": false,
     "name": "@fontsource/roboto",
-    "version": "4.5.7",
+    "version": "4.5.8",
     "authors": "Lotus <declininglotus@gmail.com>",
     "url": "https://github.com/fontsource/fontsource",
     "license": "MIT",
@@ -38,7 +38,7 @@
   "axios": {
     "ignore": false,
     "name": "axios",
-    "version": "0.24.0",
+    "version": "0.26.1",
     "authors": "Matt Zabriskie",
     "url": "https://github.com/axios/axios",
     "license": "MIT",
@@ -56,10 +56,10 @@
   "core-js": {
     "ignore": false,
     "name": "core-js",
-    "version": "3.19.3",
+    "version": "3.25.4",
     "url": "https://github.com/zloirock/core-js",
     "license": "MIT",
-    "licenseText": "Copyright (c) 2014-2021 Denis Pushkarev\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n"
+    "licenseText": "Copyright (c) 2014-2022 Denis Pushkarev\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n"
   },
   "cross-fetch": {
     "ignore": false,
@@ -90,7 +90,7 @@
   "emoji-picker-element": {
     "ignore": false,
     "name": "emoji-picker-element",
-    "version": "1.10.1",
+    "version": "1.12.1",
     "authors": "Nolan Lawson <nolan@nolanlawson.com>",
     "url": "https://github.com/nolanlawson/emoji-picker-element",
     "license": "Apache-2.0",
@@ -169,7 +169,7 @@
   "material-design-icons-iconfont": {
     "ignore": false,
     "name": "material-design-icons-iconfont",
-    "version": "6.1.1",
+    "version": "6.7.0",
     "authors": "Material Design Authors, Jossef Harush",
     "url": "https://github.com/jossef/material-design-icons-iconfont",
     "license": "Apache-2.0",
@@ -248,7 +248,7 @@
   "vue-advanced-chat": {
     "ignore": false,
     "name": "vue-advanced-chat",
-    "version": "1.5.5",
+    "version": "1.5.8",
     "authors": "Antoine Dupont <antoindupontdev@gmail.com>",
     "url": "https://github.com/antoine92190/vue-advanced-chat",
     "license": "MIT",
@@ -257,7 +257,7 @@
   "vue-i18n": {
     "ignore": false,
     "name": "vue-i18n",
-    "version": "8.26.8",
+    "version": "8.27.2",
     "authors": "kazuya kawaguchi <kawakazu80@gmail.com>",
     "url": "https://github.com/kazupon/vue-i18n",
     "license": "MIT",
@@ -266,7 +266,7 @@
   "vue-json-pretty": {
     "ignore": false,
     "name": "vue-json-pretty",
-    "version": "1.8.3",
+    "version": "1.9.2",
     "authors": "leezng <im.leezng@gmail.com>",
     "url": "https://github.com/leezng/vue-json-pretty",
     "license": "MIT",
@@ -302,7 +302,7 @@
   "vue-router": {
     "ignore": false,
     "name": "vue-router",
-    "version": "3.5.4",
+    "version": "3.6.5",
     "authors": "Evan You",
     "url": "https://github.com/vuejs/vue-router",
     "license": "MIT",
@@ -320,7 +320,7 @@
   "vuetify": {
     "ignore": false,
     "name": "vuetify",
-    "version": "2.6.6",
+    "version": "2.6.10",
     "authors": "John Leider <john@vuetifyjs.com>",
     "url": "https://github.com/vuetifyjs/vuetify",
     "license": "MIT",
