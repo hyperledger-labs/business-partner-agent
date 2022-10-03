@@ -253,9 +253,12 @@ export default {
     },
     showV2() {
       return (
+        this.record.type === CredentialTypes.INDY.type &&
+        this.record.role === PresentationExchangeRoles.VERIFIER &&
         this.record.state &&
         (this.record.state === PresentationExchangeStates.PRESENTATION_SENT ||
-          this.record.state === PresentationExchangeStates.VERIFIED)
+          this.record.state === PresentationExchangeStates.VERIFIED ||
+          this.record.state === PresentationExchangeStates.DONE)
       );
     },
     isStateRequestReceived() {

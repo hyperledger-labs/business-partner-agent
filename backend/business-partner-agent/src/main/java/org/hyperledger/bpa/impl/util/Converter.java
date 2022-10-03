@@ -249,6 +249,7 @@ public class Converter {
                     Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
                             .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
                                     .builder()
+                                    .proofType(e.getValue().getType())
                                     .revealedAttributes(e.getValue().getRevealedAttributes())
                                     .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
                                     .build()));
