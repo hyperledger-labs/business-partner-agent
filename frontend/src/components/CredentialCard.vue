@@ -12,10 +12,19 @@
       height="40"
       class="light-blue darken-3 card-title text-subtitle-1 white--text"
       style="text-transform: capitalize"
-      v-if="hasProofData"
       >{{ this.document.proofData.identifier.schemaLabel }}</v-card-title
     >
-    <v-card-text v-if="hasProofData">
+    <v-card-subtitle
+      class="light-blue darken-3 card-title text-subtitle-2 white--text"
+      ><span v-if="unrevealedAttributes">
+        {{ $t("component.credentialCard.notRevealed") }}</span
+      ><span v-else-if="predicateProof">
+        {{ $t("component.credentialCard.predicateProof") }}</span
+      ><span v-else-if="selfAttestedAttributes">
+        {{ $t("component.credentialCard.selfAttestedAttributes") }}</span
+      ></v-card-subtitle
+    >
+    <v-card-text>
       <v-container
         v-for="[key, value] in Object.entries(
           this.document.proofData.revealedAttributes
@@ -26,6 +35,17 @@
           <v-col class="col-12">
             <p class="font-weight-medium">{{ key }}</p>
             <p class="font-italic">{{ value }}</p>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row v-if="this.document.proofData.requestedPredicates">
+          <v-col class="col-12">
+            <p class="font-weight-medium">
+              {{ this.document.proofData.requestedPredicates.name }}
+              {{ translatePType }}
+              {{ this.document.proofData.requestedPredicates.pvalue }}
+            </p>
           </v-col>
         </v-row>
       </v-container>
@@ -63,6 +83,8 @@
 </template>
 
 <script lang="ts">
+import { RequestedProofType } from "@/constants";
+
 export default {
   props: {
     document: Object,
@@ -78,11 +100,41 @@ export default {
     };
   },
   computed: {
-    hasProofData() {
+    unrevealedAttributes() {
       return (
-        this.document.proofData &&
-        Object.keys(this.document.proofData).length > 0
+        RequestedProofType.UNREVEALED_ATTRS ===
+        this.document.proofData.proofType
       );
+    },
+    selfAttestedAttributes() {
+      return (
+        RequestedProofType.SELF_ATTESTED_ATTRS ===
+        this.document.proofData.proofType
+      );
+    },
+    predicateProof() {
+      return (
+        RequestedProofType.PREDICATES === this.document.proofData.proofType
+      );
+    },
+    translatePType() {
+      switch (this.document.proofData.requestedPredicates.ptype) {
+        case "GREATER_THAN": {
+          return ">";
+        }
+        case "GREATER_THAN_OR_EQUAL_TO": {
+          return ">=";
+        }
+        case "LESS_THAN": {
+          return "<";
+        }
+        case "LESS_THAN_OR_EQUAL_TO": {
+          return "<=";
+        }
+        default: {
+          return "";
+        }
+      }
     },
   },
 };

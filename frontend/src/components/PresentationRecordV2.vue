@@ -34,6 +34,15 @@
         <CredentialCard :key="groupName + idx" v-bind:document="group">
         </CredentialCard>
       </template>
+      <!-- Requested Predicates -->
+      <template
+        v-for="([groupName, group], idx) in Object.entries(
+          record.proofRequest['requestedPredicates']
+        )"
+      >
+        <CredentialCard :key="groupName + idx" v-bind:document="group">
+        </CredentialCard>
+      </template>
     </v-container>
 
     <!-- About -->
@@ -50,7 +59,7 @@
           >
             {{ $t("view.presentationRecord.role") }}
           </v-list-item-title>
-          <v-list-item-subtitle align="">
+          <v-list-item-subtitle>
             {{ record.role | capitalize }}
           </v-list-item-subtitle>
         </v-list-item>
@@ -61,7 +70,7 @@
           >
             {{ $t("view.presentationRecord.state") }}
           </v-list-item-title>
-          <v-list-item-subtitle align="">
+          <v-list-item-subtitle>
             {{
               (record.state ? record.state.replace("_", " ") : "") | capitalize
             }}
@@ -107,6 +116,7 @@ import {
   Predicates,
   RequestTypes,
   Restrictions,
+  PresentationExchangeRoles,
 } from "@/constants";
 import CredentialCard from "@/components/CredentialCard.vue";
 import Timeline from "@/components/Timeline.vue";
@@ -129,7 +139,11 @@ export default {
       return this.$store.getters.getExpertMode;
     },
     isStateVerified() {
-      return this.record.state === PresentationExchangeStates.VERIFIED;
+      return (
+        this.record.role === PresentationExchangeRoles.VERIFIER &&
+        (this.record.state === PresentationExchangeStates.VERIFIED ||
+          this.record.state === PresentationExchangeStates.DONE)
+      );
     },
     isStateProposalSent() {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;
@@ -221,9 +235,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.v-btn {
-  margin-left: 10px;
-}
-</style>

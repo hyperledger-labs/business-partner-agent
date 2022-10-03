@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRequestedPredicates;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
@@ -93,6 +94,7 @@ public class AriesProofExchange {
     public static class RevealedAttributeGroup {
         @Singular
         private Map<String, String> revealedAttributes;
+        private ProofRequestedPredicates requestedPredicates;
         private Identifier identifier;
         private PresentationExchangeRecord.RequestedProofType proofType;
     }

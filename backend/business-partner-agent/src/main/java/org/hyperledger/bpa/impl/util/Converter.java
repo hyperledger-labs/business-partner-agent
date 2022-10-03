@@ -251,6 +251,7 @@ public class Converter {
                                     .builder()
                                     .proofType(e.getValue().getType())
                                     .revealedAttributes(e.getValue().getRevealedAttributes())
+                                    .requestedPredicates(e.getValue().getRequestedPredicates())
                                     .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
                                     .build()));
                     proofData = mapper.convertValue(collect, JsonNode.class);

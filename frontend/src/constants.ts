@@ -44,11 +44,6 @@ export enum CredentialExchangeRoles {
   HOLDER = "holder",
 }
 
-export enum PresentationExchangeRoles {
-  PROVER = "prover",
-  VERIFIER = "verifier",
-}
-
 export enum CredentialExchangeStates {
   PROPOSAL_SENT = "proposal_sent",
   PROPOSAL_RECEIVED = "proposal_received",
@@ -78,6 +73,17 @@ export enum PresentationExchangeStates {
   DONE = "done",
   ABANDONED = "abandoned",
   PRESENTATION_ACKED = "presentation_acked",
+}
+
+export enum PresentationExchangeRoles {
+  PROVER = "prover",
+  VERIFIER = "verifier",
+}
+
+export enum RequestedProofType {
+  SELF_ATTESTED_ATTRS = "SELF_ATTESTED_ATTRS",
+  UNREVEALED_ATTRS = "UNREVEALED_ATTRS",
+  PREDICATES = "PREDICATES",
 }
 
 export const PartnerStates = Object.freeze({
