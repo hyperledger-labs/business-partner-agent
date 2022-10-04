@@ -1,6 +1,6 @@
 # https://github.com/hyperledger/aries-cloudagent-python/blob/main/Multiledger.md
 - id: bcorvinTest
-  is_production: true
+  is_production: false
   is_write: true
   genesis_url: 'http://test.bcovrin.vonx.io/genesis'
 - id: IDUnionTest
