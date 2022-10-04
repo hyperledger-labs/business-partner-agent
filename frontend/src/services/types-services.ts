@@ -129,6 +129,8 @@ export type PaginationCommand = components["schemas"]["PaginationCommand"];
 
 export type CredentialType = components["schemas"]["CredentialType"];
 
+export type PType = components["schemas"]["IndyProofReqPredSpec.PTypeEnum"];
+
 export type AriesCredential = components["schemas"]["AriesCredential"];
 
 export type AttributeGroup = components["schemas"]["AttributeGroup"];

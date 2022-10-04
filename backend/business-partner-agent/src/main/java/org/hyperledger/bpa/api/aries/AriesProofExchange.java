@@ -42,6 +42,7 @@ public class AriesProofExchange {
 
     private UUID id;
     private UUID partnerId;
+    private UUID proofTemplateId;
 
     private ExchangeVersion exchangeVersion;
     private PresentationExchangeState state;
@@ -64,6 +65,7 @@ public class AriesProofExchange {
         return b
                 .id(p.getId())
                 .partnerId(p.getPartner().getId())
+                .proofTemplateId(p.getProofTemplate() != null ? p.getProofTemplate().getId() : null)
                 .state(p.getState())
                 .proofRequest(p.getProofRequest() != null ? p.getProofRequest().getIndy() : null)
                 .role(p.getRole())

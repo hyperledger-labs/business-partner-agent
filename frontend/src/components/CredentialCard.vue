@@ -39,12 +39,12 @@
         </v-row>
       </v-container>
       <v-container>
-        <v-row v-if="this.document.proofData.requestedPredicates">
+        <v-row v-if="predicates">
           <v-col class="col-12">
             <p class="font-weight-medium">
-              {{ this.document.proofData.requestedPredicates.name }}
+              {{ predicates.name }}
               {{ translatePType }}
-              {{ this.document.proofData.requestedPredicates.pvalue }}
+              {{ predicates.pvalue }}
             </p>
           </v-col>
         </v-row>
@@ -100,6 +100,9 @@ export default {
     };
   },
   computed: {
+    predicates() {
+      return this.document.proofData.requestedPredicates;
+    },
     unrevealedAttributes() {
       return (
         RequestedProofType.UNREVEALED_ATTRS ===
@@ -118,7 +121,7 @@ export default {
       );
     },
     translatePType() {
-      switch (this.document.proofData.requestedPredicates.ptype) {
+      switch (this.predicates.ptype) {
         case "GREATER_THAN": {
           return ">";
         }

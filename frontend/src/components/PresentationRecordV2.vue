@@ -79,7 +79,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-item>
+        <v-list-item @click="toProofTemplate">
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
@@ -220,6 +220,14 @@ export default {
       }
 
       return attributeGroupName;
+    },
+    toProofTemplate() {
+      this.$router.push({
+        name: "ProofTemplateView",
+        params: {
+          id: this.record.proofTemplateId,
+        },
+      });
     },
   },
   data: () => {
