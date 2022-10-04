@@ -2,7 +2,7 @@ bpa:
   schemas:
     #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
     bank-account:
-      ledgerId: "BoschTest"
+      ledgerId: "bcorvinTest"
       id: "F6dB7dMVHUQSC64qemnBi7:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
@@ -19,7 +19,7 @@ bpa:
         - issuerDid: "${bpa.did.prefix}UmZ25DANwS6ngGWB4ye4tN"
           label: "Demo Bank"
     commercial-register:
-      ledgerId: "BoschTest"
+      ledgerId: "bcorvinTest"
       id: "F6dB7dMVHUQSC64qemnBi7:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
