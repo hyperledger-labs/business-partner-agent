@@ -32,7 +32,7 @@ class LedgerExplorerClientTest extends BaseTest {
     // TODO migrate to okhttp mock
     void test() {
         LedgerExplorerClient c = new LedgerExplorerClient();
-        c.setUrl("https://indy-test.idu.network");
+        c.setUrl("http://test.bcovrin.vonx.io");
         c.setMapper(mapper);
 
         final Optional<List<PartnerCredentialType>> credDefIds = c.queryCredentialDefinitions(
