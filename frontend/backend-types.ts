@@ -374,6 +374,7 @@ export interface components {
       | "CONNECTION_REQUEST"
       | "CREDENTIAL_EXCHANGE"
       | "PRESENTATION_EXCHANGE";
+    /** @description Manually trigger a message to be sent. Always in reference to a pre-existing invitation. If no template id is provided the bpa falls back to default. */
     AdHocMessageRequest: {
       /** Format: uuid */
       templateId?: string | null;
@@ -411,7 +412,6 @@ export interface components {
       };
     };
     "ApproveProofRequest.SelectedReferent": {
-      /** Format: uuid */
       referent?: string;
       revealed?: boolean;
       selfAttestedValue?: string;
@@ -435,11 +435,14 @@ export interface components {
       typeLabel?: string;
       credentialData?: { [key: string]: string };
     };
+    /** @description Requested or received Proof Requests */
     AriesProofExchange: {
       /** Format: uuid */
       id?: string;
       /** Format: uuid */
       partnerId?: string;
+      /** Format: uuid */
+      proofTemplateId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
       state?: components["schemas"]["PresentationExchangeState"];
       role?: components["schemas"]["PresentationExchangeRole"];
@@ -515,17 +518,17 @@ export interface components {
     };
     /** @enum {string} */
     ConnectionState:
-      | "INIT"
-      | "INVITATION"
-      | "REQUEST"
-      | "RESPONSE"
-      | "ACTIVE"
-      | "ERROR"
-      | "COMPLETED"
-      | "ABANDONED"
-      | "START"
-      | "PING_RESPONSE"
-      | "PING_NO_RESPONSE";
+      | "init"
+      | "invitation"
+      | "request"
+      | "response"
+      | "active"
+      | "error"
+      | "completed"
+      | "abandoned"
+      | "start"
+      | "ping_response"
+      | "ping_no_response";
     CreateCredDefRequest: {
       schemaId?: string;
       tag?: string;
@@ -590,30 +593,33 @@ export interface components {
       schemaId?: string;
     };
     /** @enum {string} */
-    CredentialExchangeRole: "ISSUER" | "HOLDER";
+    CredentialExchangeRole: "issuer" | "holder";
     /** @enum {string} */
     CredentialExchangeState:
-      | "PROPOSAL_SENT"
-      | "PROPOSAL_RECEIVED"
-      | "OFFER_SENT"
-      | "OFFER_RECEIVED"
-      | "REQUEST_SENT"
-      | "REQUEST_RECEIVED"
-      | "CREDENTIAL_ISSUED"
-      | "CREDENTIAL_RECEIVED"
-      | "CREDENTIAL_ACKED"
-      | "DONE"
-      | "CREDENTIAL_REVOKED"
-      | "ABANDONED"
-      | "DECLINED"
-      | "PROBLEM";
+      | "proposal_sent"
+      | "proposal_received"
+      | "offer_sent"
+      | "offer_received"
+      | "request_sent"
+      | "request_received"
+      | "credential_issued"
+      | "credential_received"
+      | "credential_acked"
+      | "done"
+      | "credential_revoked"
+      | "abandoned"
+      | "declined"
+      | "problem";
     CredentialOfferRequest: {
       acceptProposal?: boolean;
       credDefId?: string;
       schemaId?: string;
       attributes: { [key: string]: string };
     };
-    /** @enum {string} */
+    /**
+     * @description Document and credential types that the company agent can process.
+     * @enum {string}
+     */
     CredentialType: "ORGANIZATIONAL_PROFILE_CREDENTIAL" | "INDY" | "JSON_LD";
     DIDDocument: {
       service?: components["schemas"]["DIDDocument.Service"][];
@@ -695,7 +701,7 @@ export interface components {
       /** Format: uuid */
       partnerId: string;
       /** @description credential exchange type */
-      type?: unknown;
+      type?: components["schemas"]["CredentialType"];
       /**
        * @description credential body key value pairs
        * @example {}
@@ -707,7 +713,7 @@ export interface components {
       /** Format: uuid */
       credDefId: string;
       /** @description credential exchange api version */
-      exchangeVersion?: unknown;
+      exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
     // @ts-ignore
     "IssueCredentialRequest.IssueLDCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
@@ -828,7 +834,10 @@ export interface components {
       subject?: string;
       template: string;
     };
-    /** @enum {string} */
+    /**
+     * @description Events that trigger a notification
+     * @enum {string}
+     */
     MessageTrigger:
       | "CONNECTION_REQUEST"
       | "CREDENTIAL_PROPOSAL"
@@ -851,7 +860,10 @@ export interface components {
       /** Format: uuid */
       userInfoId: string;
     };
-    /** @enum {string} */
+    /**
+     * @description Communication channels known to the BPA
+     * @enum {string}
+     */
     MessageType: "E_MAIL";
     "MessageUserInfoCmd.ApiUserInfo": {
       /** Format: uuid */
@@ -948,6 +960,7 @@ export interface components {
       q?: string | null;
       types?: components["schemas"]["CredentialType"][] | null;
     };
+    /** @description Flat representation of a partner. In the web context a partner is just a reference to a did and the public profile that's referenced by the did documents profile endpoint. In the context of aries a partner also becomes a connection including pairwise did's, states, trust ping etc. */
     Partner: components["schemas"]["StateChangeDecorator_Partner.ConnectionState_"] & {
       /** Format: uuid */
       id?: string;
@@ -969,7 +982,7 @@ export interface components {
       /** @description the current aries connection state */
       state?: components["schemas"]["ConnectionState"] | null;
       /** @description history of aries connection states - excluding ping */
-      stateToTimestamp?: unknown;
+      stateToTimestamp?: components["schemas"]["StateChangeDecorator.StateToTimestamp_ConnectionState_"];
       /** @description aries connection label, if incoming connection set by the partner via the --label flag, or through rest overwrite */
       label?: string | null;
       /** @description The partners alias or name, always set by a user in the UI */
@@ -1061,20 +1074,20 @@ export interface components {
       restrictions?: components["schemas"]["JsonObject"][];
     };
     /** @enum {string} */
-    PresentationExchangeRole: "PROVER" | "VERIFIER";
+    PresentationExchangeRole: "prover" | "verifier";
     /** @enum {string} */
     PresentationExchangeState:
-      | "PROPOSAL_SENT"
-      | "PROPOSAL_RECEIVED"
-      | "REQUEST_SENT"
-      | "REQUEST_RECEIVED"
-      | "PRESENTATIONS_SENT"
-      | "PRESENTATION_RECEIVED"
-      | "VERIFIED"
-      | "PRESENTATION_ACKED"
-      | "DONE"
-      | "ABANDONED"
-      | "DECLINED";
+      | "proposal_sent"
+      | "proposal_received"
+      | "request_sent"
+      | "request_received"
+      | "presentation_sent"
+      | "presentation_received"
+      | "verified"
+      | "presentation_acked"
+      | "done"
+      | "abandoned"
+      | "declined";
     "PresentationRequestCredentials.Interval": {
       /** Format: int32 */
       from?: number;
@@ -1103,7 +1116,7 @@ export interface components {
     };
     PresentationRequestVersion: {
       /** @description presentation exchange api version */
-      exchangeVersion?: unknown;
+      exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
     ProofTemplate: {
       /** Format: uuid */
@@ -1332,9 +1345,11 @@ export interface components {
     };
     /** @enum {string} */
     "Sort.Order.Direction": "ASC" | "DESC";
+    /** @description Records the timestamps of the different state changes, important in the manual exchanges as they can take a while to happen. */
     "StateChangeDecorator.StateToTimestamp_ConnectionState_": {
       stateToTimestamp?: { [key: string]: string };
     };
+    /** @description Decorator class for all database entities that deal with (connection, credential and proof) exchanges to track state changes over time. As the BPA might receive events in particular order this class also sets the top level state of the entity to the latest state which might not be the current state. */
     "StateChangeDecorator_Partner.ConnectionState_": {
       stateToTimestamp?: components["schemas"]["StateChangeDecorator.StateToTimestamp_ConnectionState_"];
     };
@@ -1388,12 +1403,7 @@ export interface components {
       value: string;
     };
     /** @enum {string} */
-    ValueOperators:
-      | "EQUALS"
-      | "LESS_THAN"
-      | "LESS_THAN_OR_EQUAL_TO"
-      | "GREATER_THAN"
-      | "GREATER_THAN_OR_EQUAL_TO";
+    ValueOperators: "==" | "<" | "<=" | ">" | ">=";
     VerifiableCredential: {
       "@context"?: components["schemas"]["Object"][];
       credentialSubject?: components["schemas"]["JsonObject"];

@@ -17,15 +17,11 @@
  */
 package org.hyperledger.bpa.controller.api.activity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum ActivityType {
-    @JsonProperty("connection_request")
     CONNECTION_REQUEST,
-    @JsonProperty("credential_exchange")
     CREDENTIAL_EXCHANGE,
-    @JsonProperty("presentation_exchange")
     PRESENTATION_EXCHANGE
 }

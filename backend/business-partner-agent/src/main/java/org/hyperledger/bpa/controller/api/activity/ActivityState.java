@@ -17,34 +17,20 @@
  */
 package org.hyperledger.bpa.controller.api.activity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum ActivityState {
-    @JsonProperty("connection_request_received")
     CONNECTION_REQUEST_RECEIVED,
-    @JsonProperty("connection_request_sent")
     CONNECTION_REQUEST_SENT,
-    @JsonProperty("connection_request_accepted")
     CONNECTION_REQUEST_ACCEPTED,
-    @JsonProperty("credential_exchange_sent")
     CREDENTIAL_EXCHANGE_SENT,
-    @JsonProperty("credential_exchange_received")
     CREDENTIAL_EXCHANGE_RECEIVED,
-    @JsonProperty("credential_exchange_accepted")
     CREDENTIAL_EXCHANGE_ACCEPTED,
-    @JsonProperty("credential_exchange_declined")
     CREDENTIAL_EXCHANGE_DECLINED,
-    @JsonProperty("credential_exchange_problem")
     CREDENTIAL_EXCHANGE_PROBLEM,
-    @JsonProperty("presentation_exchange_sent")
     PRESENTATION_EXCHANGE_SENT,
-    @JsonProperty("presentation_exchange_received")
     PRESENTATION_EXCHANGE_RECEIVED,
-    @JsonProperty("presentation_exchange_accepted")
     PRESENTATION_EXCHANGE_ACCEPTED,
-    @JsonProperty("presentation_exchange_declined")
     PRESENTATION_EXCHANGE_DECLINED,
-
 }
