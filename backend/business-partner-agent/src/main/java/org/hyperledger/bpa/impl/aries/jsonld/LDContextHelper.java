@@ -17,13 +17,13 @@
  */
 package org.hyperledger.bpa.impl.aries.jsonld;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.jsonld.ProofType;
@@ -79,7 +79,7 @@ public class LDContextHelper {
     }
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
-            @NonNull BPASchema bpaSchema, @NonNull JsonNode document, @NonNull Boolean issuer) {
+            @NonNull BPASchema bpaSchema, @NonNull List<CredentialAttributes> document, @NonNull Boolean issuer) {
         return buildVC(bpaSchema, conv.toStringMap(document), issuer);
     }
 

@@ -23,6 +23,7 @@ import lombok.NonNull;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
@@ -47,7 +48,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,8 +111,9 @@ public class HolderLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.stateIsOfferReceived());
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
-        Assertions.assertEquals(2, ex.offerAttributesToMap().size());
-        Assertions.assertEquals("karl", ex.offerAttributesToMap().get("name"));
+        Assertions.assertEquals(2, ex.offerAttributesToCredentialAttributesList().size());
+        Assertions.assertEquals("karl", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
 
         holder.sendCredentialRequest(ex.getId());
 
@@ -129,8 +132,9 @@ public class HolderLDCredentialTest extends BaseTest {
         aeh.handleCredentialV2(done);
         ex = loadCredEx(id);
         Assertions.assertTrue(ex.stateIsDone());
-        Assertions.assertEquals(2, ex.credentialAttributesToMap().size());
-        Assertions.assertEquals("karl", ex.credentialAttributesToMap().get("name"));
+        Assertions.assertEquals(2, ex.credentialAttributesToCredentialAttributesList().size());
+        Assertions.assertEquals("karl", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
     }
 
     @Test
@@ -176,7 +180,9 @@ public class HolderLDCredentialTest extends BaseTest {
                 .schemaId(schemaId)
                 .type(CredentialType.JSON_LD)
                 .isPublic(Boolean.FALSE)
-                .documentData(conv.mapToNode(Map.of("name", "My Name", "identifier", "something")))
+                .documentData(new ArrayList<>(Arrays.asList(
+                        new CredentialAttributes("name", "My Name", null),
+                        new CredentialAttributes("identifier", "something", null))))
                 .build());
 
         holder.sendCredentialProposal(p.getId(), document.getId(), null);
@@ -186,8 +192,9 @@ public class HolderLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.stateIsProposalSent());
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
-        Assertions.assertEquals(2, ex.proposalAttributesToMap().size());
-        Assertions.assertEquals("My Name", ex.proposalAttributesToMap().get("name"));
+        Assertions.assertEquals(2, ex.proposalAttributesToCredentialAttributesList().size());
+        Assertions.assertEquals("My Name", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
 
         aeh.handleCredentialV2(offer);
         ex = loadCredEx(id);
@@ -219,7 +226,9 @@ public class HolderLDCredentialTest extends BaseTest {
                 .schemaId(schemaId)
                 .type(CredentialType.JSON_LD)
                 .isPublic(Boolean.FALSE)
-                .documentData(conv.mapToNode(Map.of("name", "My Name", "identifier", "something")))
+                .documentData(new ArrayList<>(Arrays.asList(
+                        new CredentialAttributes("name", "My Name", null),
+                        new CredentialAttributes("identifier", "something", null))))
                 .build());
 
         holder.sendCredentialProposal(p.getId(), document.getId(), null);

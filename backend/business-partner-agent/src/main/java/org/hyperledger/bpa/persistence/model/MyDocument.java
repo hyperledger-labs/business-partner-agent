@@ -18,18 +18,20 @@
 package org.hyperledger.bpa.persistence.model;
 
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.*;
-import io.micronaut.data.model.DataType;
+import io.micronaut.data.annotation.AutoPopulated;
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
+import io.micronaut.data.annotation.MappedProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
-import javax.persistence.Id;
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -78,7 +80,6 @@ public class MyDocument implements ExchangeTypeTranslator {
     private String label;
 
     @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> document;
-
+    // TODO: Find proper type including CredentialAttributes
+    private List<CredentialAttributes> document;
 }

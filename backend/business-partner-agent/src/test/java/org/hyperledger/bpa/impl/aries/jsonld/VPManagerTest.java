@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
@@ -75,8 +76,9 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentOrg() throws Exception {
-        String json = "{\"id\":\"did:sov:sadfafs\",\"type\":\"LegalEntity\"}";
-        final Map<String, Object> d = createMap(json);
+        List<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
+                new CredentialAttributes("id", "did:sov:sadfafs", null),
+                new CredentialAttributes("type", "LegalEntity", null)));
 
         MyDocument doc = buildDefault()
                 .setType(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)
@@ -91,8 +93,9 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentIndyNoSchema() throws Exception {
-        String json = "{\"iban\":\"1234\",\"bic\":\"4321\"}";
-        final Map<String, Object> d = createMap(json);
+        List<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
+                new CredentialAttributes("iban", "1234", null),
+                new CredentialAttributes("bic", "4321", null)));
 
         MyDocument doc = buildDefault()
                 .setType(CredentialType.INDY)
@@ -109,8 +112,9 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentIndyWithSchema() throws Exception {
-        String json = "{\"key1\":\"1234\",\"key2\":\"4321\"}";
-        final Map<String, Object> d = createMap(json);
+        List<CredentialAttributes> d = new ArrayList<>(Arrays.asList(
+                new CredentialAttributes("key1", "1234", null),
+                new CredentialAttributes("key2", "4321", null)));
 
         Set<String> attributeNames = new LinkedHashSet<>();
         attributeNames.add("key1");

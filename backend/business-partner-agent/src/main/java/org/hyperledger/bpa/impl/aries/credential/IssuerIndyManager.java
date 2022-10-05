@@ -55,9 +55,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,7 +102,8 @@ public class IssuerIndyManager {
                 .orElseThrow(() -> new IssuerException(
                         msg.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
 
-        Map<String, String> document = conv.toStringMap(request.getDocument());
+        // TODO: Use object array with name, value and mime-type instead of Map
+        List<CredentialAttributes> document = request.getDocument();
 
         checkCredentialAttributes(document, dbCredDef);
 
@@ -119,7 +118,7 @@ public class IssuerIndyManager {
                 .builder()
                 .connectionId(Objects.requireNonNull(connectionId))
                 .schemaId(schemaId)
-                .credentialProposal(new CredentialPreview(CredentialAttributes.fromMap(document)))
+                .credentialProposal(new CredentialPreview(request.getDocument()))
                 .credentialDefinitionId(credentialDefinitionId)
                 .build();
 
@@ -156,7 +155,7 @@ public class IssuerIndyManager {
             issueIndyCredential(IssueCredentialRequest.IssueIndyCredentialRequest.builder()
                     .partnerId(credEx.getPartner() != null ? credEx.getPartner().getId() : null)
                     .credDefId(credEx.getCredDef() != null ? credEx.getCredDef().getId() : null)
-                    .document(conv.mapToNode(Objects.requireNonNull(credEx.getIndyCredential()).getAttrs()))
+                    .document(new ArrayList<>(Objects.requireNonNull(credEx.getIndyCredential()).getAttrs()))
                     .exchangeVersion(credEx.getExchangeVersion())
                     .build());
         } else {
@@ -187,7 +186,7 @@ public class IssuerIndyManager {
         }
     }
 
-    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
+    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull List<CredentialAttributes> attributes,
             @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String credDefId = credEx.getCredDef() != null ? credEx.getCredDef().getCredentialDefinitionId() : null;
         if (StringUtils.isNotEmpty(ids.credDefId()) && !StringUtils.equals(credDefId, ids.credDefId())) {
@@ -207,9 +206,11 @@ public class IssuerIndyManager {
                         .credDefId(credDefId)
                         .credentialProposal(org.hyperledger.acy_py.generated.model.CredentialPreview
                                 .builder()
-                                .attributes(attributes.entrySet().stream().map(a -> CredAttrSpec
+                                .attributes(attributes.stream().map(attr -> CredAttrSpec
                                         .builder()
-                                        .name(a.getKey()).value(a.getValue())
+                                        .name(attr.getName())
+                                        .value(attr.getValue())
+                                        .mimeType(attr.getMimeType())
                                         .build()).collect(Collectors.toList()))
                                 .build())
                         .build())
@@ -235,8 +236,10 @@ public class IssuerIndyManager {
      * @param document  the credential
      * @param dbCredDef {@link BPACredentialDefinition}
      */
-    private void checkCredentialAttributes(Map<String, String> document, BPACredentialDefinition dbCredDef) {
-        Set<String> documentAttributeNames = document.keySet();
+    private void checkCredentialAttributes(List<CredentialAttributes> document,
+            BPACredentialDefinition dbCredDef) {
+        Set<String> documentAttributeNames = document.stream().map(CredentialAttributes::getName)
+                .collect(Collectors.toSet());
         Set<String> schemaAttributeNames = dbCredDef.getSchema().getSchemaAttributeNames();
         if (!documentAttributeNames.equals(schemaAttributeNames)) {
             throw new IssuerException(msg.getMessage("api.issuer.credential.document.mismatch",

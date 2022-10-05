@@ -29,6 +29,7 @@ import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -58,12 +59,13 @@ public class IssuerCredExRepositoryTest {
                 .build());
 
         issuerCredExRepo.updateCredential(exchange.getId(), Credential.builder()
-                .attrs(Map.of("attr1", "val1"))
+                .attrs(List.of(new CredentialAttributes("attr1", "val1", null)))
                 .build());
 
         exchange = issuerCredExRepo.findById(exchange.getId()).orElseThrow();
         Assertions.assertNotNull(exchange.getIndyCredential());
-        Assertions.assertEquals("val1", exchange.getIndyCredential().getAttrs().get("attr1"));
+        Assertions.assertEquals("val1", exchange.getIndyCredential().getAttrs().stream()
+                .filter(attr -> attr.getName().equals("attr1")).findFirst().get().getValue());
     }
 
     @Test

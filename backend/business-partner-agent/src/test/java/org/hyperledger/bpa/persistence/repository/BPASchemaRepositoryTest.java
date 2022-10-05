@@ -23,6 +23,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
 @MicronautTest

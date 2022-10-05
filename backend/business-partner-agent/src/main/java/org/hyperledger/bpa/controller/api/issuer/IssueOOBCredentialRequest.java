@@ -18,12 +18,12 @@
 package org.hyperledger.bpa.controller.api.issuer;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.Tag;
 
@@ -48,7 +48,7 @@ public class IssueOOBCredentialRequest implements ExchangeVersionTranslator {
     /** credential body key value pairs */
     @JsonRawValue
     @Schema(example = "{}")
-    private JsonNode document;
+    private List<CredentialAttributes> document;
 
     private ExchangeVersion exchangeVersion;
 }

@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -26,6 +25,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
@@ -43,7 +43,6 @@ import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -78,13 +77,12 @@ public class HolderLDManager {
     public void sendCredentialProposal(
             @NonNull String connectionId,
             @NonNull BPASchema s,
-            @NonNull Map<String, Object> document,
+            @NonNull List<CredentialAttributes> document,
             @NonNull BPACredentialExchange.BPACredentialExchangeBuilder dbCredEx)
             throws IOException {
-        JsonNode jsonNode = mapper.valueToTree(document);
         V2CredentialExchangeFree v2Request = V2CredentialExchangeFree.builder()
                 .connectionId(UUID.fromString(connectionId))
-                .filter(ldHelper.buildVC(s, jsonNode, Boolean.FALSE))
+                .filter(ldHelper.buildVC(s, document, Boolean.FALSE))
                 .build();
         ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> dbCredEx
                 .threadId(v2.getThreadId())

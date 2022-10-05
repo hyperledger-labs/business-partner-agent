@@ -28,6 +28,7 @@ import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20CredIssueRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.*;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
@@ -58,6 +59,7 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -167,9 +169,9 @@ public class IssuerManager extends CredentialManagerBase {
             throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.state",
                     Map.of("state", credEx.getState())));
         }
-        Map<String, String> attributes;
+        List<CredentialAttributes> attributes;
         if (counterOffer.acceptAll()) {
-            attributes = credEx.proposalAttributesToMap();
+            attributes = credEx.proposalAttributesToCredentialAttributesList();
         } else {
             attributes = counterOffer.getAttributes();
         }
@@ -367,7 +369,8 @@ public class IssuerManager extends CredentialManagerBase {
                             if (ex.payloadIsIndy()) {
                                 ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
                                         attr -> issuerCredExRepo.updateCredential(bpaEx.getId(),
-                                                Credential.builder().attrs(attr).build()));
+                                                // TODO: Pass mime-type
+                                                Credential.builder().attrs(CredentialAttributes.from(attr)).build()));
                             } else {
                                 issuerCredExRepo.updateCredential(bpaEx.getId(),
                                         ExchangePayload.jsonLD(ex.resolveLDCredential()));

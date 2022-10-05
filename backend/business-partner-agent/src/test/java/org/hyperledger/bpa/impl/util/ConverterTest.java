@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.BaseTest;
@@ -130,7 +131,7 @@ class ConverterTest extends BaseTest {
         assertEquals(c.getType(), result.getType());
         assertEquals(c.getIsPublic(), result.getIsPublic());
         assertNotNull(result.getDocument());
-        assertTrue(result.getDocument().containsValue("Hello"));
+        assertTrue(result.getDocument().stream().map(CredentialAttributes::getValue).toList().contains("Hello"));
         assertEquals(c.getIsPublic(), result.getIsPublic());
         assertNull(result.getCreatedAt());
         assertNotEquals(c.getId(), result.getId());

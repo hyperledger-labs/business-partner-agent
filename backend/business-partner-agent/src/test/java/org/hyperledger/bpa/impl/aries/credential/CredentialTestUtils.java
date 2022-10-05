@@ -17,12 +17,14 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CredentialTestUtils {
 
@@ -32,13 +34,15 @@ public class CredentialTestUtils {
         mapper = m;
     }
 
-    public MyDocumentAPI createDummyCred(@NonNull CredentialType credType, @NonNull Boolean isPublic)
-            throws JsonProcessingException {
-        String json = "{ \"iban\":\"Hello\" }";
-        JsonNode jsonNode = mapper.readTree(json);
+    public MyDocumentAPI createDummyCred(@NonNull CredentialType credType, @NonNull Boolean isPublic) {
+        CredentialAttributes dummyAttribute = new CredentialAttributes("iban", "Hello", null);
+
+        List<CredentialAttributes> attributesArrayList = new ArrayList<>();
+        attributesArrayList.add(dummyAttribute);
+
         return MyDocumentAPI.builder()
                 .type(credType)
-                .documentData(jsonNode)
+                .documentData(attributesArrayList)
                 .isPublic(isPublic)
                 .schemaId(CredentialType.INDY.equals(credType) ? "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
                         : null)

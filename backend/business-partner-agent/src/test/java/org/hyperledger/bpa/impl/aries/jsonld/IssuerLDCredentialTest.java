@@ -23,6 +23,7 @@ import lombok.NonNull;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredBoundOfferRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
@@ -47,7 +48,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -103,7 +105,9 @@ public class IssuerLDCredentialTest extends BaseTest {
         issuer.issueCredential(IssueCredentialRequest.IssueLDCredentialRequest.builder()
                 .schemaId(schemaAPI.getId())
                 .partnerId(p.getId())
-                .document(conv.mapToNode(Map.of("name", "555", "identifier", "1234")))
+                .document(new ArrayList<>(Arrays.asList(
+                        new CredentialAttributes("name", "555", null),
+                        new CredentialAttributes("identifier", "1234", null))))
                 .type(CredentialType.JSON_LD)
                 .build());
 
@@ -112,8 +116,9 @@ public class IssuerLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.stateIsOfferSent());
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
-        Assertions.assertEquals(2, ex.credentialAttributesToMap().size());
-        Assertions.assertEquals("555", ex.credentialAttributesToMap().get("name"));
+        Assertions.assertEquals(2, ex.credentialAttributesToCredentialAttributesList().size());
+        Assertions.assertEquals("555", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
 
         aeh.handleCredentialV2(received);
         ex = credExRepo.findById(ex.getId()).orElseThrow();
@@ -147,7 +152,9 @@ public class IssuerLDCredentialTest extends BaseTest {
         issuer.issueCredential(IssueCredentialRequest.IssueLDCredentialRequest.builder()
                 .schemaId(schemaAPI.getId())
                 .partnerId(p.getId())
-                .document(conv.mapToNode(Map.of("name", "555", "identifier", "1234")))
+                .document(new ArrayList<>(Arrays.asList(
+                        new CredentialAttributes("name", "555", null),
+                        new CredentialAttributes("identifier", "1234", null))))
                 .type(CredentialType.JSON_LD)
                 .build());
 
@@ -188,9 +195,10 @@ public class IssuerLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.stateIsProposalReceived());
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
-        Assertions.assertEquals(2, ex.proposalAttributesToMap().size());
-        Assertions.assertEquals("Name", ex.proposalAttributesToMap().get("name"));
-        Assertions.assertEquals(0, ex.offerAttributesToMap().size());
+        Assertions.assertEquals(2, ex.proposalAttributesToCredentialAttributesList().size());
+        Assertions.assertEquals("Name", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
+        Assertions.assertEquals(0, ex.offerAttributesToCredentialAttributesList().size());
 
         CredentialOfferRequest req = new CredentialOfferRequest();
         req.setAcceptProposal(Boolean.TRUE);
@@ -206,8 +214,9 @@ public class IssuerLDCredentialTest extends BaseTest {
 
         ex = loadCredEx(id);
         Assertions.assertTrue(ex.stateIsCredentialIssued());
-        Assertions.assertEquals(2, ex.credentialAttributesToMap().size());
-        Assertions.assertEquals("Other Name", ex.credentialAttributesToMap().get("name"));
+        Assertions.assertEquals(2, ex.credentialAttributesToCredentialAttributesList().size());
+        Assertions.assertEquals("Other Name", ex.credentialAttributesToCredentialAttributesList().stream()
+                .filter(attr -> attr.getName().equals("name")).findFirst().get().getValue());
     }
 
     @Test

@@ -23,6 +23,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialFreeOfferHelper;
@@ -41,6 +42,7 @@ import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionReposit
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -87,26 +89,24 @@ public class OOBCredentialOffer extends OOBBase {
                         ms.getMessage("api.issuer.creddef.not.found", Map.of("id", req.getCredDefId()))));
         validator.validateAttributesAgainstIndySchema(req.getDocument(), dbCredDef.getSchema().getSchemaId());
 
-        Map<String, String> document = conv.toStringMap(req.getDocument());
-
         CredentialFreeOfferHelper.CredentialFreeOffer freeOffer;
         if (req.exchangeIsV1()) {
-            freeOffer = h.buildV1Indy(dbCredDef.getCredentialDefinitionId(), document);
+            freeOffer = h.buildV1Indy(dbCredDef.getCredentialDefinitionId(), req.getDocument());
         } else {
-            freeOffer = h.buildV2Indy(dbCredDef.getCredentialDefinitionId(), document);
+            freeOffer = h.buildV2Indy(dbCredDef.getCredentialDefinitionId(), req.getDocument());
         }
 
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
 
         Partner p = persistPartner(freeOffer.getInvitationRecord(), req.getAlias(), req.getTrustPing(), req.getTag());
-        persistCredentialExchange(freeOffer, document, dbCredDef, p);
+        persistCredentialExchange(freeOffer, req.getDocument(), dbCredDef, p);
 
         return buildResponse(freeOffer.getInvitationRecord().getInviMsgId());
     }
 
     private void persistCredentialExchange(
             @NonNull CredentialFreeOfferHelper.CredentialFreeOffer r,
-            @NonNull Map<String, String> document,
+            @NonNull List<CredentialAttributes> document,
             @NonNull BPACredentialDefinition dbCredDef,
             @NonNull Partner p) {
         BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange

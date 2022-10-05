@@ -423,7 +423,7 @@ export interface components {
       type?: components["schemas"]["CredentialType"];
       label?: string;
       typeLabel?: string;
-      credentialData?: { [key: string]: string };
+      credentialData?: components["schemas"]["CredentialAttributes"][];
     };
     AriesProofExchange: {
       /** Format: uuid */
@@ -557,7 +557,7 @@ export interface components {
       partner?: components["schemas"]["PartnerAPI"];
       schemaId?: string;
       credentialDefinitionId?: string;
-      proposal?: { [key: string]: string };
+      proposal?: components["schemas"]["CredentialAttributes"][];
       credential?: components["schemas"]["Credential"];
       role?: components["schemas"]["CredentialExchangeRole"];
       state?: components["schemas"]["CredentialExchangeState"];
@@ -572,12 +572,17 @@ export interface components {
       credDef?: components["schemas"]["CredDef"];
     };
     Credential: {
-      attrs?: { [key: string]: string };
+      attrs?: components["schemas"]["CredentialAttributes"][];
       credentialDefinitionId?: string;
       credRevId?: string;
       referent?: string;
       revRegId?: string;
       schemaId?: string;
+    };
+    CredentialAttributes: {
+      mimeType: string;
+      name: string;
+      value: string;
     };
     /** @enum {string} */
     CredentialExchangeRole: "ISSUER" | "HOLDER";
@@ -601,7 +606,7 @@ export interface components {
       acceptProposal?: boolean;
       credDefId?: string;
       schemaId?: string;
-      attributes: { [key: string]: string };
+      attributes: components["schemas"]["CredentialAttributes"][];
     };
     /** @enum {string} */
     CredentialType: "ORGANIZATIONAL_PROFILE_CREDENTIAL" | "INDY" | "JSON_LD";
@@ -686,11 +691,8 @@ export interface components {
       partnerId: string;
       /** @description credential exchange type */
       type?: unknown;
-      /**
-       * @description credential body key value pairs
-       * @example {}
-       */
-      document?: { [key: string]: unknown }[];
+      /** @description Attribute array with name, value, mime-type */
+      document?: components["schemas"]["CredentialAttributes"][];
     };
     // @ts-ignore
     "IssueCredentialRequest.IssueIndyCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
@@ -714,7 +716,7 @@ export interface components {
        * @description credential body key value pairs
        * @example {}
        */
-      document?: { [key: string]: unknown }[];
+      document?: components["schemas"]["CredentialAttributes"][];
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
     JsonArray: components["schemas"]["JsonElement"] & {
@@ -872,7 +874,7 @@ export interface components {
       isPublic?: boolean;
       label?: string;
       /** @example {} */
-      documentData?: { [key: string]: unknown }[];
+      documentData?: components["schemas"]["CredentialAttributes"][];
     };
     Number: { [key: string]: unknown };
     Object: { [key: string]: unknown };
@@ -1085,7 +1087,7 @@ export interface components {
       credentialLabel?: string;
       referent?: string;
       revoked?: boolean;
-      attrs?: { [key: string]: string };
+      attrs?: components["schemas"]["CredentialAttributes"][];
       schemaId?: string;
       schemaLabel?: string;
       credentialDefinitionId?: string;
@@ -1436,7 +1438,7 @@ export interface components {
       isPublic?: boolean;
       label?: string;
       /** @example {} */
-      document?: { [key: string]: unknown }[];
+      document?: components["schemas"]["CredentialAttributes"][];
     };
   };
 }
@@ -2206,7 +2208,7 @@ export interface operations {
         /** schema id */
         schemaId?: string | null;
         /** Filter Partners by connection state */
-        showInvitations: boolean;
+        showInvitations?: boolean | null;
       };
     };
     responses: {

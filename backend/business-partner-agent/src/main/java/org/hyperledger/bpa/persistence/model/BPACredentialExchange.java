@@ -42,6 +42,8 @@ import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 import javax.persistence.Id;
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -177,53 +179,60 @@ public class BPACredentialExchange
                 : null;
     }
 
-    public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull List<CredentialAttributes> proposalAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(credentialProposal != null ? credentialProposal.getJsonLD() : null);
+            return ldAttributesToCredentialAttributesList(
+                    credentialProposal != null ? credentialProposal.getJsonLD() : null);
         }
-        return indyAttributesToMap(credentialProposal != null ? credentialProposal.getIndy() : null);
+        return indyAttributesToCredentialAttributesList(
+                credentialProposal != null ? credentialProposal.getIndy() : null);
     }
 
-    public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull List<CredentialAttributes> offerAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(credentialOffer != null ? credentialOffer.getJsonLD() : null);
+            return ldAttributesToCredentialAttributesList(credentialOffer != null ? credentialOffer.getJsonLD() : null);
         }
-        return indyAttributesToMap(credentialOffer != null ? credentialOffer.getIndy() : null);
+        return indyAttributesToCredentialAttributesList(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
 
-    public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull List<CredentialAttributes> credentialAttributesToCredentialAttributesList() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(ldCredential != null ? ldCredential.getJsonLD() : null);
+            return ldAttributesToCredentialAttributesList(ldCredential != null ? ldCredential.getJsonLD() : null);
         }
         // TODO fallback to credential
         if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
-            return Map.of();
+            return new ArrayList<>();
         }
-        return indyCredential.getAttrs();
+        return (List<CredentialAttributes>) indyCredential.getAttrs();
     }
 
-    private Map<String, String> ldAttributesToMap(V20CredExRecordByFormat.LdProof ldProof) {
-        return ldProof == null ? Map.of() : ldProof.toFlatMap();
-    }
-
-    private Map<String, String> indyAttributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
-        if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
-            return Map.of();
-        }
-        return p.getAttributes()
+    private List<CredentialAttributes> ldAttributesToCredentialAttributesList(
+            V20CredExRecordByFormat.LdProof ldProof) {
+        Map<String, String> result = ldProof == null ? Map.of() : ldProof.toFlatMap();
+        // TODO: Pass mime-type
+        return (List<CredentialAttributes>) result.entrySet()
                 .stream()
-                .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
+                .map(e -> new CredentialAttributes(e.getKey(), e.getValue(), null))
+                .collect(Collectors.toList());
     }
 
-    public Map<String, String> attributesByState() {
-        if (stateIsProposalReceived()) {
-            return proposalAttributesToMap();
-        } else if (stateIsOfferReceived()) {
-            return offerAttributesToMap();
-        } else if (stateIsDone() || stateIsCredentialAcked() || stateIsCredentialIssued()) {
-            return credentialAttributesToMap();
+    private List<CredentialAttributes> indyAttributesToCredentialAttributesList(
+            V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
+        if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
+            return new ArrayList<>();
         }
-        return Map.of();
+        return (List<CredentialAttributes>) p.getAttributes();
+    }
+
+    public List<CredentialAttributes> attributesByState() {
+        if (stateIsProposalReceived()) {
+            return proposalAttributesToCredentialAttributesList();
+        } else if (stateIsOfferReceived()) {
+            return offerAttributesToCredentialAttributesList();
+        } else if (stateIsDone() || stateIsCredentialAcked() || stateIsCredentialIssued()) {
+            return credentialAttributesToCredentialAttributesList();
+        }
+        return new ArrayList<>();
     }
 
     public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> exchangePayloadByState() {

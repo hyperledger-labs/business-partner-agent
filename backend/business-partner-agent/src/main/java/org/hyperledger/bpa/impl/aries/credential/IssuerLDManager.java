@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -49,6 +48,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -78,7 +78,8 @@ public class IssuerLDManager {
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
-    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
+    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId,
+            List<CredentialAttributes> document) {
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
         try {
@@ -116,7 +117,7 @@ public class IssuerLDManager {
         throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.not.supported"));
     }
 
-    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
+    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull List<CredentialAttributes> attributes,
             @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String schemaId = credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null;
         if (StringUtils.isNotEmpty(schemaId) && !StringUtils.equals(schemaId, ids.schemaId())) {
@@ -131,7 +132,7 @@ public class IssuerLDManager {
                 V20CredBoundOfferRequest.builder()
                         .filter(v20CredFilter)
                         .counterPreview(V2CredentialExchangeFree.V2CredentialPreview.builder()
-                                .attributes(CredentialAttributes.fromMap(attributes))
+                                .attributes(attributes)
                                 .build())
                         .build())
                 .orElseThrow();

@@ -21,6 +21,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
@@ -29,6 +30,7 @@ import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.ExchangeVersionTranslator;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,7 +46,7 @@ public class CredEx implements ExchangeVersionTranslator {
     private PartnerAPI partner;
     private String schemaId; // TODO UI should use this id instead the one from the credential
     private String credentialDefinitionId; // TODO UI should use this id instead the one from the credential
-    private Map<String, String> proposal;
+    private List<CredentialAttributes> proposal;
     private Credential credential; // TODO should also be Map<String, String>
     private CredentialExchangeRole role;
     private CredentialExchangeState state;
@@ -81,18 +83,18 @@ public class CredEx implements ExchangeVersionTranslator {
         } else if (StringUtils.isNotEmpty(db.getErrorMsg())) {
             displayText = db.getErrorMsg();
         }
-        Map<String, String> credentialAttrs;
+        List<CredentialAttributes> credentialAttrs;
         if (db.stateIsProposalReceived()
                 || db.stateIsProposalSent()
                 || db.roleIsHolder() && db.stateIsProblem()
                 || db.roleIsIssuer() && db.stateIsDeclined()) {
-            credentialAttrs = db.proposalAttributesToMap();
+            credentialAttrs = db.proposalAttributesToCredentialAttributesList();
         } else if (db.stateIsOfferReceived()
                 || db.stateIsRequestSent()
                 || db.roleIsHolder() && db.stateIsDeclined()) {
-            credentialAttrs = db.offerAttributesToMap();
+            credentialAttrs = db.offerAttributesToCredentialAttributesList();
         } else {
-            credentialAttrs = db.credentialAttributesToMap();
+            credentialAttrs = db.credentialAttributesToCredentialAttributesList();
         }
         return builder
                 .id(db.getId())
@@ -101,7 +103,7 @@ public class CredEx implements ExchangeVersionTranslator {
                 .partner(partner)
                 .schemaId(db.getSchema() != null ? db.getSchema().getSchemaId() : null)
                 .credentialDefinitionId(db.getCredDef() != null ? db.getCredDef().getCredentialDefinitionId() : null)
-                .proposal(db.proposalAttributesToMap())
+                .proposal(db.proposalAttributesToCredentialAttributesList())
                 .credential(Credential
                         .builder()
                         .schemaId(db.getSchema() != null ? db.getSchema().getSchemaId() : null)

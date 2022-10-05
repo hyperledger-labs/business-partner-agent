@@ -24,7 +24,6 @@ import org.hyperledger.aries.api.credentials.CredentialAttributes;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -34,16 +33,9 @@ public class CredentialOfferRequest {
     private String credDefId;
     private String schemaId;
     @NotEmpty
-    private Map<String, String> attributes;
+    private List<CredentialAttributes> attributes;
 
     public boolean acceptAll() {
         return acceptProposal != null && acceptProposal;
-    }
-
-    public List<CredentialAttributes> toCredentialAttributes() {
-        if (attributes != null) {
-            return CredentialAttributes.fromMap(attributes);
-        }
-        return List.of();
     }
 }

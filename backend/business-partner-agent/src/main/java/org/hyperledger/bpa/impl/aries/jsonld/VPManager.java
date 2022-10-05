@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.jsonld;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.micronaut.core.annotation.Nullable;
@@ -114,13 +113,11 @@ public class VPManager {
     }
 
     protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
-        final ObjectNode on = converter.fromMap(Objects.requireNonNull(doc.getDocument()), ObjectNode.class);
-        on.remove("id");
-        on.put("id", myDid);
+        var document = Objects.requireNonNull(doc.getDocument());
 
         // this is needed because the java client serializes with GSON
         // and cannot handle Jackson ObjectNode
-        JsonObject subj = GsonConfig.defaultConfig().fromJson(on.toString(), JsonObject.class);
+        JsonObject subj = GsonConfig.defaultConfig().fromJson(document.toString(), JsonObject.class);
 
         List<String> types = new ArrayList<>(doc.getType().getType());
         if (doc.typeIsJsonLd() && doc.getSchema() != null && doc.getSchema().getLdType() != null) {

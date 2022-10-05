@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
@@ -27,6 +26,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.MyDocumentAPI;
@@ -37,7 +37,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -59,11 +59,10 @@ public class LabelStrategy {
     public void apply(@NonNull MyDocumentAPI document) {
         if (StringUtils.isBlank(document.getLabel())) {
             findDefaultAttribute(document.getSchemaId()).ifPresent(attr -> {
-                JsonNode documentData = document.getDocumentData();
-                JsonNode value = documentData.findValue(attr);
+                List<CredentialAttributes> documentData = document.getDocumentData();
+                String value = documentData.stream().filter(a -> a.getName().equals(attr)).findFirst().get().getValue();
                 if (value != null) {
-                    String label = value.asText();
-                    document.setLabel(label);
+                    document.setLabel(value);
                 }
             });
         }
@@ -73,8 +72,8 @@ public class LabelStrategy {
         if (ariesCredential != null) {
             Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
             if (attr.isPresent() && ariesCredential.getAttrs() != null) {
-                Map<String, String> attrs = ariesCredential.getAttrs();
-                return attrs.get(attr.get());
+                List<CredentialAttributes> attrs = (List<CredentialAttributes>) ariesCredential.getAttrs();
+                return attrs.stream().filter(a -> a.getName().equals(attr.get())).findFirst().get().getValue();
             }
         }
         return null;
@@ -87,8 +86,8 @@ public class LabelStrategy {
         } else {
             Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
             if (attr.isPresent() && ariesCredential.getCredentialData() != null) {
-                Map<String, String> attrs = ariesCredential.getCredentialData();
-                mergedLabel = attrs.get(attr.get());
+                List<CredentialAttributes> attrs = ariesCredential.getCredentialData();
+                mergedLabel = attrs.stream().filter(a -> a.getName().equals(attr.get())).findFirst().get().getValue();
             }
         }
         return mergedLabel;
