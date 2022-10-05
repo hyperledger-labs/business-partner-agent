@@ -91,13 +91,13 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 
 A first alpha version of Business Partner Agent is available, see
 [Helm Chart](https://github.com/hyperledger-labs/business-partner-agent-chart) and [Docker images](https://github.com/orgs/hyperledger-labs/packages/container/package/business-partner-agent)
-It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)). 
+It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time, and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)). 
 
 # Getting Started
 
 The Business Partner Agent supports two modes
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
-2. Indy mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.idu.network/)
+2. Indy mode: Utilizes an identity on an Hyperledger Indy ledger (default: http://test.bcovrin.vonx.io/)
 
 Both modes are currently coupled with a specific instance of an Indy network in order to read schemas and credential definitions.
 The agent is started in Indy mode per default and tries to connect with our test network. Please refer to the [.env-example file](scripts/.env-example) to start the agent in web mode or connect to a different Indy network.

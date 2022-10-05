@@ -21,7 +21,7 @@ The service that returns the public profile VP is advertised in the DID document
     "service":
     [{
         "type":"profile",
-        "serviceEndpoint":"https://alice.iil.network/profile.jsonld"
+        "serviceEndpoint":"http://localhost:8080/profile.jsonld"
     }]
 }
 ```
@@ -37,7 +37,7 @@ In order to embed Indy Anconcreds in the public profile, we wrap their content i
 
 #### Example of a wrapped in Indy Credential
 
-Given an Indy Credential based on [this schema](https://indy-test.idu.network/browse/domain?page=1&query=M6Mbe3qx7vB4wpZF4sBRjt%3A2%3Abank_account%3A1.0&txn_type=), we dynamically create the following unsigned VC.
+Given an Indy Credential based on [this schema](http://test.bcovrin.vonx.io/browse/domain?page=1&query=F6dB7dMVHUQSC64qemnBi7%3A2%3Abank_account%3A1.0&txn_type=), we dynamically create the following unsigned VC.
 It becomes verifiably self-attested by including it in a signed VP (see example at the end). The actual content of the original credential gets included in the `credentialSubject`.
 ```
 {
@@ -45,7 +45,7 @@ It becomes verifiably self-attested by including it in a signed VP (see example 
             "https://www.w3.org/2018/credentials/v1",
             {
                "@context":{
-                  "sc":"did:sov:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                  "sc":"did:sov:F6dB7dMVHUQSC64qemnBi7:2:bank_account:1.0",
                   "bic":{
                      "@id":"sc:bic"
                   },
@@ -67,9 +67,9 @@ It becomes verifiably self-attested by including it in a signed VP (see example 
             "iban":"1234"
          },
          "label":"1234",
-         "indyIssuer":"did:sov:M6Mbe3qx7vB4wpZF4sBRjt",
-         "schemaId":"M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
-         "credDefId":"M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
+         "indyIssuer":"did:sov:F6dB7dMVHUQSC64qemnBi7",
+         "schemaId":"F6dB7dMVHUQSC64qemnBi7:2:bank_account:1.0",
+         "credDefId":"F6dB7dMVHUQSC64qemnBi7:3:CL:571:bank_account_no_revoc"
       }
 ```
 

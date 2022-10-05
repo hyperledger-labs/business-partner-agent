@@ -2,13 +2,13 @@ bpa:
   schemas:
     #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
     bank-account:
-      ledgerId: "BoschTest"
-      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
+      ledgerId: "bcorvinTest"
+      id: "F6dB7dMVHUQSC64qemnBi7:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
       # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
       restrictions:
-        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
+        - issuerDid: "${bpa.did.prefix}F6dB7dMVHUQSC64qemnBi7"
           label: "Demo Bank"
     bank-account-idunion:
       ledgerId: "IDUnionTest"
@@ -19,20 +19,20 @@ bpa:
         - issuerDid: "${bpa.did.prefix}UmZ25DANwS6ngGWB4ye4tN"
           label: "Demo Bank"
     commercial-register:
-      ledgerId: "BoschTest"
-      id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
+      ledgerId: "bcorvinTest"
+      id: "F6dB7dMVHUQSC64qemnBi7:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
       restrictions:
-        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
+        - issuerDid: "${bpa.did.prefix}F6dB7dMVHUQSC64qemnBi7"
           label: "Commercial Register"
     commercial-register-idunion:
       ledgerId: "IDUnionTest"
-      id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
+      id: "3WDPV5zrNEWhAy9oRS2g8i:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
       restrictions:
-        - issuerDid: "${bpa.did.prefix}R6WR6n7CQVDjvvmwofHK6S"
+        - issuerDid: "${bpa.did.prefix}3WDPV5zrNEWhAy9oRS2g8i"
           label: "Commercial Register"
     permanent-resident:
       id: "https://w3id.org/citizenship/v1"
