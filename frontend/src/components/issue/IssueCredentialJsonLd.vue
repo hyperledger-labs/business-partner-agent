@@ -127,13 +127,9 @@ export default {
     schemasJsonLd: {
       get() {
         let documentTypes: SchemaAPI[] = this.$store.getters.getSchemas;
-
-        if (this.$store.getters.getOrganizationalProfile) {
-          documentTypes = documentTypes.filter(
-            (schema) => schema.type === CredentialTypes.JSON_LD.type
-          );
-        }
-
+        documentTypes = documentTypes.filter(
+          (schema) => schema.type === CredentialTypes.JSON_LD.type
+        );
         return documentTypes;
       },
     },
