@@ -416,7 +416,8 @@
         "selectHeader": "Wybierz dane do prezentacj",
         "label": "Dopasowanie poświadczeń",
         "credentialRevoked": " - poświadczenie jest unieważnione",
-        "noInfoFound": "No info found"
+        "noInfoFound": "No info found",
+        "revealed": "Reveal"
       }
     },
     "issueCredentials": {
@@ -532,7 +533,10 @@
       "issuedAt": "Issued at"
     },
     "credentialCard": {
-      "details": "Details"
+      "details": "Details",
+      "notRevealed": "Credential Not Revealed",
+      "predicateProof": "Predicate Proof",
+      "selfAttestedAttributes": "Self Attested Credential"
     },
     "credentialDefinitions": {
       "label": "Tag",

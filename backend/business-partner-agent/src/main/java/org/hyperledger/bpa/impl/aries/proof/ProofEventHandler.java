@@ -25,7 +25,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.BasePresExRecord;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
@@ -141,13 +140,11 @@ public class ProofEventHandler {
                                     pProof.setProofRequest(ExchangePayload.buildForProofRequest(dif));
                                 }
                                 pProofRepo.update(pProof);
-                                if (proof.isNotAutoPresent()) {
-                                    if (proof instanceof V20PresExRecord dif) {
-                                        proofManager.acceptDifCredentialsFromProposal(dif, pProof);
-                                    } else if (proof instanceof PresentationExchangeRecord indy) {
-                                        proofManager.acceptSelectedIndyCredentials(null, pProof.getExchangeVersion(),
-                                                indy);
-                                    }
+                                if (proof.isNotAutoPresent() && proof instanceof V20PresExRecord dif) {
+                                    // anoncred based proposals are always set to auto-present
+                                    // this does not work for dif exchanges, so they are handled
+                                    // explicitly here
+                                    proofManager.acceptDifCredentialsFromProposal(dif, pProof);
                                 }
                             }
                         }, () -> {

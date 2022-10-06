@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  * @see ProofTemplateConversion#proofRequestViaVisitorFrom for an example on how
  *      to use this class
  */
-class ProofTemplateElementVisitor {
+public class ProofTemplateElementVisitor {
 
     private final Function<UUID, Optional<String>> resolveLedgerSchemaId;
     private final RevocationTimeStampProvider revocationTimeStampProvider;
@@ -57,6 +57,13 @@ class ProofTemplateElementVisitor {
     private final Map<String, NonRevocationApplicator> nonRevocationApplicatorMap = new HashMap<>();
     private final Map<String, AtomicInteger> sameSchemaCounters = new HashMap<>();
     private String templateName;
+
+    ProofTemplateElementVisitor(
+            Function<UUID, Optional<String>> resolveLedgerSchemaId,
+            RevocationTimeStampProvider revocationTimeStampProvider) {
+        this.resolveLedgerSchemaId = resolveLedgerSchemaId;
+        this.revocationTimeStampProvider = revocationTimeStampProvider;
+    }
 
     static List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> asProofRestrictionsBuilder(
             List<BPASchemaRestrictions> schemaRestrictions) {
@@ -82,13 +89,6 @@ class ProofTemplateElementVisitor {
 
     private AtomicInteger getSameSchemaCounter(Pair<String, ?> schemaAndAttributesBuilder) {
         return sameSchemaCounters.computeIfAbsent(schemaAndAttributesBuilder.getLeft(), s -> new AtomicInteger(0));
-    }
-
-    ProofTemplateElementVisitor(
-            Function<UUID, Optional<String>> resolveLedgerSchemaId,
-            RevocationTimeStampProvider revocationTimeStampProvider) {
-        this.resolveLedgerSchemaId = resolveLedgerSchemaId;
-        this.revocationTimeStampProvider = revocationTimeStampProvider;
     }
 
     /**

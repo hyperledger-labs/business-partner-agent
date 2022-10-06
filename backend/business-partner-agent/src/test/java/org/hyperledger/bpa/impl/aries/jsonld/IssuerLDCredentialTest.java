@@ -40,6 +40,7 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,10 +83,10 @@ public class IssuerLDCredentialTest extends BaseTest {
 
     @Test
     void testHandleIssuerSendCredential() throws IOException {
-        String offerSent = loader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
-        String reqReceived = loader.load("files/v2-ld-credex-issuer/02-request-received.json");
-        String credIssued = loader.load("files/v2-ld-credex-issuer/03-credential-issued.json");
-        String exDone = loader.load("files/v2-ld-credex-issuer/04-done.json");
+        String offerSent = FileLoader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
+        String reqReceived = FileLoader.load("files/v2-ld-credex-issuer/02-request-received.json");
+        String credIssued = FileLoader.load("files/v2-ld-credex-issuer/03-credential-issued.json");
+        String exDone = FileLoader.load("files/v2-ld-credex-issuer/04-done.json");
 
         V20CredExRecord offer = ep.parseValueSave(offerSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord received = ep.parseValueSave(reqReceived, V20CredExRecord.class).orElseThrow();
@@ -130,8 +131,8 @@ public class IssuerLDCredentialTest extends BaseTest {
 
     @Test
     void testHandleIssuerSendCredentialHolderDeclines() throws IOException {
-        String offerSent = loader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
-        String abandoned = loader.load("files/v2-ld-credex-issuer/05-abandoned.json");
+        String offerSent = FileLoader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
+        String abandoned = FileLoader.load("files/v2-ld-credex-issuer/05-abandoned.json");
 
         V20CredExRecord offer = ep.parseValueSave(offerSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord problem = ep.parseValueSave(abandoned, V20CredExRecord.class).orElseThrow();
@@ -163,10 +164,10 @@ public class IssuerLDCredentialTest extends BaseTest {
 
     @Test
     void testHandleIssuerProposalReceived() throws IOException {
-        String proposalReceived = loader.load("files/v2-ld-credex-issuer-proposal/01-proposal-received.json");
-        String counterOffer = loader.load("files/v2-ld-credex-issuer-proposal/02-counter-offer-sent.json");
-        String requestReceived = loader.load("files/v2-ld-credex-issuer-proposal/03-request-received.json");
-        String credentialIssued = loader.load("files/v2-ld-credex-issuer-proposal/04-credential-issued.json");
+        String proposalReceived = FileLoader.load("files/v2-ld-credex-issuer-proposal/01-proposal-received.json");
+        String counterOffer = FileLoader.load("files/v2-ld-credex-issuer-proposal/02-counter-offer-sent.json");
+        String requestReceived = FileLoader.load("files/v2-ld-credex-issuer-proposal/03-request-received.json");
+        String credentialIssued = FileLoader.load("files/v2-ld-credex-issuer-proposal/04-credential-issued.json");
 
         V20CredExRecord proposal = ep.parseValueSave(proposalReceived, V20CredExRecord.class).orElseThrow();
         V20CredExRecord offer = ep.parseValueSave(counterOffer, V20CredExRecord.class).orElseThrow();
@@ -212,7 +213,7 @@ public class IssuerLDCredentialTest extends BaseTest {
 
     @Test
     void testHandleIssuerProposalReceivedIssuerDeclines() {
-        String proposalReceived = loader.load("files/v2-ld-credex-issuer-proposal/01-proposal-received.json");
+        String proposalReceived = FileLoader.load("files/v2-ld-credex-issuer-proposal/01-proposal-received.json");
         V20CredExRecord proposal = ep.parseValueSave(proposalReceived, V20CredExRecord.class).orElseThrow();
 
         createDefaultPartner(proposal.getConnectionId());

@@ -43,6 +43,9 @@ export type DeclineExchangeRequest =
 
 export type ApproveProofRequest = components["schemas"]["ApproveProofRequest"];
 
+export type SelectedReferent =
+  components["schemas"]["ApproveProofRequest.SelectedReferent"];
+
 export type ProofRequestedAttributes =
   components["schemas"]["PresentProofRequest.ProofRequest.ProofRequestedAttributes"];
 
@@ -125,6 +128,8 @@ export type WalletDocumentRequest =
 export type PaginationCommand = components["schemas"]["PaginationCommand"];
 
 export type CredentialType = components["schemas"]["CredentialType"];
+
+export type PType = components["schemas"]["IndyProofReqPredSpec.PTypeEnum"];
 
 export type AriesCredential = components["schemas"]["AriesCredential"];
 

@@ -149,13 +149,15 @@
 import {
   AriesProofExchange,
   PageOptions,
-  PresentationRequestCredentials,
   partnerService,
+  PresentationRequestCredentials,
   proofExService,
+  SelectedReferent,
 } from "@/services";
 import { EventBus } from "@/main";
 import {
   CredentialTypes,
+  PresentationExchangeRoles,
   PresentationExchangeStates,
   RequestTypes,
 } from "@/constants";
@@ -163,6 +165,7 @@ import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import PresentationRecord from "@/components/PresentationRecord.vue";
 import PresentationRecordV2 from "@/components/PresentationRecordV2.vue";
 import VBpaButton from "@/components/BpaButton";
+
 export default {
   props: {
     openItemById: String,
@@ -250,9 +253,12 @@ export default {
     },
     showV2() {
       return (
+        this.record.type === CredentialTypes.INDY.type &&
+        this.record.role === PresentationExchangeRoles.VERIFIER &&
         this.record.state &&
         (this.record.state === PresentationExchangeStates.PRESENTATION_SENT ||
-          this.record.state === PresentationExchangeStates.VERIFIED)
+          this.record.state === PresentationExchangeStates.VERIFIED ||
+          this.record.state === PresentationExchangeStates.DONE)
       );
     },
     isStateRequestReceived() {
@@ -368,7 +374,10 @@ export default {
     },
     isStateVerified(item: AriesProofExchange) {
       return (
-        item && item.state === PresentationExchangeStates.VERIFIED.toLowerCase()
+        item &&
+        item.role === PresentationExchangeRoles.VERIFIER.toLowerCase() &&
+        (item.state === PresentationExchangeStates.VERIFIED.toLowerCase() ||
+          item.state === PresentationExchangeStates.DONE.toLowerCase())
       );
     },
     async deleteItem() {
@@ -407,14 +416,16 @@ export default {
         });
       }
     },
-    prepareReferents(): string[] {
-      const referents: string[] = [];
+    prepareReferents(): { [key: string]: SelectedReferent } {
+      const referents: { [key: string]: SelectedReferent } = {};
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]: [string, any]) => {
-            console.log(groupName);
-            referents.push(group.selectedCredential?.credentialInfo?.referent);
+            referents[groupName] = {
+              referent: group.selectedCredential?.credentialInfo?.referent,
+              revealed: !!group.revealed,
+            };
           }
         );
       });
@@ -460,6 +471,8 @@ export default {
             for (const c of cred.presentationReferents) {
               const attribute = this.record.proofRequest.requestedAttributes[c];
               this.pushIfMatch(attribute, cred);
+              // only on anoncred attribute groups
+              if (attribute) attribute.revealed = true;
               const pred = this.record.proofRequest.requestedPredicates[c];
               this.pushIfMatch(pred, cred);
             }

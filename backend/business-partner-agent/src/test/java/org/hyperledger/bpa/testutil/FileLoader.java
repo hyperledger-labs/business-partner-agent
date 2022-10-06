@@ -19,17 +19,14 @@ package org.hyperledger.bpa.testutil;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Slf4j
 public class FileLoader {
 
-    public String load(String filename) {
+    public static String load(String filename) {
         String result = "";
         String fn;
 
@@ -39,17 +36,12 @@ public class FileLoader {
             fn = filename;
         }
 
-        InputStream is = getClass().getClassLoader().getResourceAsStream(fn);
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-            result = buffer.lines().collect(Collectors.joining("\n"));
+        try {
+            result = Files.readString(Paths.get("src/test/resources/" + fn));
         } catch (IOException e) {
             log.error("Could not read from input stream.", e);
         }
 
         return result;
-    }
-
-    public static FileLoader newLoader() {
-        return new FileLoader();
     }
 }

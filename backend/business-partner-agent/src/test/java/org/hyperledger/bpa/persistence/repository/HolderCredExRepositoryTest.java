@@ -31,6 +31,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +56,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         String schemaId = "F6dB7dMVHUQSC64qemnBi7:2:spaces:1.0";
         String credDefId = "EraYCDJUPsChbkw7S1vV96:3:CL:4740:spaces";
 
-        final String json = loader.load("files/v1-credex-holder/04-acked.json");
+        final String json = FileLoader.load("files/v1-credex-holder/04-acked.json");
         final V1CredentialExchange ex = GsonConfig.defaultConfig().fromJson(json, V1CredentialExchange.class);
 
         BPACredentialExchange cred = BPACredentialExchange

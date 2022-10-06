@@ -102,7 +102,7 @@
         <dependency>
             <groupId>io.micronaut.email</groupId>
             <artifactId>micronaut-email-mailjet</artifactId>
-            <version>1.3.1</version>
+            <version>1.3.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.activation</groupId>
@@ -123,7 +123,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.0-M17</version>
+            <version>10.1.0</version>
         </dependency>
 
         <!-- Logging -->
@@ -137,7 +137,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
         <!-- .yml log files -->
         <dependency>
@@ -149,7 +149,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.29</version>
+            <version>0.7.30</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -267,7 +267,7 @@
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-J-Dmicronaut.openapi.views.spec=redoc.enabled=true,rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop</arg>
+                        <arg>-Amicronaut.openapi.views.spec=rapidoc.enabled=false,swagger-ui.enabled=true,swagger-ui.theme=flattop</arg>
                         <arg>-Amicronaut.processing.group=org.hyperledger.business-partner-agent</arg>
                         <arg>-Amicronaut.processing.module=business-partner-agent</arg>
                     </compilerArgs>
@@ -283,24 +283,24 @@
                             <version>${org.mapstruct.version}</version>
                         </path>
                         <path>
-                            <groupId>io.micronaut.openapi</groupId>
-                            <artifactId>micronaut-openapi</artifactId>
-                            <version>${micronaut.openapi.version}</version>
-                        </path>
-                        <path>
                             <groupId>io.micronaut</groupId>
                             <artifactId>micronaut-inject-java</artifactId>
                             <version>${micronaut.version}</version>
                         </path>
                         <path>
-                            <groupId>io.micronaut.security</groupId>
-                            <artifactId>micronaut-security-annotations</artifactId>
-                            <version>${micronaut.security.version}</version>
-                        </path>
-                        <path>
                             <groupId>io.micronaut.data</groupId>
                             <artifactId>micronaut-data-processor</artifactId>
                             <version>${micronaut.data.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.micronaut.openapi</groupId>
+                            <artifactId>micronaut-openapi</artifactId>
+                            <version>${micronaut.openapi.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.micronaut.security</groupId>
+                            <artifactId>micronaut-security-annotations</artifactId>
+                            <version>${micronaut.security.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -443,8 +443,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v16.15.1</nodeVersion>
-                                    <npmVersion>8.11.0</npmVersion>
+                                    <nodeVersion>v16.17.1</nodeVersion>
+                                    <npmVersion>8.15.0</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

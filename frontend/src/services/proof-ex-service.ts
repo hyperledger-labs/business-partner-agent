@@ -14,6 +14,7 @@ import {
   AriesProofExchange,
   DeclineExchangeRequest,
   PresentationRequestCredentials,
+  SelectedReferent,
 } from "@/services/types-services";
 
 export default {
@@ -37,10 +38,10 @@ export default {
 
   approveProofRequest(
     id: string,
-    referents: string[]
+    referents: { [key: string]: SelectedReferent }
   ): Promise<AxiosResponse<void>> {
     const body: ApproveProofRequest = {
-      referents: referents,
+      selectedReferents: referents,
     };
 
     return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, body);

@@ -26,9 +26,9 @@ import java.util.Objects;
 
 public class NonRevocationApplicator {
 
-    Boolean applyNonRevocation;
+    private final Boolean applyNonRevocation;
 
-    PresentProofRequest.ProofRequest.ProofNonRevoked nonRevocation;
+    private PresentProofRequest.ProofRequest.ProofNonRevoked nonRevocation;
 
     @Builder
     public NonRevocationApplicator(@NonNull Boolean applyNonRevocation,

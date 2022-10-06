@@ -8,6 +8,18 @@
 
 <template>
   <v-container>
+    <!-- Valid/Invalid info for role verifier -->
+
+    <v-container v-if="isStateVerified">
+      <v-alert v-if="record.valid" dense border="left" type="success">
+        {{ $t("view.presentationRecord.presentationValid") }}
+      </v-alert>
+
+      <v-alert v-else dense border="left" type="error">
+        {{ $t("view.presentationRecord.presentationNotValid") }}
+      </v-alert>
+    </v-container>
+
     <!-- Exchange States -->
     <v-list-item>
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
@@ -154,36 +166,35 @@
                     )
                   }}
                 </h4>
-                <v-select
-                  :label="
-                    $t('view.presentationRecord.matchingCredentials.label')
-                  "
-                  return-object
-                  :items="group.matchingCredentials"
-                  :item-text="toCredentialLabel"
-                  v-model="group.selectedCredential"
-                  outlined
-                  @change="selectCredential(group, $event)"
-                  dense
-                ></v-select>
+                <span class="d-flex align-end">
+                  <v-select
+                    :label="
+                      $t('view.presentationRecord.matchingCredentials.label')
+                    "
+                    return-object
+                    :items="group.matchingCredentials"
+                    :item-text="toCredentialLabel"
+                    v-model="group.selectedCredential"
+                    outlined
+                    @change="selectCredential(group, $event)"
+                    dense
+                    class="pa-0"
+                  ></v-select>
+                  <v-checkbox
+                    :label="
+                      $t('view.presentationRecord.matchingCredentials.revealed')
+                    "
+                    v-model="group.revealed"
+                    v-if="group.hasOwnProperty('revealed')"
+                    class="pa-2"
+                  ></v-checkbox>
+                </span>
               </div>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </template>
       </v-expansion-panels>
     </template>
-
-    <!-- Valid/Invalid info for role verifier -->
-
-    <v-container v-if="isStateVerified">
-      <v-alert v-if="record.valid" dense border="left" type="success">
-        {{ $t("view.presentationRecord.presentationValid") }}
-      </v-alert>
-
-      <v-alert v-else dense border="left" type="error">
-        {{ $t("view.presentationRecord.presentationNotValid") }}
-      </v-alert>
-    </v-container>
 
     <!-- ExpertMode: Raw data -->
 
@@ -207,6 +218,7 @@ import {
   Predicates,
   RequestTypes,
   Restrictions,
+  PresentationExchangeRoles,
 } from "@/constants";
 import Timeline from "@/components/Timeline.vue";
 import {
@@ -227,7 +239,11 @@ export default {
       return this.$store.getters.getExpertMode;
     },
     isStateVerified() {
-      return this.record.state === PresentationExchangeStates.VERIFIED;
+      return (
+        this.record.role === PresentationExchangeRoles.VERIFIER &&
+        (this.record.state === PresentationExchangeStates.VERIFIED ||
+          this.record.state === PresentationExchangeStates.DONE)
+      );
     },
     isStateProposalSent() {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;

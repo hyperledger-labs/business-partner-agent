@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -17,15 +17,11 @@
  */
 package org.hyperledger.bpa.controller.api.activity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum ActivityType {
-    @JsonProperty("connection_request")
     CONNECTION_REQUEST,
-    @JsonProperty("credential_exchange")
     CREDENTIAL_EXCHANGE,
-    @JsonProperty("presentation_exchange")
     PRESENTATION_EXCHANGE
 }

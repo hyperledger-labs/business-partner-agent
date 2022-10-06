@@ -418,7 +418,8 @@
         "selectHeader": "Select data for presentation",
         "label": "Matching Credentials",
         "credentialRevoked": " - credential is revoked",
-        "noInfoFound": "No info found"
+        "noInfoFound": "No info found",
+        "revealed": "Reveal"
       }
     },
     "issueCredentials": {
@@ -535,7 +536,10 @@
       "issuedAt": "Issued at"
     },
     "credentialCard": {
-      "details": "Details"
+      "details": "Details",
+      "notRevealed": "Credential Not Revealed",
+      "predicateProof": "Predicate Proof",
+      "selfAttestedAttributes": "Self Attested Credential"
     },
     "credentialDefinitions": {
       "label": "Tag",

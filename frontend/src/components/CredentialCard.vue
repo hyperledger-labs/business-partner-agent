@@ -10,9 +10,19 @@
   <v-card class="my-2 rounded-lg align-self-start" width="400" elevation="5">
     <v-card-title
       height="40"
-      class="light-blue darken-3 card-title text-subtitle-1 white--text"
+      class="light-blue darken-3 card-title text-subtitle-1 white--text font-weight-medium"
       style="text-transform: capitalize"
       >{{ this.document.proofData.identifier.schemaLabel }}</v-card-title
+    >
+    <v-card-subtitle
+      class="light-blue darken-3 card-title text-subtitle-2 white--text font-weight-thin"
+      ><span v-if="unrevealedAttributes">
+        {{ $t("component.credentialCard.notRevealed") }}</span
+      ><span v-else-if="predicateProof">
+        {{ $t("component.credentialCard.predicateProof") }}</span
+      ><span v-else-if="selfAttestedAttributes">
+        {{ $t("component.credentialCard.selfAttestedAttributes") }}</span
+      ></v-card-subtitle
     >
     <v-card-text>
       <v-container
@@ -25,6 +35,17 @@
           <v-col class="col-12">
             <p class="font-weight-medium">{{ key }}</p>
             <p class="font-italic">{{ value }}</p>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row v-if="predicates">
+          <v-col class="col-12">
+            <p class="font-weight-medium">
+              {{ predicates.name }}
+              {{ translatePType }}
+              {{ predicates.pvalue }}
+            </p>
           </v-col>
         </v-row>
       </v-container>
@@ -48,7 +69,7 @@
                   <v-list-item-title class="font-weight-medium">
                     {{ key }}
                   </v-list-item-title>
-                  <v-list-item-subtitle align="">
+                  <v-list-item-subtitle>
                     {{ value }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -62,6 +83,8 @@
 </template>
 
 <script lang="ts">
+import { RequestedProofType } from "@/constants";
+
 export default {
   props: {
     document: Object,
@@ -75,6 +98,47 @@ export default {
       },
       origIntDoc: Object,
     };
+  },
+  computed: {
+    predicates() {
+      return this.document.proofData.requestedPredicates;
+    },
+    unrevealedAttributes() {
+      return (
+        RequestedProofType.UNREVEALED_ATTRS ===
+        this.document.proofData.proofType
+      );
+    },
+    selfAttestedAttributes() {
+      return (
+        RequestedProofType.SELF_ATTESTED_ATTRS ===
+        this.document.proofData.proofType
+      );
+    },
+    predicateProof() {
+      return (
+        RequestedProofType.PREDICATES === this.document.proofData.proofType
+      );
+    },
+    translatePType() {
+      switch (this.predicates.ptype) {
+        case "GREATER_THAN": {
+          return ">";
+        }
+        case "GREATER_THAN_OR_EQUAL_TO": {
+          return ">=";
+        }
+        case "LESS_THAN": {
+          return "<";
+        }
+        case "LESS_THAN_OR_EQUAL_TO": {
+          return "<=";
+        }
+        default: {
+          return "";
+        }
+      }
+    },
   },
 };
 </script>

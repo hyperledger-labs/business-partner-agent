@@ -25,6 +25,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,7 +69,7 @@ class CredentialManagerTest extends BaseTest {
 
     @Test
     void testResolveIssuerByVP() throws Exception {
-        final String json = loader.load("files/verifiablePresentation.json");
+        final String json = FileLoader.load("files/verifiablePresentation.json");
         final VerifiablePresentation<VerifiableIndyCredential> vp = mapper.readValue(json, Converter.VP_TYPEREF);
 
         Partner p = partnerRepo.save(Partner

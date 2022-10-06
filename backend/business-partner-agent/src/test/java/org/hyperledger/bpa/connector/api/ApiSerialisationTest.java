@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -19,6 +19,7 @@ package org.hyperledger.bpa.connector.api;
 
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.BaseTest;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,7 +31,7 @@ class ApiSerialisationTest extends BaseTest {
 
     @Test
     void testVerificationMethodFlat() throws Exception {
-        String didDocument = loader.load("files/didDocument.json");
+        String didDocument = FileLoader.load("files/didDocument.json");
         DIDDocument didDoc = mapper.readValue(didDocument, DIDDocument.class);
 
         assertNotNull(didDoc);
@@ -50,7 +51,7 @@ class ApiSerialisationTest extends BaseTest {
 
     @Test
     void testVerificationMethodList() throws Exception {
-        String didDocument = loader.load("files/didLocal.json");
+        String didDocument = FileLoader.load("files/didLocal.json");
         DIDDocument didDoc = mapper.readValue(didDocument, DIDDocument.class);
 
         assertNotNull(didDoc);

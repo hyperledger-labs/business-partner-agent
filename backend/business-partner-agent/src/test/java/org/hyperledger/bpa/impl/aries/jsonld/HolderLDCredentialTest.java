@@ -40,6 +40,7 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,11 +89,11 @@ public class HolderLDCredentialTest extends BaseTest {
         Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
                 .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
 
-        String offerReceived = loader.load("files/v2-ld-credex-holder/01-offer-received.json");
-        String requestSent = loader.load("files/v2-ld-credex-holder/02-request-sent.json");
-        String credentialReceived = loader.load("files/v2-ld-credex-holder/03-credential-received.json");
-        String ldProofIds = loader.load("files/v2-ld-credex-holder/04-issue-credential-ld-proof.json");
-        String credDone = loader.load("files/v2-ld-credex-holder/05-done.json");
+        String offerReceived = FileLoader.load("files/v2-ld-credex-holder/01-offer-received.json");
+        String requestSent = FileLoader.load("files/v2-ld-credex-holder/02-request-sent.json");
+        String credentialReceived = FileLoader.load("files/v2-ld-credex-holder/03-credential-received.json");
+        String ldProofIds = FileLoader.load("files/v2-ld-credex-holder/04-issue-credential-ld-proof.json");
+        String credDone = FileLoader.load("files/v2-ld-credex-holder/05-done.json");
 
         V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
         V20CredExRecord request = ep.parseValueSave(requestSent, V20CredExRecord.class).orElseThrow();
@@ -135,7 +136,7 @@ public class HolderLDCredentialTest extends BaseTest {
 
     @Test
     void testHolderReceivesCredentialFromIssuerAndDeclines() {
-        String offerReceived = loader.load("files/v2-ld-credex-holder/01-offer-received.json");
+        String offerReceived = FileLoader.load("files/v2-ld-credex-holder/01-offer-received.json");
 
         V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
 
@@ -155,8 +156,8 @@ public class HolderLDCredentialTest extends BaseTest {
 
     @Test
     void testHolderRequestsCredentialFromIssuerAndIssuerAccepts() throws IOException {
-        String proposalSent = loader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
-        String offerReceived = loader.load("files/v2-ld-credex-holder-proposal/02-offer-received.json");
+        String proposalSent = FileLoader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
+        String offerReceived = FileLoader.load("files/v2-ld-credex-holder-proposal/02-offer-received.json");
 
         V20CredExRecord proposal = ep.parseValueSave(proposalSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
@@ -198,8 +199,8 @@ public class HolderLDCredentialTest extends BaseTest {
 
     @Test
     void testHolderRequestsCredentialFromIssuerAndIssuerDeclines() throws IOException {
-        String proposalSent = loader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
-        String abandonedEvent = loader.load("files/v2-ld-credex-holder-proposal/03-abandoned.json");
+        String proposalSent = FileLoader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
+        String abandonedEvent = FileLoader.load("files/v2-ld-credex-holder-proposal/03-abandoned.json");
 
         V20CredExRecord proposal = ep.parseValueSave(proposalSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord abandoned = ep.parseValueSave(abandonedEvent, V20CredExRecord.class).orElseThrow();

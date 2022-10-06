@@ -74,7 +74,7 @@ If you want to run in web only mode you also have to set:
 
 5. Access the UI
 
-Swagger UI: http://localhost:8080/swagger-ui   
+Swagger UI: http://localhost:8080/swagger-ui/
 Frontend: http://localhost:8080
 
 ##FAQ

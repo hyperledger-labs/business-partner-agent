@@ -249,7 +249,9 @@ public class Converter {
                     Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
                             .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
                                     .builder()
+                                    .proofType(e.getValue().getType())
                                     .revealedAttributes(e.getValue().getRevealedAttributes())
+                                    .requestedPredicates(e.getValue().getRequestedPredicates())
                                     .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
                                     .build()));
                     proofData = mapper.convertValue(collect, JsonNode.class);
@@ -282,20 +284,6 @@ public class Converter {
         return proof;
     }
 
-    public Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttrsToGroup(
-            @Nullable Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
-            @Nullable List<PresentationExchangeRecord.Identifier> identifier) {
-        Map<String, PresentationExchangeRecord.RevealedAttributeGroup> attrToGroup = new LinkedHashMap<>();
-        if (CollectionUtils.isNotEmpty(attrs)) {
-            attrs.forEach((k, v) -> attrToGroup.put(k, PresentationExchangeRecord.RevealedAttributeGroup
-                    .builder()
-                    .revealedAttributes(Map.of(k, v.getRaw()))
-                    .identifier(CollectionUtils.isNotEmpty(identifier) ? identifier.get(v.getSubProofIndex()) : null)
-                    .build()));
-        }
-        return attrToGroup;
-    }
-
     /**
      * In V1 proof proposal there is no way to name the proof request so aca-py
      * always falls back to 'proof-request' for the name. In most cases this is only
@@ -308,8 +296,7 @@ public class Converter {
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
         ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = Objects
-                .requireNonNullElseGet(p.getProofRequest(),
-                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new);
+                .requireNonNullElseGet(p.getProofRequest(), ExchangePayload::new);
         if (p.typeIsIndy() && pr.getIndy() != null) {
             PresentProofRequest.ProofRequest indy = pr.getIndy();
             if (!"proof-request".equals(indy.getName())) {

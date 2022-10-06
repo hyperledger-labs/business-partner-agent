@@ -417,7 +417,8 @@
         "selectHeader": "Daten für die Präsentation auswählen",
         "label": "Passende Berechtigungsnachweise",
         "credentialRevoked": " - Berechtigungsnachweis wurde widerrufen",
-        "noInfoFound": "Keine Informationen gefunden"
+        "noInfoFound": "Keine Informationen gefunden",
+        "revealed": "Offenlegen"
       }
     },
     "issueCredentials": {
@@ -533,7 +534,10 @@
       "issuedAt": "Ausgestellt am"
     },
     "credentialCard": {
-      "details": "Details"
+      "details": "Details",
+      "notRevealed": "Credential nicht offengelegt",
+      "predicateProof": "Predicate Proof",
+      "selfAttestedAttributes": "Selbst signiert"
     },
     "credentialDefinitions": {
       "label": "Tag",

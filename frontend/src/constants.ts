@@ -75,6 +75,17 @@ export enum PresentationExchangeStates {
   PRESENTATION_ACKED = "presentation_acked",
 }
 
+export enum PresentationExchangeRoles {
+  PROVER = "prover",
+  VERIFIER = "verifier",
+}
+
+export enum RequestedProofType {
+  SELF_ATTESTED_ATTRS = "SELF_ATTESTED_ATTRS",
+  UNREVEALED_ATTRS = "UNREVEALED_ATTRS",
+  PREDICATES = "PREDICATES",
+}
+
 export const PartnerStates = Object.freeze({
   INVITATION: {
     value: "invitation",
