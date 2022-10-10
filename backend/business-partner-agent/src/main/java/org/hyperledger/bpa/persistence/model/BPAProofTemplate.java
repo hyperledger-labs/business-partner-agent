@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.verification.prooftemplates.SameSchemaType;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroups;
 
@@ -38,7 +39,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
@@ -103,5 +107,21 @@ public class BPAProofTemplate {
 
     public boolean typeIsJsonLD() {
         return CredentialType.JSON_LD.equals(type);
+    }
+
+    public boolean allowSelfAttested() {
+        return streamAttributeGroups()
+                .map(BPAAttributeGroup::allowSelfAttested)
+                .findFirst()
+                .orElse(Boolean.FALSE);
+    }
+
+    public Set<String> collectAttributes() {
+        return streamAttributeGroups()
+                .map(BPAAttributeGroup::getAttributes)
+                .flatMap(List::stream)
+                .map(BPAAttribute::getName)
+                .collect(Collectors.toSet());
+
     }
 }

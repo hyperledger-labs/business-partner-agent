@@ -46,6 +46,10 @@ public class AttributeGroup {
     @Builder.Default
     private Boolean nonRevoked = Boolean.FALSE;
 
+    @Nullable
+    @Builder.Default
+    private Boolean allowSelfAttested = Boolean.FALSE;
+
     @Valid
     @Nullable
     private List<SchemaRestrictions> schemaLevelRestrictions;
