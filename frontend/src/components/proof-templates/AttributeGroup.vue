@@ -57,7 +57,12 @@
             </v-data-table>
           </v-container>
 
-          <v-container v-if="attributeGroup.schemaLevelRestrictions.length > 0">
+          <v-container
+            v-if="
+              attributeGroup.schemaLevelRestrictions &&
+              attributeGroup.schemaLevelRestrictions.length > 0
+            "
+          >
             <h4 class="mb-4">
               {{
                 $t("view.proofTemplate.view.attributeGroup.titleRestrictions")

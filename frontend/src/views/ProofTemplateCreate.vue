@@ -403,11 +403,6 @@ export default {
           );
         }
 
-        // add empty restrictions object to satisfy backend
-        if (ag.schemaLevelRestrictions.length === 0) {
-          restrictionsInGroup.push({});
-        }
-
         // sanitize ui data (remove ui helper values)
         sanitizedAttributeGroupObjects.push({
           schemaId: ag.schemaId,

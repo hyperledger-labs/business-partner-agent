@@ -17,10 +17,12 @@
  */
 package org.hyperledger.bpa.impl.aries.prooftemplates;
 
+import io.micronaut.core.util.CollectionUtils;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRequestedAttributes;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPASchemaRestrictions;
 
 import java.util.List;
@@ -39,21 +41,19 @@ public class Attributes {
     @Singular
     private Map<String, String> equals;
 
-    public void addToBuilder(
-            BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> builderSink) {
-        List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
-                .asProofRestrictionsBuilder(
-                        schemaRestrictions);
-        restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
+    public void addToBuilder(BiConsumer<String, ProofRequestedAttributes> builderSink) {
+        List<ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
+                .asProofRestrictionsBuilder(schemaRestrictions);
 
-        PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
-                .builder()
-                .names(names)
-                // TODO only set when set in restriction
-                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject())
-                        .collect(Collectors.toList()));
+        ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = ProofRequestedAttributes.builder()
+                .names(names);
+
+        if (CollectionUtils.isNotEmpty(restrictionsBuilder)) {
+            restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
+            builder.restrictions(restrictionsBuilder.stream().map(res -> res.build().toJsonObject())
+                    .collect(Collectors.toList()));
+        }
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
-
     }
 }

@@ -18,7 +18,7 @@
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
-import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 
 import javax.validation.Valid;
@@ -46,15 +46,7 @@ public class AttributeGroup {
     @Builder.Default
     private Boolean nonRevoked = Boolean.FALSE;
 
-    @NotNull
-    @Builder.Default
     @Valid
-    private List<SchemaRestrictions> schemaLevelRestrictions = List.of(SchemaRestrictions.builder().build());
-
-    public List<SchemaRestrictions> getSchemaLevelRestrictions() {
-        if (CollectionUtils.isEmpty(schemaLevelRestrictions)) {
-            return List.of(SchemaRestrictions.builder().build());
-        }
-        return schemaLevelRestrictions;
-    }
+    @Nullable
+    private List<SchemaRestrictions> schemaLevelRestrictions;
 }
