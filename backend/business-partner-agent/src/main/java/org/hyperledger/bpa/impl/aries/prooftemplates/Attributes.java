@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.prooftemplates;
 
-import io.micronaut.core.util.CollectionUtils;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
@@ -44,15 +43,13 @@ public class Attributes {
     public void addToBuilder(BiConsumer<String, ProofRequestedAttributes> builderSink) {
         List<ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
                 .asProofRestrictionsBuilder(schemaRestrictions);
+        restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
 
         ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = ProofRequestedAttributes.builder()
-                .names(names);
-
-        if (CollectionUtils.isNotEmpty(restrictionsBuilder)) {
-            restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
-            builder.restrictions(restrictionsBuilder.stream().map(res -> res.build().toJsonObject())
-                    .collect(Collectors.toList()));
-        }
+                .names(names)
+                .restrictions(restrictionsBuilder.stream()
+                        .map(res -> res.schemaId(schemaId).build().toJsonObject())
+                        .collect(Collectors.toList()));
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
     }

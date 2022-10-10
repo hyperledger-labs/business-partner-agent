@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries.prooftemplates;
 
 import io.micronaut.core.annotation.Nullable;
+import lombok.NonNull;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.impl.util.Pair;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
@@ -67,8 +68,8 @@ public class ProofTemplateElementVisitor {
     }
 
     static List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> asProofRestrictionsBuilder(
-            @Nullable List<BPASchemaRestrictions> schemaRestrictions) {
-        return schemaRestrictions != null ? schemaRestrictions.stream()
+            @NonNull List<BPASchemaRestrictions> schemaRestrictions) {
+        return schemaRestrictions.stream()
                 .map(res -> PresentProofRequest.ProofRequest.ProofRestrictions.builder()
                         .schemaId(res.getSchemaId())
                         .schemaName(res.getSchemaName())
@@ -76,8 +77,7 @@ public class ProofTemplateElementVisitor {
                         .schemaIssuerDid(res.getSchemaIssuerDid())
                         .credentialDefinitionId(res.getCredentialDefinitionId())
                         .issuerDid(res.getIssuerDid()))
-                .collect(Collectors.toList())
-                : List.of();
+                .collect(Collectors.toList());
     }
 
     private NonRevocationApplicator getRevocationApplicator(Pair<String, ?> schemaAndAttributesBuilder) {
@@ -88,7 +88,7 @@ public class ProofTemplateElementVisitor {
     private List<BPASchemaRestrictions> getSchemaRestrictions(Pair<String, ?> schemaAndAttributesBuilder) {
         return schemaRestrictions.computeIfAbsent(
                 schemaAndAttributesBuilder.getLeft(),
-                schemaId -> List.of());
+                schemaId -> List.of(BPASchemaRestrictions.builder().build()));
     }
 
     private AtomicInteger getSameSchemaCounter(Pair<String, ?> schemaAndAttributesBuilder) {
