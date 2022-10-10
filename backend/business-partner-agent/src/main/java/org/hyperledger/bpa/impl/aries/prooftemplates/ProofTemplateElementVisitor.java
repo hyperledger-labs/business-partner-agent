@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.prooftemplates;
 
-import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.impl.util.Pair;
