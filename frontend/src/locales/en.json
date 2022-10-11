@@ -368,7 +368,8 @@
         "requestedDataTitle": "Data to be requested",
         "requestedDataSubtitle": "Add data to be requested by Schema",
         "snackbarContent": "Removed attribute group",
-        "success": "Proof Template Created"
+        "success": "Proof Template Created",
+        "allowSelfAttested": "Allow Self Attestation"
       }
     },
     "requestPresentation": {

@@ -118,6 +118,7 @@ public class BPAProofTemplate {
 
     public Set<String> collectAttributes() {
         return streamAttributeGroups()
+                .filter(BPAAttributeGroup::allowSelfAttested)
                 .map(BPAAttributeGroup::getAttributes)
                 .flatMap(List::stream)
                 .map(BPAAttribute::getName)
