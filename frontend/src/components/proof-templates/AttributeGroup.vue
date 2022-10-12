@@ -14,7 +14,22 @@
         :key="idx"
       >
         <v-expansion-panel-header>
-          <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+          <template>
+            <v-row no-gutters class="d-flex align-end">
+              <v-col cols="6">
+                <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+              </v-col>
+              <v-col
+                cols="6"
+                class="text--secondary"
+                v-if="attributeGroup.allowSelfAttested"
+              >
+                <span>
+                  {{ $t("view.proofTemplate.create.allowSelfAttested") }}
+                </span>
+              </v-col>
+            </v-row>
+          </template>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container>
@@ -43,7 +58,10 @@
               show-expand
               hide-default-footer
             >
-              <template v-slot:expanded-item="{ headers, item }">
+              <template
+                v-slot:expanded-item="{ headers, item }"
+                v-if="!attributeGroup.allowSelfAttested"
+              >
                 <td :colspan="headers.length" style="padding: 0">
                   <v-data-table
                     disable-sort
