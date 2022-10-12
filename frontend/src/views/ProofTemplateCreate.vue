@@ -78,7 +78,7 @@
                       </v-col>
                       <v-col
                         cols="6"
-                        class="text--secondary"
+                        class="text--secondary font-weight-light"
                         v-if="templateIsIndy"
                       >
                         <v-fade-transition leave-absolute>
@@ -97,7 +97,13 @@
                             ></v-switch>
                           </span>
                           <span v-else key="1">
-                            {{ allowSelfAttestationSliderLabel }}
+                            {{
+                              attributeGroup.allowSelfAttested
+                                ? $t(
+                                    "view.proofTemplate.attributes.allowsSelfAttestation"
+                                  )
+                                : ""
+                            }}
                           </span>
                         </v-fade-transition>
                       </v-col>
@@ -310,11 +316,6 @@ export default {
         attributeGroupsInvalid ||
         predicateConditionsInvalid
       );
-    },
-    allowSelfAttestationSliderLabel() {
-      return this.attributeGroup.allowSelfAttested
-        ? this.$t("view.proofTemplate.create.allowSelfAttested")
-        : "";
     },
     templateIsIndy() {
       return this.proofTemplate.type === CredentialTypes.INDY.type;

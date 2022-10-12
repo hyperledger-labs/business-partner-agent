@@ -21,11 +21,13 @@
               </v-col>
               <v-col
                 cols="6"
-                class="text--secondary"
+                class="text--secondary font-weight-light"
                 v-if="attributeGroup.allowSelfAttested"
               >
                 <span>
-                  {{ $t("view.proofTemplate.create.allowSelfAttested") }}
+                  {{
+                    $t("view.proofTemplate.attributes.allowsSelfAttestation")
+                  }}
                 </span>
               </v-col>
             </v-row>

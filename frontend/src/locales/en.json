@@ -339,6 +339,7 @@
       "attributes": {
         "title": "Data fields",
         "errorNoAttributes": "There must be at least one selected data field",
+        "allowsSelfAttestation": "allows self attestation",
         "header": {
           "name": "Name",
           "operator": "Operator",
