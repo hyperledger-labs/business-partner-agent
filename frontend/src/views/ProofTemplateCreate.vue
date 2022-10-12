@@ -88,7 +88,7 @@
                               hide-spin-buttons
                               hide-details
                               @click.native.stop
-                              v-model="allowSelfAttested"
+                              v-model="attributeGroup.allowSelfAttested"
                               :label="
                                 $t(
                                   'view.proofTemplate.create.allowSelfAttested'
@@ -108,14 +108,13 @@
                   <AttributeEdit
                     v-model="proofTemplate.attributeGroups[idx]"
                     :type="proofTemplate.type"
-                    :allow-self-attested="allowSelfAttested"
                   />
 
                   <!-- Schema Restrictions -->
                   <RestrictionsEdit
                     v-model="proofTemplate.attributeGroups[idx]"
                     :type="proofTemplate.type"
-                    v-if="!allowSelfAttested"
+                    v-if="!attributeGroup.allowSelfAttested"
                   />
 
                   <v-card-actions>
@@ -259,7 +258,6 @@ export default {
       openAttributeGroupPanels: new Array<number>(),
       createButtonIsBusy: false,
       useV2Exchange: false,
-      allowSelfAttested: false,
       proofTemplate: {
         name: "",
         type: "",
@@ -314,7 +312,7 @@ export default {
       );
     },
     allowSelfAttestationSliderLabel() {
-      return this.allowSelfAttested
+      return this.attributeGroup.allowSelfAttested
         ? this.$t("view.proofTemplate.create.allowSelfAttested")
         : "";
     },
@@ -378,6 +376,7 @@ export default {
       this.proofTemplate.attributeGroups.push({
         schemaId,
         nonRevoked: true,
+        allowSelfAttested: false,
         attributes,
         ui: {
           selectedAttributes: attributes,
@@ -451,6 +450,7 @@ export default {
         sanitizedAttributeGroupObjects.push({
           schemaId: ag.schemaId,
           nonRevoked: ag.nonRevoked,
+          allowSelfAttested: ag.allowSelfAttested,
           attributes: attributesInGroup,
           schemaLevelRestrictions: restrictionsInGroup,
         });

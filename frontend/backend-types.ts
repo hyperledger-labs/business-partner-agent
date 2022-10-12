@@ -491,12 +491,15 @@ export interface components {
       conditions: components["schemas"]["ValueCondition"][];
     };
     AttributeGroup: {
-      schemaLevelRestrictions: components["schemas"]["SchemaRestrictions"][];
       /** Format: uuid */
       schemaId: string;
       attributeGroupName: string;
       attributes: components["schemas"]["Attribute"][];
       nonRevoked: boolean;
+      allowSelfAttested: boolean | null;
+      schemaLevelRestrictions:
+        | components["schemas"]["SchemaRestrictions"][]
+        | null;
     };
     BPAStats: {
       /** @description my DID */

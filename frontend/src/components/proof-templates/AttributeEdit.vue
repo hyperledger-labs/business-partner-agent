@@ -38,7 +38,7 @@
       <template v-slot:[`item.operator`]="{ item }">
         <v-select
           :items="operators"
-          :disabled="allowSelfAttested"
+          :disabled="attributeGroup.allowSelfAttested"
           v-model="item.conditions[0].operator"
           dense
         />
@@ -64,7 +64,7 @@
             setPredicateConditionsErrorCount($event, attributeGroup)
           "
           dense
-          :disabled="allowSelfAttested"
+          :disabled="attributeGroup.allowSelfAttested"
         />
       </template>
     </v-data-table>
@@ -78,7 +78,6 @@ export default {
   name: "AttributeEdit",
   props: {
     value: {},
-    allowSelfAttested: Boolean,
     type: String,
   },
   data: () => {
