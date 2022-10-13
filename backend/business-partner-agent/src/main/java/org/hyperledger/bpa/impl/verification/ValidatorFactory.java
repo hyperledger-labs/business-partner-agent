@@ -79,6 +79,18 @@ public class ValidatorFactory {
         };
     }
 
+    @Singleton
+    ConstraintValidator<SameGroupType, BPAProofTemplate> sameAttributeGroupType() {
+        return (value, annotationMetadata, context) -> {
+            if (value == null) {
+                return true;
+            }
+            int selfAttested = value.streamAttributeGroups()
+                    .filter(BPAAttributeGroup::allowSelfAttested).toList().size();
+            return selfAttested == 0 || selfAttested == value.getAttributeGroups().getAttributeGroups().size();
+        };
+    }
+
     // TODO find a way to validate single list entries in isolation. This shows the
     // whole list as invalid, even if it's only one entry.
     @Singleton
