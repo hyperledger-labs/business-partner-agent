@@ -19,6 +19,7 @@ package org.hyperledger.bpa.persistence.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -60,10 +61,13 @@ public class BPAAttributeGroup {
     @Builder.Default
     private Boolean nonRevoked = Boolean.FALSE;
 
-    @NotNull
+    @Nullable
     @Builder.Default
+    private Boolean allowSelfAttested = Boolean.FALSE;
+
+    @Nullable
     @Valid
-    private List<BPASchemaRestrictions> schemaLevelRestrictions = List.of(BPASchemaRestrictions.builder().build());
+    private List<BPASchemaRestrictions> schemaLevelRestrictions;
 
     public AttributeGroup toRepresentation() {
         return AttributeGroup
@@ -73,10 +77,12 @@ public class BPAAttributeGroup {
                         .map(BPAAttribute::toRepresentation)
                         .collect(Collectors.toList()))
                 .nonRevoked(nonRevoked)
-                .schemaLevelRestrictions(schemaLevelRestrictions
+                .allowSelfAttested(allowSelfAttested)
+                .schemaLevelRestrictions(CollectionUtils.isNotEmpty(schemaLevelRestrictions) ? schemaLevelRestrictions
                         .stream()
                         .map(BPASchemaRestrictions::toRepresentation)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toList())
+                        : null)
                 .build();
     }
 
@@ -87,9 +93,12 @@ public class BPAAttributeGroup {
                         .map(BPAAttribute::fromRepresentation)
                         .collect(Collectors.toList()))
                 .nonRevoked(attributeGroup.getNonRevoked())
-                .schemaLevelRestrictions(attributeGroup.getSchemaLevelRestrictions().stream()
-                        .map(BPASchemaRestrictions::fromRepresentation)
-                        .collect(Collectors.toList()))
+                .allowSelfAttested(attributeGroup.getAllowSelfAttested())
+                .schemaLevelRestrictions(CollectionUtils.isNotEmpty(attributeGroup.getSchemaLevelRestrictions())
+                        ? attributeGroup.getSchemaLevelRestrictions().stream()
+                                .map(BPASchemaRestrictions::fromRepresentation)
+                                .collect(Collectors.toList())
+                        : null)
                 .build();
     }
 
@@ -100,5 +109,9 @@ public class BPAAttributeGroup {
                         CollectionUtils.isNotEmpty(attr.getConditions()) ? attr.getConditions().get(0) : null))
                 .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll)
                 : Map.of();
+    }
+
+    public Boolean allowSelfAttested() {
+        return Boolean.TRUE.equals(allowSelfAttested);
     }
 }

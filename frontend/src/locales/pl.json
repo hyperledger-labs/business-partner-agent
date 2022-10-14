@@ -337,6 +337,7 @@
       "attributes": {
         "title": "Pola danych",
         "errorNoAttributes": "Musi istnieć co najmniej jedno wybrane pole danych",
+        "allowsSelfAttestation": "allows self attestation",
         "header": {
           "name": "Nazwa",
           "operator": "Operator",
@@ -366,7 +367,8 @@
         "requestedDataTitle": "Dane, o które należy wystąpić",
         "requestedDataSubtitle": "Dodaj dane, które mają być wymagane",
         "snackbarContent": "Usunięto grupę atrybutów",
-        "success": "Utworzono szablon dowodu"
+        "success": "Utworzono szablon dowodu",
+        "allowSelfAttested": "Allow Self Attestation"
       }
     },
     "requestPresentation": {

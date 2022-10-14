@@ -34,7 +34,9 @@
         <v-row>
           <v-col class="col-12">
             <p class="font-weight-medium">{{ key }}</p>
-            <p class="font-italic">{{ value }}</p>
+            <p class="font-italic">
+              {{ unrevealedAttributes ? "***" : value }}
+            </p>
           </v-col>
         </v-row>
       </v-container>

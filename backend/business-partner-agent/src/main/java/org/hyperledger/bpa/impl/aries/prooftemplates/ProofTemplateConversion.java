@@ -22,6 +22,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequestHelper;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -80,6 +81,11 @@ public class ProofTemplateConversion {
     @NonNull
     public PresentProofRequest.PresentProofRequestBuilder templateToProofRequest(
             @NonNull @Valid BPAProofTemplate proofTemplate) {
+
+        if (proofTemplate.allowSelfAttested()) {
+            return buildForSelfAttestation(proofTemplate);
+        }
+
         ProofTemplateElementVisitor proofTemplateElementVisitor = new ProofTemplateElementVisitor(
                 this::resolveLedgerSchemaId,
                 new RevocationTimeStampProvider(clock));
@@ -108,6 +114,12 @@ public class ProofTemplateConversion {
                         .map(pair::right)
                         .map(Pair.PairBuilder::build))
                 .orElse(Stream.empty());
+    }
+
+    PresentProofRequest.PresentProofRequestBuilder buildForSelfAttestation(@NonNull BPAProofTemplate proofTemplate) {
+        return PresentProofRequestHelper.buildForSelfAttestation(
+                proofTemplate.getName(),
+                proofTemplate.collectSelfAttestedAttributes());
     }
 
 }

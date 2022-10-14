@@ -51,27 +51,64 @@
                 :key="attributeGroup.schemaId"
               >
                 <v-expansion-panel-header>
-                  <div>
-                    <span v-html="renderSchemaLabelId(attributeGroup)"></span>
-                    <v-icon
-                      right
-                      color="error"
-                      v-show="
-                        attributeGroup.ui.selectedAttributes.length === 0 ||
-                        attributeGroup.ui.predicateConditionsErrorCount > 0
-                      "
-                      >$vuetify.icons.validationError</v-icon
-                    >
-                    <v-icon
-                      v-show="
-                        attributeGroup.ui.selectedRestrictionsByTrustedIssuer
-                          .length === 0
-                      "
-                      right
-                      color="info"
-                      >$vuetify.icons.about</v-icon
-                    >
-                  </div>
+                  <template v-slot:default="{ open }">
+                    <v-row no-gutters class="d-flex align-end">
+                      <v-col cols="6">
+                        <span
+                          v-html="renderSchemaLabelId(attributeGroup)"
+                        ></span>
+                        <v-icon
+                          right
+                          color="error"
+                          v-show="
+                            attributeGroup.ui.selectedAttributes.length === 0 ||
+                            attributeGroup.ui.predicateConditionsErrorCount > 0
+                          "
+                          >$vuetify.icons.validationError</v-icon
+                        >
+                        <v-icon
+                          v-show="
+                            attributeGroup.ui
+                              .selectedRestrictionsByTrustedIssuer.length === 0
+                          "
+                          right
+                          color="info"
+                          >$vuetify.icons.about</v-icon
+                        >
+                      </v-col>
+                      <v-col
+                        cols="6"
+                        class="text--secondary font-weight-light"
+                        v-if="templateIsIndy"
+                      >
+                        <v-fade-transition leave-absolute>
+                          <span v-if="open" key="0">
+                            <v-switch
+                              dense
+                              hide-spin-buttons
+                              hide-details
+                              @click.native.stop
+                              v-model="attributeGroup.allowSelfAttested"
+                              :label="
+                                $t(
+                                  'view.proofTemplate.create.allowSelfAttested'
+                                )
+                              "
+                            ></v-switch>
+                          </span>
+                          <span v-else key="1">
+                            {{
+                              attributeGroup.allowSelfAttested
+                                ? $t(
+                                    "view.proofTemplate.attributes.allowsSelfAttestation"
+                                  )
+                                : ""
+                            }}
+                          </span>
+                        </v-fade-transition>
+                      </v-col>
+                    </v-row>
+                  </template>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <AttributeEdit
@@ -83,6 +120,7 @@
                   <RestrictionsEdit
                     v-model="proofTemplate.attributeGroups[idx]"
                     :type="proofTemplate.type"
+                    v-if="!attributeGroup.allowSelfAttested"
                   />
 
                   <v-card-actions>
@@ -198,6 +236,7 @@ import {
   SchemaRestrictions,
   ValueCondition,
 } from "@/services";
+import { CredentialTypes } from "@/constants";
 
 export default {
   name: "ProofTemplates",
@@ -254,7 +293,8 @@ export default {
     schemas(): SchemaAPI[] {
       return this.$store.getters.getSchemas.filter(
         (schema: SchemaAPI) =>
-          schema.type === "INDY" || schema.type === "JSON_LD"
+          schema.type === CredentialTypes.INDY.type ||
+          schema.type === CredentialTypes.JSON_LD.type
       );
     },
     overallValidationErrors() {
@@ -276,6 +316,9 @@ export default {
         attributeGroupsInvalid ||
         predicateConditionsInvalid
       );
+    },
+    templateIsIndy() {
+      return this.proofTemplate.type === CredentialTypes.INDY.type;
     },
   },
   methods: {
@@ -334,6 +377,7 @@ export default {
       this.proofTemplate.attributeGroups.push({
         schemaId,
         nonRevoked: true,
+        allowSelfAttested: false,
         attributes,
         ui: {
           selectedAttributes: attributes,
@@ -403,15 +447,11 @@ export default {
           );
         }
 
-        // add empty restrictions object to satisfy backend
-        if (ag.schemaLevelRestrictions.length === 0) {
-          restrictionsInGroup.push({});
-        }
-
         // sanitize ui data (remove ui helper values)
         sanitizedAttributeGroupObjects.push({
           schemaId: ag.schemaId,
           nonRevoked: ag.nonRevoked,
+          allowSelfAttested: ag.allowSelfAttested,
           attributes: attributesInGroup,
           schemaLevelRestrictions: restrictionsInGroup,
         });

@@ -338,6 +338,7 @@
       "attributes": {
         "title": "Datenfelder",
         "errorNoAttributes": "Es muss mindestens ein ausgewähltes Datenfeld vorhanden sein",
+        "allowsSelfAttestation": "erlaubt selbst ausgestellte Attribute",
         "header": {
           "name": "Name",
           "operator": "Operator",
@@ -367,7 +368,8 @@
         "requestedDataTitle": "Anzufordernde Daten",
         "requestedDataSubtitle": "Anzufordernde Daten nach Schema auswählen",
         "snackbarContent": "Attribut-Gruppe wurde entfernt",
-        "success": "Nachweisvorlage erstellt"
+        "success": "Nachweisvorlage erstellt",
+        "allowSelfAttested": "Selber austellen erlauben"
       }
     },
     "requestPresentation": {

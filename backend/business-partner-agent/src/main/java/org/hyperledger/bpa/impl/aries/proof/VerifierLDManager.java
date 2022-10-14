@@ -38,6 +38,7 @@ import org.hyperledger.bpa.persistence.model.prooftemplate.BPASchemaRestrictions
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -97,7 +98,9 @@ public class VerifierLDManager extends BaseLDManager {
     }
 
     private Map<UUID, DIFField> buildDifFieldsFromGroup(@NonNull BPAAttributeGroup group) {
-        Map<UUID, DIFField> issuerRestrictions = group.getSchemaLevelRestrictions()
+        List<BPASchemaRestrictions> restrictions = Objects.requireNonNullElse(group.getSchemaLevelRestrictions(),
+                List.of());
+        Map<UUID, DIFField> issuerRestrictions = restrictions
                 .stream()
                 .map(BPASchemaRestrictions::getIssuerDid)
                 .filter(StringUtils::isNotEmpty)

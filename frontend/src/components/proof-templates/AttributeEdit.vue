@@ -38,6 +38,7 @@
       <template v-slot:[`item.operator`]="{ item }">
         <v-select
           :items="operators"
+          :disabled="attributeGroup.allowSelfAttested"
           v-model="item.conditions[0].operator"
           dense
         />
@@ -63,6 +64,7 @@
             setPredicateConditionsErrorCount($event, attributeGroup)
           "
           dense
+          :disabled="attributeGroup.allowSelfAttested"
         />
       </template>
     </v-data-table>

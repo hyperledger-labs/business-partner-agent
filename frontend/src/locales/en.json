@@ -339,6 +339,7 @@
       "attributes": {
         "title": "Data fields",
         "errorNoAttributes": "There must be at least one selected data field",
+        "allowsSelfAttestation": "allows self attestation",
         "header": {
           "name": "Name",
           "operator": "Operator",
@@ -368,7 +369,8 @@
         "requestedDataTitle": "Data to be requested",
         "requestedDataSubtitle": "Add data to be requested by Schema",
         "snackbarContent": "Removed attribute group",
-        "success": "Proof Template Created"
+        "success": "Proof Template Created",
+        "allowSelfAttested": "Allow Self Attestation"
       }
     },
     "requestPresentation": {

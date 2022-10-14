@@ -20,7 +20,8 @@ package org.hyperledger.bpa.impl.aries.prooftemplates;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRequestedAttributes;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPASchemaRestrictions;
 
 import java.util.List;
@@ -39,21 +40,17 @@ public class Attributes {
     @Singular
     private Map<String, String> equals;
 
-    public void addToBuilder(
-            BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> builderSink) {
-        List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
-                .asProofRestrictionsBuilder(
-                        schemaRestrictions);
+    public void addToBuilder(BiConsumer<String, ProofRequestedAttributes> builderSink) {
+        List<ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
+                .asProofRestrictionsBuilder(schemaRestrictions);
         restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
 
-        PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
-                .builder()
+        ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = ProofRequestedAttributes.builder()
                 .names(names)
-                // TODO only set when set in restriction
-                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject())
+                .restrictions(restrictionsBuilder.stream()
+                        .map(res -> res.schemaId(schemaId).build().toJsonObject())
                         .collect(Collectors.toList()));
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
-
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Introspected
 public class SchemaRestrictions {
 
     @Nullable
@@ -45,16 +45,4 @@ public class SchemaRestrictions {
     private String credentialDefinitionId;
     @Nullable
     private String issuerDid;
-
-    public static SchemaRestrictions fromProofRestrictions(PresentProofRequest.ProofRequest.ProofRestrictions r) {
-        return SchemaRestrictions
-                .builder()
-                .schemaId(r.getSchemaId())
-                .schemaName(r.getSchemaName())
-                .schemaVersion(r.getSchemaVersion())
-                .schemaIssuerDid(r.getSchemaIssuerDid())
-                .credentialDefinitionId(r.getCredentialDefinitionId())
-                .issuerDid(r.getIssuerDid())
-                .build();
-    }
 }
