@@ -82,7 +82,7 @@ public class ValidatorFactory {
     @Singleton
     ConstraintValidator<SameGroupType, BPAProofTemplate> sameAttributeGroupType() {
         return (value, annotationMetadata, context) -> {
-            if (value == null) {
+            if (value == null || value.getAttributeGroups() == null) {
                 return true;
             }
             int selfAttested = value.streamAttributeGroups()
