@@ -119,7 +119,7 @@ public class ProofTemplateConversion {
     PresentProofRequest.PresentProofRequestBuilder buildForSelfAttestation(@NonNull BPAProofTemplate proofTemplate) {
         return PresentProofRequestHelper.buildForSelfAttestation(
                 proofTemplate.getName(),
-                proofTemplate.collectAttributes());
+                proofTemplate.collectSelfAttestedAttributes());
     }
 
 }
