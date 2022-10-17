@@ -252,7 +252,9 @@ public class Converter {
                                     .proofType(e.getValue().getType())
                                     .revealedAttributes(e.getValue().getRevealedAttributes())
                                     .requestedPredicates(e.getValue().getRequestedPredicates())
-                                    .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
+                                    .identifier(e.getValue().getIdentifier() != null ?
+                                            credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier())
+                                            : null)
                                     .build()));
                     proofData = mapper.convertValue(collect, JsonNode.class);
                 } else if (p.typeIsJsonLd()) {
@@ -263,8 +265,9 @@ public class Converter {
                                 AriesProofExchange.RevealedAttributeGroup ag = AriesProofExchange.RevealedAttributeGroup
                                         .builder()
                                         .revealedAttributes(vc.subjectToFlatMap())
-                                        .identifier(credentialInfoResolver
-                                                .populateIdentifier(LDContextHelper.findSchemaId(vc), vc.getIssuer()))
+                                        .identifier(vc.getIssuer() != null ? credentialInfoResolver
+                                                .populateIdentifier(LDContextHelper.findSchemaId(vc), vc.getIssuer())
+                                                : null)
                                         .build();
                                 return new AbstractMap.SimpleEntry<>(sub.getId(), ag);
                             }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

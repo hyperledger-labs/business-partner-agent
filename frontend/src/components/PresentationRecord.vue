@@ -167,7 +167,7 @@
                   }}
                 </h4>
                 <span class="d-flex align-end">
-                  <v-select
+                  <v-combobox
                     :label="
                       $t('view.presentationRecord.matchingCredentials.label')
                     "
@@ -179,7 +179,9 @@
                     @change="selectCredential(group, $event)"
                     dense
                     class="pa-0"
-                  ></v-select>
+                    clearable
+                  >
+                  </v-combobox>
                   <v-checkbox
                     :label="
                       $t('view.presentationRecord.matchingCredentials.revealed')
@@ -271,10 +273,14 @@ export default {
     },
   },
   methods: {
-    selectCredential(group: any, credential: PresentationRequestCredentials) {
+    selectCredential(group: any, credential: any) {
       group.cvalues = {};
       this.names(group).map((name: string) => {
-        group.cvalues[name] = credential.credentialInfo.attrs[name];
+        if (credential && typeof credential === "object") {
+          group.cvalues[name] = credential.credentialInfo.attrs[name];
+        } else {
+          group.cvalues[name] = credential;
+        }
       });
     },
     names(item: ProofRequestedAttributes): string[] {

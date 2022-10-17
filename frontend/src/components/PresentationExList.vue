@@ -267,6 +267,7 @@ export default {
         this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
       );
     },
+    // TODO
     isReadyToApprove() {
       if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
         const groupsWithCredentials = RequestTypes.map((type) => {
@@ -422,10 +423,20 @@ export default {
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]: [string, any]) => {
-            referents[groupName] = {
-              referent: group.selectedCredential?.credentialInfo?.referent,
-              revealed: !!group.revealed,
-            };
+            if (
+              group.selectedCredential &&
+              typeof group.selectedCredential === "object"
+            ) {
+              referents[groupName] = {
+                referent: group.selectedCredential?.credentialInfo?.referent,
+                revealed: !!group.revealed,
+              };
+            } else {
+              referents[groupName] = {
+                selfAttestedValue: group.selectedCredential,
+                revealed: true,
+              };
+            }
           }
         );
       });
