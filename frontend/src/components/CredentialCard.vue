@@ -12,7 +12,9 @@
       height="40"
       class="light-blue darken-3 card-title text-subtitle-1 white--text font-weight-medium"
       style="text-transform: capitalize"
-      >{{ this.document.proofData.identifier.schemaLabel }}</v-card-title
+      >{{
+        hasIdentifiers ? this.document.proofData.identifier.schemaLabel : ""
+      }}</v-card-title
     >
     <v-card-subtitle
       class="light-blue darken-3 card-title text-subtitle-2 white--text font-weight-thin"
@@ -51,7 +53,7 @@
           </v-col>
         </v-row>
       </v-container>
-      <v-expansion-panels flat>
+      <v-expansion-panels flat v-if="hasIdentifiers">
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-medium">
             {{ $t("component.credentialCard.details") }}
@@ -104,6 +106,9 @@ export default {
   computed: {
     predicates() {
       return this.document.proofData.requestedPredicates;
+    },
+    hasIdentifiers() {
+      return this.document.proofData.identifier;
     },
     unrevealedAttributes() {
       return (
