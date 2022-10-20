@@ -205,6 +205,7 @@
                     "
                     v-model="group.revealed"
                     v-if="group.hasOwnProperty('revealed')"
+                    :disabled="group.canReveal"
                     class="pa-2"
                   ></v-checkbox>
                 </span>
@@ -248,11 +249,19 @@ import {
 } from "@/services";
 export default {
   name: "PresentationRecord",
+  components: { Timeline },
   props: {
     record: {} as AriesProofExchange & {
       stateToTimestampUiTimeline: [string, number][];
     },
     isReadyToApprove: Boolean,
+  },
+  data: () => {
+    return {
+      Predicates,
+      Restrictions,
+      RequestTypes,
+    };
   },
   computed: {
     expertMode() {
@@ -298,8 +307,10 @@ export default {
         this.names(group).map((name: string) => {
           if (credential && typeof credential === "object") {
             group.cvalues[name] = credential.credentialInfo.attrs[name];
+            group.canReveal = false;
           } else {
             group.cvalues[name] = credential;
+            group.canReveal = true;
           }
         });
       }
@@ -308,6 +319,7 @@ export default {
     },
     clearSelectedCredential(group: any) {
       delete group.cvalues;
+      delete group.canReveal;
       delete group.selectedCredential;
     },
     checkIfReadyToApprove() {
@@ -375,13 +387,5 @@ export default {
       return attributeGroupName;
     },
   },
-  data: () => {
-    return {
-      Predicates,
-      Restrictions,
-      RequestTypes,
-    };
-  },
-  components: { Timeline },
 };
 </script>
