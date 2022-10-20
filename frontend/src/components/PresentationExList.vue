@@ -96,6 +96,7 @@
             class="justify-start"
             v-else
             v-bind:record="record"
+            :isReadyToApprove.sync="isReadyToApprove"
           ></PresentationRecord>
           <v-alert
             v-if="
@@ -198,11 +199,12 @@ export default {
       dialog: false,
       isBusy: false,
       isLoadingPresExRecords: true,
+      isWaitingForMatchingCreds: false,
+      isReadyToApprove: false,
       presentationExchangeRecords: new Array<AriesProofExchange>(),
       options: {},
       totalNumberOfElements: 0,
       hideFooter: false,
-      isWaitingForMatchingCreds: false,
       declineReasonText: "",
     };
   },
@@ -266,17 +268,6 @@ export default {
         this.record.state &&
         this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
       );
-    },
-    isReadyToApprove() {
-      if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
-        const groupsWithCredentials = RequestTypes.map((type) => {
-          return Object.values(this.record.proofRequest[type]).map((group) => {
-            return Object.hasOwnProperty.call(group, "selectedCredential");
-          });
-        });
-        // eslint-disable-next-line unicorn/no-array-reduce
-        return groupsWithCredentials.flat().reduce((x, y) => x && y);
-      } else return false;
     },
     typeIsIndy() {
       return this.record.type === CredentialTypes.INDY.type;
@@ -422,10 +413,20 @@ export default {
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]: [string, any]) => {
-            referents[groupName] = {
-              referent: group.selectedCredential?.credentialInfo?.referent,
-              revealed: !!group.revealed,
-            };
+            if (
+              group.selectedCredential &&
+              typeof group.selectedCredential === "object"
+            ) {
+              referents[groupName] = {
+                referent: group.selectedCredential?.credentialInfo?.referent,
+                revealed: !!group.revealed,
+              };
+            } else {
+              referents[groupName] = {
+                selfAttestedValue: group.selectedCredential,
+                revealed: true,
+              };
+            }
           }
         );
       });

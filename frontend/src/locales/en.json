@@ -418,7 +418,8 @@
       "presentationNotValid": "Presentation is not valid",
       "matchingCredentials": {
         "selectHeader": "Select data for presentation",
-        "label": "Matching Credentials",
+        "label": "Matching credentials",
+        "labelSelfAttestation": "Matching credentials or self attested value",
         "credentialRevoked": " - credential is revoked",
         "noInfoFound": "No info found",
         "revealed": "Reveal"

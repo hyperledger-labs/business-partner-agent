@@ -418,6 +418,7 @@
       "matchingCredentials": {
         "selectHeader": "Daten für die Präsentation auswählen",
         "label": "Passende Berechtigungsnachweise",
+        "labelSelfAttestation": "Passende Berechtigungsnachweise oder selbst ausgestellt",
         "credentialRevoked": " - Berechtigungsnachweis wurde widerrufen",
         "noInfoFound": "Keine Informationen gefunden",
         "revealed": "Offenlegen"

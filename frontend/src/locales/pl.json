@@ -417,6 +417,7 @@
       "matchingCredentials": {
         "selectHeader": "Wybierz dane do prezentacj",
         "label": "Dopasowanie poświadczeń",
+        "labelSelfAttestation": "Matching credentials or self attested value",
         "credentialRevoked": " - poświadczenie jest unieważnione",
         "noInfoFound": "No info found",
         "revealed": "Reveal"
