@@ -171,7 +171,9 @@
                   <v-combobox
                     v-if="group.restrictions.length === 0"
                     :label="
-                      $t('view.presentationRecord.matchingCredentials.label')
+                      $t(
+                        'view.presentationRecord.matchingCredentials.labelSelfAttestation'
+                      )
                     "
                     return-object
                     :items="group.matchingCredentials"
