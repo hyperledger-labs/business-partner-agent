@@ -167,7 +167,26 @@
                   }}
                 </h4>
                 <span class="d-flex align-end">
+                  <!-- Use combo box if there are no restrictions, meaning self-attested attributes are allowed -->
                   <v-combobox
+                    v-if="group.restrictions.length === 0"
+                    :label="
+                      $t('view.presentationRecord.matchingCredentials.label')
+                    "
+                    return-object
+                    :items="group.matchingCredentials"
+                    :item-text="toCredentialLabel"
+                    v-model="group.selectedCredential"
+                    outlined
+                    @change="selectCredential(group, $event)"
+                    @click:clear="clearSelectedCredential(group)"
+                    dense
+                    class="pa-0"
+                    clearable
+                  >
+                  </v-combobox>
+                  <v-select
+                    v-else
                     :label="
                       $t('view.presentationRecord.matchingCredentials.label')
                     "
@@ -179,9 +198,7 @@
                     @change="selectCredential(group, $event)"
                     dense
                     class="pa-0"
-                    clearable
-                  >
-                  </v-combobox>
+                  ></v-select>
                   <v-checkbox
                     :label="
                       $t('view.presentationRecord.matchingCredentials.revealed')
@@ -235,6 +252,7 @@ export default {
     record: {} as AriesProofExchange & {
       stateToTimestampUiTimeline: [string, number][];
     },
+    isReadyToApprove: Boolean,
   },
   computed: {
     expertMode() {
@@ -274,14 +292,34 @@ export default {
   },
   methods: {
     selectCredential(group: any, credential: any) {
-      group.cvalues = {};
-      this.names(group).map((name: string) => {
-        if (credential && typeof credential === "object") {
-          group.cvalues[name] = credential.credentialInfo.attrs[name];
-        } else {
-          group.cvalues[name] = credential;
-        }
-      });
+      // update credential value in UI
+      if (credential) {
+        group.cvalues = {};
+        this.names(group).map((name: string) => {
+          if (credential && typeof credential === "object") {
+            group.cvalues[name] = credential.credentialInfo.attrs[name];
+          } else {
+            group.cvalues[name] = credential;
+          }
+        });
+      }
+      // update approve button state in parent component
+      this.$emit("update:isReadyToApprove", this.checkIfReadyToApprove());
+    },
+    clearSelectedCredential(group: any) {
+      delete group.cvalues;
+      delete group.selectedCredential;
+    },
+    checkIfReadyToApprove() {
+      if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
+        const groupsWithCredentials = RequestTypes.map((type) => {
+          return Object.values(this.record.proofRequest[type]).map((group) => {
+            return Object.hasOwnProperty.call(group, "cvalues");
+          });
+        });
+        // eslint-disable-next-line unicorn/no-array-reduce
+        return groupsWithCredentials.flat().reduce((x, y) => x && y);
+      } else return false;
     },
     names(item: ProofRequestedAttributes): string[] {
       return item.names ? item.names : [item.name];
