@@ -107,7 +107,6 @@ public class MessagingManager {
         try {
             messageTemplate.deleteById(id);
         } catch (DataAccessException e) {
-            log.error("Could not delete message template", e);
             throw new WrongApiUsageException(ms.getMessage("mail.template.constrain.violation"));
         }
     }
@@ -136,7 +135,6 @@ public class MessagingManager {
         try {
             userInfo.deleteById(id);
         } catch (DataAccessException e) {
-            log.error("Could not delete user info", e);
             throw new WrongApiUsageException(ms.getMessage("mail.user.info.constrain.violation"));
         }
     }

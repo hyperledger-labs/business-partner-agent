@@ -148,7 +148,7 @@ public class DidResolver {
 
     private Optional<PartnerAPI> lookupPartnerSave(String did) {
         try {
-            if (StringUtils.isNotEmpty(did)) {
+            if (AriesStringUtil.isDidIndy(did)) {
                 PartnerAPI partnerAPI = partnerLookup.lookupPartner(did);
                 if (partnerAPI.getVerifiablePresentation() != null) {
                     return Optional.of(partnerAPI);

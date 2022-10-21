@@ -217,7 +217,6 @@ public class SchemaService {
             try {
                 schemaRepo.deleteById(id);
             } catch (DataAccessException e) {
-                log.error("Could not delete schema", e);
                 throw new WrongApiUsageException(ms.getMessage("api.schema.constrain.violation"));
             }
         }, EntityNotFoundException::new);
