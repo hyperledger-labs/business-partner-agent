@@ -132,4 +132,14 @@ class AriesStringUtilTest {
         Assertions.assertEquals("did:indy:1", AriesStringUtil.qualifyDidIfNeeded("did:indy:1", "did:indy"));
     }
 
+    @Test
+    void testIsDidIndy() {
+        Assertions.assertTrue(AriesStringUtil.isDidIndy("did:indy:test:123"));
+        Assertions.assertTrue(AriesStringUtil.isDidIndy("did:sov:123"));
+        Assertions.assertFalse(AriesStringUtil.isDidIndy("did:key:123"));
+        Assertions.assertFalse(AriesStringUtil.isDidIndy("test"));
+        Assertions.assertFalse(AriesStringUtil.isDidIndy(null));
+        Assertions.assertFalse(AriesStringUtil.isDidIndy(""));
+    }
+
 }
