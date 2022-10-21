@@ -160,78 +160,78 @@ export const ActivityTypes: Readonly<{
 
 export const ActivityStates = Object.freeze({
   CONNECTION_REQUEST_ACCEPTED: {
-    value: "connection_request_accepted",
+    value: "CONNECTION_REQUEST_ACCEPTED",
     label: i18n.t("constants.activityStates.connectionRequest.accepted"),
   },
   CONNECTION_REQUEST_RECEIVED: {
-    value: "connection_request_received",
+    value: "CONNECTION_REQUEST_RECEIVED",
     label: i18n.t("constants.activityStates.connectionRequest.received"),
   },
   CONNECTION_REQUEST_SENT: {
-    value: "connection_request_sent",
+    value: "CONNECTION_REQUEST_SENT",
     label: i18n.t("constants.activityStates.connectionRequest.sent"),
   },
   CREDENTIAL_EXCHANGE_ACCEPTED: {
-    value: "credential_exchange_accepted",
+    value: "CREDENTIAL_EXCHANGE_ACCEPTED",
     label: i18n.t("constants.activityStates.credentialExchange.accepted"),
   },
   CREDENTIAL_EXCHANGE_DECLINED: {
-    value: "credential_exchange_declined",
+    value: "CREDENTIAL_EXCHANGE_DECLINED",
     label: i18n.t("constants.activityStates.credentialExchange.declined"),
   },
   CREDENTIAL_EXCHANGE_RECEIVED: {
-    value: "credential_exchange_received",
+    value: "CREDENTIAL_EXCHANGE_RECEIVED",
     label: i18n.t("constants.activityStates.credentialExchange.received"),
   },
   CREDENTIAL_EXCHANGE_PROBLEM: {
-    value: "credential_exchange_problem",
+    value: "CREDENTIAL_EXCHANGE_PROBLEM",
     label: i18n.t("constants.activityStates.credentialExchange.problem"),
   },
   CREDENTIAL_EXCHANGE_SENT: {
-    value: "credential_exchange_sent",
+    value: "CREDENTIAL_EXCHANGE_SENT",
     label: i18n.t("constants.activityStates.credentialExchange.sent"),
   },
   PRESENTATION_EXCHANGE_ACCEPTED: {
-    value: "presentation_exchange_accepted",
+    value: "PRESENTATION_EXCHANGE_ACCEPTED",
     label: i18n.t("constants.activityStates.presentationExchange.accepted"),
   },
   PRESENTATION_EXCHANGE_DECLINED: {
-    value: "presentation_exchange_declined",
+    value: "PRESENTATION_EXCHANGE_DECLINED",
     label: i18n.t("constants.activityStates.presentationExchange.declined"),
   },
   PRESENTATION_EXCHANGE_RECEIVED: {
-    value: "presentation_exchange_received",
+    value: "PRESENTATION_EXCHANGE_RECEIVED",
     label: i18n.t("constants.activityStates.presentationExchange.received"),
   },
   PRESENTATION_EXCHANGE_SENT: {
-    value: "presentation_exchange_sent",
+    value: "PRESENTATION_EXCHANGE_SENT",
     label: i18n.t("constants.activityStates.presentationExchange.sent"),
   },
 });
 
 export const ActivityRoles = Object.freeze({
   CONNECTION_REQUEST_SENDER: {
-    value: "connection_request_sender",
+    value: "CONNECTION_REQUEST_SENDER",
     label: i18n.t("constants.activityRoles.connectionRequest.sender"),
   },
   CONNECTION_REQUEST_RECIPIENT: {
-    value: "connection_request_recipient",
+    value: "CONNECTION_REQUEST_RECIPIENT",
     label: i18n.t("constants.activityRoles.connectionRequest.recipient"),
   },
   CREDENTIAL_EXCHANGE_HOLDER: {
-    value: "credential_exchange_holder",
+    value: "CREDENTIAL_EXCHANGE_HOLDER",
     label: i18n.t("constants.activityRoles.credentialExchange.holder"),
   },
   CREDENTIAL_EXCHANGE_ISSUER: {
-    value: "credential_exchange_issuer",
+    value: "CREDENTIAL_EXCHANGE_ISSUER",
     label: i18n.t("constants.activityRoles.credentialExchange.issuer"),
   },
   PRESENTATION_EXCHANGE_PROVER: {
-    value: "presentation_exchange_prover",
+    value: "PRESENTATION_EXCHANGE_PROVER",
     label: i18n.t("constants.activityRoles.presentationExchange.prover"),
   },
   PRESENTATION_EXCHANGE_VERIFIER: {
-    value: "presentation_exchange_verifier",
+    value: "PRESENTATION_EXCHANGE_VERIFIER",
     label: i18n.t("constants.activityRoles.presentationExchange.verifier"),
   },
 });
