@@ -116,7 +116,7 @@ public class IssuerManager extends CredentialManagerBase {
             throw new WrongApiUsageException();
         }
         fireCredentialIssuedEvent(credEx);
-        return credEx.getCredentialExchangeId();
+        return credEx.getId().toString();
     }
 
     /**
