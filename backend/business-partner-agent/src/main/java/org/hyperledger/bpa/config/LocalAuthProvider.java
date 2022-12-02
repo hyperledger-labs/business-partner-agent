@@ -18,8 +18,9 @@
 package org.hyperledger.bpa.config;
 
 import io.micronaut.http.HttpRequest;
-import io.micronaut.security.authentication.*;
-import io.reactivex.rxjava3.core.Maybe;
+import io.micronaut.security.authentication.AuthenticationProvider;
+import io.micronaut.security.authentication.AuthenticationRequest;
+import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.hyperledger.bpa.config.security.oauth2.client.RequiresMissingKeycloak;
@@ -27,6 +28,7 @@ import org.hyperledger.bpa.persistence.model.BPAUser;
 import org.hyperledger.bpa.persistence.repository.BPAUserRepository;
 import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -49,17 +51,16 @@ public class LocalAuthProvider implements AuthenticationProvider {
 
         Optional<BPAUser> dbUser = userRepo.findByUsername(String.valueOf(authenticationRequest.getIdentity()));
 
-        return Maybe.<AuthenticationResponse>create(emitter -> {
+        return Mono.create(emitter -> {
             if (dbUser.isPresent()
                     && enc.matches(String.valueOf(authenticationRequest.getSecret()), dbUser.get().getPassword())) {
-                emitter.onSuccess(AuthenticationResponse.success(
+                emitter.success(AuthenticationResponse.success(
                         dbUser.get().getUsername(),
                         Arrays.asList(dbUser.get().getRoles().split(",")),
                         Map.of("userId", dbUser.get().getId())));
             } else {
-                emitter.onError(new AuthenticationException(new AuthenticationFailed()));
+                emitter.error(AuthenticationResponse.exception());
             }
-        }).toFlowable();
+        });
     }
-
 }
