@@ -1,4 +1,8 @@
+version: "2"
+
+# region: <your-region> # e.g. us, eu
 # authtoken: <your-token>
+
 tunnels:
     businesspartner:
       proto: http
