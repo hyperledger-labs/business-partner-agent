@@ -33,7 +33,7 @@ import java.net.URL;
 @Testcontainers
 public abstract class RunWithAries extends BaseTest {
 
-    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4";
+    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.5";
 
     /** Container local port, the mapped port is random */
     private static final Integer ARIES_ADMIN_PORT = 8031;
@@ -61,7 +61,6 @@ public abstract class RunWithAries extends BaseTest {
             .waitingFor(Wait.defaultWaitStrategy())
             .withLogConsumer(new Slf4jLogConsumer(log));
 
-    @SuppressWarnings("resource")
     public RunWithAries() {
         runWithProxyIfConfigured(ariesContainer);
     }

@@ -92,12 +92,12 @@
         <dependency>
             <groupId>io.micronaut.redis</groupId>
             <artifactId>micronaut-redis-lettuce</artifactId>
-            <version>5.3.1</version>
+            <version>5.3.2</version>
         </dependency>
         <dependency>
             <groupId>io.micronaut.email</groupId>
             <artifactId>micronaut-email-mailjet</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.activation</groupId>
@@ -118,7 +118,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.1</version>
+            <version>10.1.2</version>
         </dependency>
 
         <!-- Logging -->
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.31</version>
+            <version>0.7.33</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.7.4</version>
+            <version>5.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
