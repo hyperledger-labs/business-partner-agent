@@ -1,6 +1,6 @@
 # Docker-compose setup
 
-## Prerequistes
+## Prerequisites
 
 The following tools should be installed on your developer machine:
 - docker
@@ -114,7 +114,7 @@ Alternatively, you can register a DID manually:
 
 ## Get a public IP
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
-A simple way to get public endpoints for your agent is to setup [ngrok](https://ngrok.com/).
+A simple way to get public endpoints for your agent is to set up [ngrok](https://ngrok.com/).
 
 If you have set up ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints. Note that this scripts expects the `ngrok` command to be available in the global path, and additionally requires the `jq` command (which may need to be installed first on your machine).
 ```s
@@ -157,3 +157,14 @@ E.g. to exchange the logo you can set:
 -Dbpa.ux.navigation.avatar.agent.src=data:image/png;base64,<...>
 ```
 In the JAVA_OPTS section of the bpa-agent1 or bpa-agent2 in the docker compose file.
+
+## Compatibility with older mobile wallets
+
+In case you see `invalid invitation` errors with some wallets, you have to set the following to false
+in `acapy-static-args.yml`:
+
+```yaml
+emit-new-didcomm-prefix: false
+emit-new-didcomm-mime-type: false
+```
+This is because some older apps do not support the new didcomm mime types.  
