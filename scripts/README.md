@@ -1,6 +1,6 @@
 # Docker-compose setup
 
-## Prerequistes
+## Prerequisites
 
 The following tools should be installed on your developer machine:
 - docker
@@ -19,7 +19,7 @@ Spinning up a single instance that is not exposed to the internet.
 git clone https://github.com/hyperledger-labs/business-partner-agent
 cd scripts
 ./register-dids.sh
-docker compose up
+docker compose --env-file .env -f docker-compose.yml up
 ```
 
 ## Spinning up a single BPA
@@ -32,11 +32,16 @@ will set up the tunnel and start everything for you. Before making your agent pu
 you most likely want to change the security options, at least set passwords, in the `.env` file. 
 See the security section below for details.
 
-- Alternatively, for a local test, just run
+Alternatively, for a local test, just run
 ```s
 # If not done already, run
 # ./register-dids.sh
 docker-compose up
+```
+**Note**: this will also compile the BPA from the checked out sources, which can take a while.
+If you want to speed things up you can disable this by running
+```shell
+docker compose -f docker-compose.yml up
 ```
 
 ### Accessing the frontend
@@ -109,7 +114,7 @@ Alternatively, you can register a DID manually:
 
 ## Get a public IP
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
-A simple way to get public endpoints for your agent is to setup [ngrok](https://ngrok.com/).
+A simple way to get public endpoints for your agent is to set up [ngrok](https://ngrok.com/).
 
 If you have set up ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints. Note that this scripts expects the `ngrok` command to be available in the global path, and additionally requires the `jq` command (which may need to be installed first on your machine).
 ```s
@@ -133,6 +138,11 @@ and a username and password.
 Ideally also configure a secure connection between the backend services (core and aca-py).
 This can be achieved by setting an API key in `.env` file via `ACAPY_ADMIN_CONFIG` (see example).
 
+**Note**: If security is enabled the BPA must be run behind a TLS proxy, 
+if login over plain HTTP is desired `-Dmicronaut.session.http.cookie-secure=false`
+needs to be set in the JAVA_OPTS section of the docker-compose.yml for both bpa1 and bpa2. If this is not set
+the login will fail in Chrome based browsers.
+
 ## Customizing the frontend
 
 There are some limited options to customize the UI without recompiling the code
@@ -147,3 +157,14 @@ E.g. to exchange the logo you can set:
 -Dbpa.ux.navigation.avatar.agent.src=data:image/png;base64,<...>
 ```
 In the JAVA_OPTS section of the bpa-agent1 or bpa-agent2 in the docker compose file.
+
+## Compatibility with older mobile wallets
+
+In case you see `invalid invitation` errors with some wallets, you have to set the following to false
+in `acapy-static-args.yml`:
+
+```yaml
+emit-new-didcomm-prefix: false
+emit-new-didcomm-mime-type: false
+```
+This is because some older apps do not support the new didcomm mime types.  

@@ -5,7 +5,7 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-if [ "$(which gp)" ]; then
+if command -v gp > /dev/null 2>&1; then
   eval $(gp env -e)
   if [[ $ACAPY_SEED ]] && [[ $ACAPY_SEED2 ]]; then
        echo "There is already DIDs registered, no need to run the script again."
@@ -51,7 +51,7 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
     echo ""
     echo ""Registration on $URL successful""
 
-    if [ "$(which gp)" ]; then
+    if command -v gp > /dev/null 2>&1; then
         echo ""Setting seeds permanently in gitpod environment""
         gp env $1=$SEED
 
