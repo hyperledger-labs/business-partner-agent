@@ -8,6 +8,13 @@
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent)
 
+# _Looking for Maintainer_
+
+The current maintainers stop active contribution to the further development of the Hyperledger Labs project Business Partner Agent, as well as the related project Business Partner Agent Helm Chart.
+To give existing users of the Business Partner Agent enough lead time, we are willing to continue maintaining the project for now. For more information see the Hyperledger Discord channel.
+
+**We are looking for a new maintainer, if you are interested please contact us via [Hyperledger Discord][discord-url] in the business-partner-agent channel.**
+
 # Short Description
 The BPA allows organizations to verify, hold, and issue verifiable credentials.
 
