@@ -111,12 +111,6 @@ The agent is started in Indy mode per default and tries to connect with our test
 
 You can run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
 
-## Run a business partner agent with gitpod
-
-The easiest way to run two agents, is to work with [gitpod](https://gitpod.io/). 
-Gitpod launches a pre-configured IDE in the browser and the agents being launched in the background.
-See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/blob/main/docs/DEBUGGING.md#fronend-and-backend-with-gitpod).
-
 # Documentation and Tutorials
 
 User documentation is located at https://hyperledger-labs.github.io/business-partner-agent
