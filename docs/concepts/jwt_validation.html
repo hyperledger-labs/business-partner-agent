@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>JWT Token Validation &mdash; Business Partner Agent  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/drawio.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Business Partner Agent
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Concepts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="indy_web_mode.html">Indy and Web mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_profile.html">Public Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_partner.html">Business Partner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas_trusted_issuers.html">Configuration of Schemas and Trusted Issuers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_verifications.html">Request Verifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_presentations.html">Request Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_keycloak.html">Security - Keycloak</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/demo.html">Demo Scenario</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Business Partner Agent</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>JWT Token Validation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/concepts/jwt_validation.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="jwt-token-validation">
+<h1>JWT Token Validation<a class="headerlink" href="#jwt-token-validation" title="Permalink to this headline">¶</a></h1>
+<p>JSON Web Token (JWT) is a term standing for two implementations: JSON Web Signature (JWS) and JSON Web Encryption (JWE).
+JWE is not very common, and most of the time you will see JWS.</p>
+<div class="section" id="jws-basics">
+<h2>JWS Basics<a class="headerlink" href="#jws-basics" title="Permalink to this headline">¶</a></h2>
+<p>A token consists of three parts:</p>
+<ol class="simple">
+<li><p>Header</p></li>
+<li><p>Payload</p></li>
+<li><p>Signature</p></li>
+</ol>
+<p>Header and Payload are base64 encoded JSON documents whose contents are based on <a class="reference external" href="https://tools.ietf.org/html/rfc7519">RFC7519</a>.
+The signature is created by hashing header and payload and then signing the result with a private key and base64 encoding the result.
+The JWS presentation is built by concatenating all three parts with dots in between, so in short the result looks like:
+Concat(Base64(Header) + ‘.’ + Base64(Payload) + ‘.’ + Base64(Signature).</p>
+<p>Note: To restrict parsing effort the CA only allows EdDSA as the signature algorithm with an Ed25519 key pair.</p>
+</div>
+<div class="section" id="jws-in-a-regular-web-service-context">
+<h2>JWS in a regular (web-) service context<a class="headerlink" href="#jws-in-a-regular-web-service-context" title="Permalink to this headline">¶</a></h2>
+<p>To verify the token, you need the public key of the signing party.
+In a web service context this key is usually statically configured and only changes when the key is rotated or expired.
+As both header and payload are part of the signature any manipulation of the header or the payload becomes evident immediately.</p>
+</div>
+<div class="section" id="jws-in-the-context-of-business-partner-agent-web">
+<h2>JWS in the context of business-partner-agent:web<a class="headerlink" href="#jws-in-the-context-of-business-partner-agent-web" title="Permalink to this headline">¶</a></h2>
+<p>Here we have the issue that the public key is delivered separately from the token, this opens possibilities for manipulation.
+In this context we have the following token retrieval and validation process:</p>
+<ul class="simple">
+<li><p>Step 1. Resolve the public profile service endpoint via the did document</p></li>
+</ul>
+<p>This depends on the did method, so the did document can be written on a ledger or made available by a web service.
+As did document presentations are not always the same, resolution happens with the help of the universal resolver,
+that (hopefully) returns a normalised presentation of the did document.</p>
+<p>Example did document with a profile type endpoint within the service section:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;https://www.w3.org/ns/did/v1&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;verificationMethod&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7#key-1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ed25519VerificationKey2018&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;controller&quot;</span><span class="p">:</span> <span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;publicKeyBase58&quot;</span><span class="p">:</span> <span class="s2">&quot;8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;service&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7#did-communication&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;did-communication&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;serviceEndpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;recipientKeys&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7#key-1&quot;</span>
+      <span class="p">],</span>
+      <span class="nt">&quot;routingKeys&quot;</span><span class="p">:</span> <span class="p">[],</span>
+      <span class="nt">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7#profile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;profile&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;serviceEndpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080/profile.jsonld&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Step 2. Resolve the public profile</p></li>
+</ul>
+<p>In this case the profile service endpoint returns a JSON structure that contains the JWT.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;decoded&quot;</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="s2">&quot;jwt&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Step 3. Decode token and verify signature</p></li>
+</ul>
+<p>Decoding just means breaking the token down into the three parts mentioned above and verifying its integrity.
+Verification is the tricky part though.</p>
+<ul class="simple">
+<li><p>Step 4. Resolve the public key</p></li>
+</ul>
+<p>If the token is self-signed the key is already part of the did document.
+If the token was signed by a third party the public key needs to be resolved by pulling the did document of the third party.</p>
+<div class="section" id="token-verification-scenarios">
+<h3>Token verification scenarios<a class="headerlink" href="#token-verification-scenarios" title="Permalink to this headline">¶</a></h3>
+<p>A token can be either self-signed or signed by a third party.
+Self-signed in the context of verifiable credentials means subject (sub) == issuer (iss).
+In JWT terms iss === sub. In general, we have to decide if we want to trust an issuer to make specific claim about a subject.
+In the self-signed public profile data case we have (human) trust if issuer == subject.
+But in some cases we would probably not trust did:indy:1 making claims about did:indy:2.</p>
+<p>The second step is cryptographic trust, to check if the issuer authenticated the credential.
+This is the part where we have to check that the public key which verifies the JWT is authorized by the issuer.
+Therefore, we have to check if the verifying public key is part of the did document of the issuer</p>
+<p>Therefore, we can state that:</p>
+<ol class="simple">
+<li><p>If there is no kid and iss == sub then the token is considered self-signed</p></li>
+<li><p>If kid &amp;&amp; iss == sub then the token is also considered self-signed, and kid must be part of the issuers did document</p></li>
+<li><p>If sub != iss the token is signed by a third party</p></li>
+<li><p>If kid &amp;&amp; sub != iss, the token is signed by a third party, and kid must be part of the issuers did document</p></li>
+</ol>
+<div class="section" id="self-signed-no-key-id-in-the-header">
+<h4>Self-signed - no key id in the header<a class="headerlink" href="#self-signed-no-key-id-in-the-header" title="Permalink to this headline">¶</a></h4>
+<p>If the JWT is in the following form:</p>
+<div class="highlight-jsom notranslate"><div class="highlight"><pre><span></span>{
+  &quot;typ&quot;: &quot;JWT&quot;,
+  &quot;alg&quot;: &quot;EdDSA&quot;
+},
+{
+  &quot;sub&quot;: &quot;did:web:faber.iil.network&quot;,
+  &quot;iss&quot;: &quot;did:web:faber.iil.network&quot;
+}
+</pre></div>
+</div>
+<p>The did document must only contain a single key. If there is more than one key element the token is considered invalid.
+If the structure is valid the token signature is validated with the value of “publicKeyBase58”.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;publicKey&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network#key-1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ed25519VerificationKey2018&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;publicKeyBase58&quot;</span><span class="p">:</span> <span class="s2">&quot;24j9iYZTPRE3L4W5kRixBAEQLHJzfzuHsqiQyCnVEbKZ&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="self-signed-key-id-in-the-header">
+<h4>Self-signed - key id in the header<a class="headerlink" href="#self-signed-key-id-in-the-header" title="Permalink to this headline">¶</a></h4>
+<p>If the header contains a kid…</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;kid&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network#key-1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;typ&quot;</span><span class="p">:</span> <span class="s2">&quot;JWT&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;alg&quot;</span><span class="p">:</span> <span class="s2">&quot;EdDSA&quot;</span>
+<span class="p">},</span>
+<span class="p">{</span>
+  <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;iss&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>…the did document is allowed to have multiple keys. If the did document is missing a matching publicKey:id the token is considered invalid.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;publicKey&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;did:web:faber.iil.network#key-1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ed25519VerificationKey2018&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;publicKeyBase58&quot;</span><span class="p">:</span> <span class="s2">&quot;24j9iYZTPRE3L4W5kRixBAEQLHJzfzuHsqiQyCnVEbKZ&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="signed-by-third-party">
+<h4>Signed by third party<a class="headerlink" href="#signed-by-third-party" title="Permalink to this headline">¶</a></h4>
+<p>Like mentioned above, the public key needs to be resolved by yet another call to the universal resolver to retrieve
+the did document and public key of the third party. The <code class="docutils literal notranslate"><span class="pre">did</span></code> used for resolution is taken from the iss field of the Payload.
+If there is a kid then the same mechanism as above is applied.</p>
+<p>This use-case is currently out of scope and validation will fail.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

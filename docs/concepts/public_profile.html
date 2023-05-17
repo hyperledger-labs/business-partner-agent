@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Public Profile &mdash; Business Partner Agent  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/drawio.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Business Partner" href="business_partner.html" />
+    <link rel="prev" title="Indy and Web mode" href="indy_web_mode.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Business Partner Agent
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="indy_web_mode.html">Indy and Web mode</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Public Profile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#profile-endpoint">Profile Endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#organizational-profile-credential">Organizational Profile Credential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indy-credentials">Indy Credentials</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-of-a-wrapped-in-indy-credential">Example of a wrapped in Indy Credential</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#verifiable-presentation">Verifiable Presentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-of-a-public-profile">Example of a public profile</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="business_partner.html">Business Partner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas_trusted_issuers.html">Configuration of Schemas and Trusted Issuers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_verifications.html">Request Verifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_presentations.html">Request Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_keycloak.html">Security - Keycloak</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/demo.html">Demo Scenario</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Business Partner Agent</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Public Profile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/concepts/public_profile.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="public-profile">
+<h1>Public Profile<a class="headerlink" href="#public-profile" title="Permalink to this headline">¶</a></h1>
+<p>The public profile allows an organization to share public information about itself in the form of a W3C Verifiable Presentation (VP).</p>
+<p>The public profile can be seen as a very simple, limited implementation of the Identity Hub concept for an organization.</p>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Provide basc public information without relying on DIDcomm and Indy Credentials (Anoncreds), i.e. such that even a human with a browser and a ledger explorer can read the data.</p></li>
+<li><p>Allow the integration of documents (self-attested data) and credentials (third-party attested data)</p></li>
+<li><p>Allow the public profile to be a “static” ressource, i.e. a request should not require access to cryptographic keys.</p></li>
+</ul>
+</div>
+<div class="section" id="design">
+<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="profile-endpoint">
+<h3>Profile Endpoint<a class="headerlink" href="#profile-endpoint" title="Permalink to this headline">¶</a></h3>
+<p>The service that returns the public profile VP is advertised in the DID document as a service endpoint of type <code class="docutils literal notranslate"><span class="pre">profile</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;service&quot;</span><span class="p">:</span>
+    <span class="p">[{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;profile&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;serviceEndpoint&quot;</span><span class="p">:</span><span class="s2">&quot;http://localhost:8080/profile.jsonld&quot;</span>
+    <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="organizational-profile-credential">
+<h3>Organizational Profile Credential<a class="headerlink" href="#organizational-profile-credential" title="Permalink to this headline">¶</a></h3>
+<p>The Organizational Profile Credential contains basic organizational master data and provides the means for a self description of the organization. It is natively defined as W3C Verifiable Credential (VC) in JSON-LD.
+Hence it supports a richer structure with nested objects and arrays. The JSON-LD Context is available <a class="reference external" href="https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld">here</a>.</p>
+</div>
+<div class="section" id="indy-credentials">
+<h3>Indy Credentials<a class="headerlink" href="#indy-credentials" title="Permalink to this headline">¶</a></h3>
+<p>In order to embed Indy Anconcreds in the public profile, we wrap their content in a dynamically generated VC with an additional <a class="reference external" href="https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld">Indy Credential JSON-LD context</a>. The VC itself is not directly cryptographically verifiable, but contains all information required to request a presentation (proof) via DIDcomm. The intent is that an organization self-attests that it holds these credentials and provides the content. A business partner supporting DIDcomm is able to request a verification if required.</p>
+<div class="section" id="example-of-a-wrapped-in-indy-credential">
+<h4>Example of a wrapped in Indy Credential<a class="headerlink" href="#example-of-a-wrapped-in-indy-credential" title="Permalink to this headline">¶</a></h4>
+<p>Given an Indy Credential based on <a class="reference external" href="http://test.bcovrin.vonx.io/browse/domain?page=1&amp;query=F6dB7dMVHUQSC64qemnBi7%3A2%3Abank_account%3A1.0&amp;txn_type=">this schema</a>, we dynamically create the following unsigned VC.
+It becomes verifiably self-attested by including it in a signed VP (see example at the end). The actual content of the original credential gets included in the <code class="docutils literal notranslate"><span class="pre">credentialSubject</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+         <span class="s2">&quot;@context&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;https://www.w3.org/2018/credentials/v1&quot;</span><span class="p">,</span>
+            <span class="p">{</span>
+               <span class="s2">&quot;@context&quot;</span><span class="p">:{</span>
+                  <span class="s2">&quot;sc&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7:2:bank_account:1.0&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;bic&quot;</span><span class="p">:{</span>
+                     <span class="s2">&quot;@id&quot;</span><span class="p">:</span><span class="s2">&quot;sc:bic&quot;</span>
+                  <span class="p">},</span>
+                  <span class="s2">&quot;iban&quot;</span><span class="p">:{</span>
+                     <span class="s2">&quot;@id&quot;</span><span class="p">:</span><span class="s2">&quot;sc:iban&quot;</span>
+                  <span class="p">}</span>
+               <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld&quot;</span>
+         <span class="p">],</span>
+         <span class="s2">&quot;type&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;VerifiableCredential&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IndyCredential&quot;</span>
+         <span class="p">],</span>
+         <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;urn:583100e7-9141-4444-b3bf-3bd27fb1e33e&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;issuanceDate&quot;</span><span class="p">:</span><span class="s2">&quot;2020-12-09T19:21:58Z&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;credentialSubject&quot;</span><span class="p">:{</span>
+            <span class="s2">&quot;bic&quot;</span><span class="p">:</span><span class="s2">&quot;456&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;iban&quot;</span><span class="p">:</span><span class="s2">&quot;1234&quot;</span>
+         <span class="p">},</span>
+         <span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;1234&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;indyIssuer&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:F6dB7dMVHUQSC64qemnBi7&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;schemaId&quot;</span><span class="p">:</span><span class="s2">&quot;F6dB7dMVHUQSC64qemnBi7:2:bank_account:1.0&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;credDefId&quot;</span><span class="p">:</span><span class="s2">&quot;F6dB7dMVHUQSC64qemnBi7:3:CL:571:bank_account_no_revoc&quot;</span>
+      <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="verifiable-presentation">
+<h3>Verifiable Presentation<a class="headerlink" href="#verifiable-presentation" title="Permalink to this headline">¶</a></h3>
+<p>The VP can be verified with the public key listed in the authentication section of the DID document.</p>
+</div>
+<div class="section" id="example-of-a-public-profile">
+<h3>Example of a public profile<a class="headerlink" href="#example-of-a-public-profile" title="Permalink to this headline">¶</a></h3>
+<p>The following example shows a public profile that consists of a VP including two verifiable credentials.</p>
+<ul class="simple">
+<li><p>Organization Profile Credential</p></li>
+<li><p>Bank Account Indy Credential</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;@context&quot;</span><span class="p">:[</span>
+      <span class="s2">&quot;https://www.w3.org/2018/credentials/v1&quot;</span>
+   <span class="p">],</span>
+   <span class="s2">&quot;type&quot;</span><span class="p">:[</span>
+      <span class="s2">&quot;VerifiablePresentation&quot;</span>
+   <span class="p">],</span>
+   <span class="s2">&quot;verifiableCredential&quot;</span><span class="p">:[</span>
+      <span class="p">{</span>
+         <span class="s2">&quot;@context&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;https://www.w3.org/2018/credentials/v1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld&quot;</span>
+         <span class="p">],</span>
+         <span class="s2">&quot;type&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;VerifiableCredential&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LabeledCredential&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;OrganizationalProfileCredential&quot;</span>
+         <span class="p">],</span>
+         <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;urn:992c5897-e897-484f-99b2-33070593a128&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;issuer&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:VoSfM3eGaPxduty34ySygw&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;issuanceDate&quot;</span><span class="p">:</span><span class="s2">&quot;2020-12-14T14:48:08Z&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;credentialSubject&quot;</span><span class="p">:{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:VoSfM3eGaPxduty34ySygw&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Legal Entity&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;altName&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;legalName&quot;</span><span class="p">:</span><span class="s2">&quot;Robert Bosch GmbH (ILL)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identifier&quot;</span><span class="p">:[</span>
+               <span class="p">{</span>
+                  <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;D-U-N-S&quot;</span>
+               <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;registeredSite&quot;</span><span class="p">:{</span>
+               <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;ff35b805-c7c2-49aa-bb1c-d90383fd3919&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;address&quot;</span><span class="p">:{</span>
+                  <span class="s2">&quot;city&quot;</span><span class="p">:</span><span class="s2">&quot;Gerlingen&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;region&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;country&quot;</span><span class="p">:</span><span class="s2">&quot;Germany&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;zipCode&quot;</span><span class="p">:</span><span class="s2">&quot;79999&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;streetAddress&quot;</span><span class="p">:</span><span class="s2">&quot;Mauserstrasse 1&quot;</span>
+               <span class="p">}</span>
+            <span class="p">}</span>
+         <span class="p">},</span>
+         <span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;Robert Bosch GmbH (ILL)&quot;</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+         <span class="s2">&quot;@context&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;https://www.w3.org/2018/credentials/v1&quot;</span><span class="p">,</span>
+            <span class="p">{</span>
+               <span class="s2">&quot;@context&quot;</span><span class="p">:{</span>
+                  <span class="s2">&quot;sc&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;bic&quot;</span><span class="p">:{</span>
+                     <span class="s2">&quot;@id&quot;</span><span class="p">:</span><span class="s2">&quot;sc:bic&quot;</span>
+                  <span class="p">},</span>
+                  <span class="s2">&quot;iban&quot;</span><span class="p">:{</span>
+                     <span class="s2">&quot;@id&quot;</span><span class="p">:</span><span class="s2">&quot;sc:iban&quot;</span>
+                  <span class="p">}</span>
+               <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld&quot;</span>
+         <span class="p">],</span>
+         <span class="s2">&quot;type&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;VerifiableCredential&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IndyCredential&quot;</span>
+         <span class="p">],</span>
+         <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;urn:583100e7-9141-4444-b3bf-3bd27fb1e33e&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;issuanceDate&quot;</span><span class="p">:</span><span class="s2">&quot;2020-12-09T19:21:58Z&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;credentialSubject&quot;</span><span class="p">:{</span>
+            <span class="s2">&quot;bic&quot;</span><span class="p">:</span><span class="s2">&quot;456&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;iban&quot;</span><span class="p">:</span><span class="s2">&quot;1234&quot;</span>
+         <span class="p">},</span>
+         <span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="s2">&quot;1234&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;indyIssuer&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:M6Mbe3qx7vB4wpZF4sBRjt&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;schemaId&quot;</span><span class="p">:</span><span class="s2">&quot;M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;credDefId&quot;</span><span class="p">:</span><span class="s2">&quot;M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc&quot;</span>
+      <span class="p">}</span>
+   <span class="p">],</span>
+   <span class="s2">&quot;proof&quot;</span><span class="p">:{</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Ed25519Signature2018&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;created&quot;</span><span class="p">:</span><span class="s2">&quot;2020-12-14T14:48:08Z&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;verificationMethod&quot;</span><span class="p">:</span><span class="s2">&quot;did:sov:VoSfM3eGaPxduty34ySygw#key-1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;proofPurpose&quot;</span><span class="p">:</span><span class="s2">&quot;authentication&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;jws&quot;</span><span class="p">:</span><span class="s2">&quot;eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..fYhHd3qJlGZjsiDMgYH-0cFlhgPlvW4NQw5pkKQX5KN0_jBKhbjJwIwzrplo9tPDASB2tRJAXnWBykgKPz8FAQ&quot;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="business_partner.html" class="btn btn-neutral float-right" title="Business Partner" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="indy_web_mode.html" class="btn btn-neutral float-left" title="Indy and Web mode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

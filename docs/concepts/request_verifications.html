@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Request Verifications &mdash; Business Partner Agent  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/drawio.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Request Presentations" href="request_presentations.html" />
+    <link rel="prev" title="Configuration of Schemas and Trusted Issuers" href="schemas_trusted_issuers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Business Partner Agent
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="indy_web_mode.html">Indy and Web mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_profile.html">Public Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_partner.html">Business Partner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas_trusted_issuers.html">Configuration of Schemas and Trusted Issuers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Request Verifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#request-verifications-using-the-rest-api">Request verifications using the REST API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-verifications-using-the-ui">Request verifications using the UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#possible-improvements">Possible Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#used-aries-protocols">Used Aries protocols</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="request_presentations.html">Request Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_keycloak.html">Security - Keycloak</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/demo.html">Demo Scenario</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Business Partner Agent</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Request Verifications</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/concepts/request_verifications.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="request-verifications">
+<h1>Request Verifications<a class="headerlink" href="#request-verifications" title="Permalink to this headline">¶</a></h1>
+<p>BPA supports two mechanisms to receive Indy credentials in its wallet.</p>
+<ol class="simple">
+<li><p>An issuer can trigger the usual <a class="reference external" href="https://github.com/hyperledger/aries-rfcs/tree/main/features/0036-issue-credential">issue credential flow</a> and the credential shows up in the wallet, because ACA-Py is configured with the following auto flags.</p>
+<ul class="simple">
+<li><p>auto-respond-credential-offer: true</p></li>
+<li><p>auto-store-credential: true</p></li>
+</ul>
+</li>
+<li><p>A user can request a verification for a document in the wallet.</p></li>
+</ol>
+<div class="section" id="request-verifications-using-the-rest-api">
+<h2>Request verifications using the REST API<a class="headerlink" href="#request-verifications-using-the-rest-api" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="p">:</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">partners</span><span class="o">/</span><span class="p">{</span><span class="nb">id</span><span class="p">}</span><span class="o">/</span><span class="n">credential</span><span class="o">-</span><span class="n">request</span>
+<span class="p">{</span>
+  <span class="s2">&quot;documentId&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>BPA will create a credential request based on the schema and attributes of the document.</p>
+</div>
+<div class="section" id="request-verifications-using-the-ui">
+<h2>Request verifications using the UI<a class="headerlink" href="#request-verifications-using-the-ui" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Wallet</span> <span class="pre">&gt;</span> <span class="pre">Select</span> <span class="pre">a</span> <span class="pre">document</span> <span class="pre">&gt;</span> <span class="pre">Request</span> <span class="pre">Presentation</span> <span class="pre">&gt;</span> <span class="pre">Verification</span> <span class="pre">&gt;</span> <span class="pre">Select</span> <span class="pre">Business</span> <span class="pre">Partner</span> <span class="pre">&gt;</span> <span class="pre">Submit</span></code></p>
+<p>If trusted issuers are provided for the schema, only business partners which are also trusted issuers are shown.
+If a ledger explorer is configured and no trusted issuers are provided, only business partners which can issue the document based on ledger data are shown.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The current process (2) assumes that an issuer will just issue a credential (i.e. provide a verification of a document) without further inquiry. This can be motivated as follows:
+We assume that the issuer is able to identify the holder already in the process of setting up a connection (see <a class="reference internal" href="business_partner.html"><span class="doc std std-doc">Business Partner</span></a> for more information). Let’s assume the issuer is a bank and an organization has a bank account with this bank. When the organization asks for a verification of the bank account, the bank can check its internal database if the provided bank account in the document belongs to the organization and hence issue the credential.</p>
+</div>
+<div class="section" id="possible-improvements">
+<h2>Possible Improvements<a class="headerlink" href="#possible-improvements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>In practice, the verification process might trigger a workflow that includes one or more proof requests from the issuer. This could be implemented using <a class="reference external" href="https://github.com/hyperledger/aries-rfcs/blob/main/concepts/0478-coprotocols/README.md">Coprotocols</a></p></li>
+<li><p>Show all possible issuers for a document in the UI based on ledger data. If an issuer is not already a business partner provide a link to add it.</p></li>
+</ul>
+</div>
+<div class="section" id="used-aries-protocols">
+<h2>Used Aries protocols<a class="headerlink" href="#used-aries-protocols" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/hyperledger/aries-rfcs/blob/main/features/0036-issue-credential/README.md">0036: Issue Credential Protocol 1.0</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="request_presentations.html" class="btn btn-neutral float-right" title="Request Presentations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="schemas_trusted_issuers.html" class="btn btn-neutral float-left" title="Configuration of Schemas and Trusted Issuers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Business Partner &mdash; Business Partner Agent  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/drawio.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration of Schemas and Trusted Issuers" href="schemas_trusted_issuers.html" />
+    <link rel="prev" title="Public Profile" href="public_profile.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Business Partner Agent
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="indy_web_mode.html">Indy and Web mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_profile.html">Public Profile</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Business Partner</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#used-aries-protocols">Used Aries protocols</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="schemas_trusted_issuers.html">Configuration of Schemas and Trusted Issuers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_verifications.html">Request Verifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_presentations.html">Request Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_keycloak.html">Security - Keycloak</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/demo.html">Demo Scenario</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Business Partner Agent</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Business Partner</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/concepts/business_partner.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="business-partner">
+<h1>Business Partner<a class="headerlink" href="#business-partner" title="Permalink to this headline">¶</a></h1>
+<p>In principle a business partner can be any entity with a DID. Currently, we focus on organizations with public DIDs.</p>
+<p>At the moment BPA supports ony adding a business partner by public DID. We resolve DIDs with a remote instance of an universal resolver.
+The universal resolver instance can be configured by setting the <code class="docutils literal notranslate"><span class="pre">BPA_RESOLVER_URL</span></code> environment variable. Thereby, we can support multiple DID methods.
+If the DID document contains a service endpoint of type <code class="docutils literal notranslate"><span class="pre">profile</span></code>, the BPA retrieves the VP and verifies it. If the DID document contains a DIDcomm endpoint it initiates the <a class="reference external" href="https://github.com/hyperledger/aries-rfcs/blob/main/features/0160-connection-protocol/README.md">connection protocol</a>.</p>
+<p>BPA currenty uses an ACA-PY with auto flags concerning connections enabled, i.e. a BPA will automatically accept a connection request. Also the ACA-Py is set to support public invitations, such that connection requests based on public DIDs work.</p>
+<p>If a business partner does not support DIDcomm, but provides only a <code class="docutils literal notranslate"><span class="pre">profile</span></code> endpoint, it won’t know if it got added. If a business partner supports DIDcomm, a new entry will appear in its list of business partners. However,  the connection protocol uses peer DIDs for every connection. Therefore, the entry won’t be the public DID of the requesting business partner, and the profile endpoint can’t be resolved.</p>
+<p>We manually approach this issue currently by issuing <code class="docutils literal notranslate"><span class="pre">identity</span> <span class="pre">credentials</span></code> to the business partners that include their public DID. This identity credential can be requested and the connection gets upgraded.</p>
+<div class="section" id="used-aries-protocols">
+<h2>Used Aries protocols<a class="headerlink" href="#used-aries-protocols" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/hyperledger/aries-rfcs/blob/main/features/0160-connection-protocol/README.md">0160: Connection Protocol</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="schemas_trusted_issuers.html" class="btn btn-neutral float-right" title="Configuration of Schemas and Trusted Issuers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="public_profile.html" class="btn btn-neutral float-left" title="Public Profile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Configuration of Schemas and Trusted Issuers &mdash; Business Partner Agent  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/drawio.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Request Verifications" href="request_verifications.html" />
+    <link rel="prev" title="Business Partner" href="business_partner.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Business Partner Agent
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="indy_web_mode.html">Indy and Web mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_profile.html">Public Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="business_partner.html">Business Partner</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration of Schemas and Trusted Issuers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#static-configuration">Static configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-configuration">Dynamic Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-using-the-rest-api">Configuration using the REST API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-a-new-schema">Adding a new schema</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-a-trusted-issuer-to-an-already-configured-schema">Adding a trusted issuer to an already configured schema</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration-using-the-ui">Configuration using the UI</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="request_verifications.html">Request Verifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request_presentations.html">Request Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_keycloak.html">Security - Keycloak</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/demo.html">Demo Scenario</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Business Partner Agent</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Configuration of Schemas and Trusted Issuers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/concepts/schemas_trusted_issuers.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="configuration-of-schemas-and-trusted-issuers">
+<h1>Configuration of Schemas and Trusted Issuers<a class="headerlink" href="#configuration-of-schemas-and-trusted-issuers" title="Permalink to this headline">¶</a></h1>
+<p>The BPA allows handle documents and (verified) credentials based on schemas. Currently, mostly Indy Schemas are supported. One exception is the Organizational Profile which is defined by a JSON-LD context.</p>
+<p><img alt="" src="https://i.imgur.com/GGotdrE.png" /></p>
+<p>When adding a new document to the wallet you can select from the configured schemas.</p>
+<p>Schemas can be registered either during configuration or during runtime.</p>
+<div class="section" id="static-configuration">
+<h2>Static configuration<a class="headerlink" href="#static-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Example of the configuration of a bank acount schema in the <a class="reference external" href="https://github.com/hyperledger-labs/business-partner-agent/blob/main/backend/business-partner-agent/src/main/resources/application.yml"><code class="docutils literal notranslate"><span class="pre">application.yml</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">schemas</span><span class="p">:</span>
+    <span class="c1">#test ledger schemas, can be overwritten / extended when e.g. working with other ledger</span>
+    <span class="n">bank</span><span class="o">-</span><span class="n">account</span><span class="p">:</span>
+      <span class="nb">id</span><span class="p">:</span> <span class="s2">&quot;M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0&quot;</span>
+      <span class="n">label</span><span class="p">:</span> <span class="s2">&quot;Bank Account&quot;</span>
+      <span class="n">defaultAttributeName</span><span class="p">:</span> <span class="s2">&quot;iban&quot;</span>
+      <span class="c1"># Note: this also works json style restrictions: [{id: 123, label: myLabel}]</span>
+      <span class="n">restrictions</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">issuerDid</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{bpa.did.prefix}</span><span class="s2">M6Mbe3qx7vB4wpZF4sBRjt&quot;</span>
+          <span class="n">label</span><span class="p">:</span> <span class="s2">&quot;Demo Bank&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> is the Indy schema id</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code> is the label shown in the UI</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defaultAttributeName</span></code> defines the default label that is used for a document/credential instance based on the schema</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restrictions</span></code> allow to specifiy trusted issuers for this schema. This is used in the Request Presentation flow. The user can select 0..n issuers when <a class="reference internal" href="request_presentations.html"><span class="doc std std-doc">requesting a presentation</span></a> from a business partner</p></li>
+</ul>
+</div>
+<div class="section" id="dynamic-configuration">
+<h2>Dynamic Configuration<a class="headerlink" href="#dynamic-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Schemas and trusted issuers can also be configured dynamically using the REST API or the UI. However, all schemas that are configured statically can’t be modified by the API.</p>
+<div class="section" id="configuration-using-the-rest-api">
+<h3>Configuration using the REST API<a class="headerlink" href="#configuration-using-the-rest-api" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="adding-a-new-schema">
+<h4>Adding a new schema<a class="headerlink" href="#adding-a-new-schema" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span><span class="p">:</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">schema</span>
+
+<span class="p">{</span>
+  <span class="s2">&quot;defaultAttributeName&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;schemaId&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;trustedIssuer&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;issuerDid&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">trustedIssuer</span></code> array is optional.</p>
+</div>
+<div class="section" id="adding-a-trusted-issuer-to-an-already-configured-schema">
+<h4>Adding a trusted issuer to an already configured schema<a class="headerlink" href="#adding-a-trusted-issuer-to-an-already-configured-schema" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span><span class="p">:</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">schema</span><span class="o">/</span><span class="p">{</span><span class="nb">id</span><span class="p">}</span><span class="o">/</span><span class="n">trustedIssuer</span>
+<span class="p">{</span>
+  <span class="s2">&quot;issuerDid&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Have look at the OpenAPI specification under <code class="docutils literal notranslate"><span class="pre">/api/admin/schema</span></code> to see all endpoints related to schema management.</p>
+</div>
+<div class="section" id="configuration-using-the-ui">
+<h4>Configuration using the UI<a class="headerlink" href="#configuration-using-the-ui" title="Permalink to this headline">¶</a></h4>
+<p>You can configure schemas in the UI under <code class="docutils literal notranslate"><span class="pre">Settings</span> <span class="pre">&gt;</span> <span class="pre">Schema</span> <span class="pre">and</span> <span class="pre">Trusted</span> <span class="pre">Issuers</span></code>.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="request_verifications.html" class="btn btn-neutral float-right" title="Request Verifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="business_partner.html" class="btn btn-neutral float-left" title="Business Partner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

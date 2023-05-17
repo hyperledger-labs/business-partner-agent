@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Demo Scenario &mdash; Business Partner Agent  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/drawio.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Security - Keycloak" href="../concepts/security_keycloak.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Business Partner Agent
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Concepts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/indy_web_mode.html">Indy and Web mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/public_profile.html">Public Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/business_partner.html">Business Partner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/schemas_trusted_issuers.html">Configuration of Schemas and Trusted Issuers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/request_verifications.html">Request Verifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/request_presentations.html">Request Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/security_keycloak.html">Security - Keycloak</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Demo Scenario</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-a-public-profile-for-your-organization">Setup a public profile for your organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-a-bank-account-to-your-public-profile">Add a bank account to your public profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-our-bank-as-a-business-partner">Add our bank as a business partner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-your-bank-account-verified-by-your-bank">Get your bank account verified by your bank</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Business Partner Agent</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Demo Scenario</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/tutorials/demo.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="demo-scenario">
+<h1>Demo Scenario<a class="headerlink" href="#demo-scenario" title="Permalink to this headline">¶</a></h1>
+<p>In this scenario you will setup a public profile and get your bank account verified by your bank.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>We assume that you started the Business Partner Agent in Aries mode on the default ledger, and your Agent’s endpoint is publicly available.</p>
+</div>
+<div class="section" id="setup-a-public-profile-for-your-organization">
+<h2>Setup a public profile for your organization<a class="headerlink" href="#setup-a-public-profile-for-your-organization" title="Permalink to this headline">¶</a></h2>
+<p>The first thing you should do is to setup your public profile.</p>
+<ol class="simple">
+<li><p>Go to Wallet, click the <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">button</span></code>, and select <code class="docutils literal notranslate"><span class="pre">Organizational</span> <span class="pre">Profile</span></code></p></li>
+<li><p>Enter your master data and click <code class="docutils literal notranslate"><span class="pre">save</span></code></p></li>
+<li><p>The public profile is now available for your business partners</p></li>
+</ol>
+</div>
+<div class="section" id="add-a-bank-account-to-your-public-profile">
+<h2>Add a bank account to your public profile<a class="headerlink" href="#add-a-bank-account-to-your-public-profile" title="Permalink to this headline">¶</a></h2>
+<p>Next we add some bank account information</p>
+<ol class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Wallet</span></code>, click the <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">button</span></code> and select <code class="docutils literal notranslate"><span class="pre">Bank</span> <span class="pre">Account</span></code></p></li>
+<li><p>Set the visible in public profile toggle to true</p></li>
+<li><p>Enter your IBAN and BIC and click on <code class="docutils literal notranslate"><span class="pre">save</span></code></p></li>
+</ol>
+<p>This information is currently self-attested, but we like to have this information verified by our bank, such that our business partners can automatically verify the authenticity of the bank account.</p>
+</div>
+<div class="section" id="add-our-bank-as-a-business-partner">
+<h2>Add our bank as a business partner<a class="headerlink" href="#add-our-bank-as-a-business-partner" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Business</span> <span class="pre">Partners</span></code> and click the <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">button</span></code></p></li>
+<li><p>Paste <code class="docutils literal notranslate"><span class="pre">did:sov:M6Mbe3qx7vB4wpZF4sBRjt</span></code> in the DID Box. This is the DID of your bank</p></li>
+<li><p>Click on <code class="docutils literal notranslate"><span class="pre">Lookup</span> <span class="pre">Partner</span></code>. You’ll see the public profile of your partner.</p></li>
+<li><p>Click on <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Partner</span></code>. Now you have a connection with your bank.</p></li>
+</ol>
+</div>
+<div class="section" id="get-your-bank-account-verified-by-your-bank">
+<h2>Get your bank account verified by your bank<a class="headerlink" href="#get-your-bank-account-verified-by-your-bank" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Wallet</span></code> and click on the Bank Account document</p></li>
+<li><p>Click on <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> in the Verification section</p></li>
+<li><p>Select your bank and click <code class="docutils literal notranslate"><span class="pre">submit</span></code></p></li>
+<li><p>You should see the bank account in the <code class="docutils literal notranslate"><span class="pre">Verified</span> <span class="pre">Credentials</span></code> section of your wallet</p></li>
+</ol>
+<p>You can now send a proof of your verified bank account to one of your business partners.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../concepts/security_keycloak.html" class="btn btn-neutral float-left" title="Security - Keycloak" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
