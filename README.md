@@ -6,8 +6,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI/CD](https://github.com/hyperledger-labs/business-partner-agent/workflows/CI/CD/badge.svg)](https://github.com/hyperledger-labs/business-partner-agent/actions?query=workflow%3ACI%2FCD+branch%3Amain)
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent)
-
 # _Looking for Maintainer_
 
 The current maintainers stop active contribution to the further development of the Hyperledger Labs project Business Partner Agent, as well as the related project Business Partner Agent Helm Chart.
@@ -112,12 +110,6 @@ The agent is started in Indy mode per default and tries to connect with our test
 ## Run a business partner agent with docker-compose or helm
 
 You can run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
-
-## Run a business partner agent with gitpod
-
-The easiest way to run two agents, is to work with [gitpod](https://gitpod.io/). 
-Gitpod launches a pre-configured IDE in the browser and the agents being launched in the background.
-See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/blob/main/docs/DEBUGGING.md#fronend-and-backend-with-gitpod).
 
 # Documentation and Tutorials
 
